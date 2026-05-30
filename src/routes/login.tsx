@@ -1,0 +1,328 @@
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
+import { Eye, EyeOff, Leaf, Truck, Users } from 'lucide-react'
+import { useAuth } from '#/context/AuthContext'
+import { loginUser, registerUser } from '#/services/auth'
+
+export const Route = createFileRoute('/login')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === 'string' ? search.redirect : '/shop',
+  }),
+  component: LoginPage,
+})
+
+const isDemoMode = !(import.meta.env as Record<string, string>).VITE_API_URL
+
+function LoginPage() {
+  const navigate = useNavigate()
+  const { redirect } = Route.useSearch()
+  const { login, user } = useAuth()
+  const [tab, setTab] = useState<'signin' | 'register'>('signin')
+
+  useEffect(() => {
+    if (user) void navigate({ to: redirect as never })
+  }, [user])
+
+  return (
+    <div className="min-h-screen flex">
+      {/* Left panel — branding */}
+      <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-[#0f2418] via-[#1a3d2b] to-[#2f6a4a] text-white flex-col justify-between p-14 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-[#d4af37]/10 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#4fb8b2]/10 blur-3xl" />
+        </div>
+
+        <div className="relative">
+          <Link to="/" className="flex items-center gap-3 no-underline w-fit">
+            <div className="w-11 h-11 bg-[#d4af37] rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-[#1a3d2b] font-bold text-lg leading-none font-serif">த</span>
+            </div>
+            <div>
+              <p className="font-serif text-lg font-bold leading-tight">Tenkasi Fresh</p>
+              <p className="text-white/50 text-[10px] tracking-widest uppercase">Farm to Home · Since 1987</p>
+            </div>
+          </Link>
+        </div>
+
+        <div className="relative space-y-8">
+          <div>
+            <p className="text-[#d4af37] text-xs font-bold tracking-widest uppercase mb-4">Our Promise</p>
+            <h2 className="font-serif text-4xl font-bold leading-snug mb-3">
+              From our soil<br />to your soul.
+            </h2>
+            <p className="text-white/60 text-sm leading-relaxed">
+              Every fruit traced to a farmer we know by name. Harvested at dawn, at your door by dusk.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              { icon: <Leaf size={16} />, label: '100% Chemical Free' },
+              { icon: <Truck size={16} />, label: 'Same Day Delivery across TN' },
+              { icon: <Users size={16} />, label: '240+ Farmer Families' },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-3 text-sm text-white/75">
+                <span className="text-[#d4af37]">{item.icon}</span>
+                {item.label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="relative text-white/30 text-xs">© 2026 Tenkasi Fresh Fruits</p>
+      </div>
+
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#faf9f4]">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <Link to="/" className="lg:hidden flex items-center gap-2.5 no-underline mb-8">
+            <div className="w-9 h-9 bg-[#2f6a4a] rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-base leading-none font-serif">த</span>
+            </div>
+            <span className="font-serif font-bold text-gray-900">Tenkasi Fresh</span>
+          </Link>
+
+          <h1 className="font-serif text-3xl font-bold text-gray-900 mb-1">
+            {tab === 'signin' ? 'Welcome back' : 'Create account'}
+          </h1>
+          <p className="text-gray-500 text-sm mb-7">
+            {tab === 'signin' ? 'Sign in to continue shopping' : 'Join 500K+ happy customers'}
+          </p>
+
+          {/* Tabs */}
+          <div className="flex bg-gray-100 rounded-xl p-1 mb-7">
+            {(['signin', 'register'] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setTab(t)}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  tab === t ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {t === 'signin' ? 'Sign In' : 'Register'}
+              </button>
+            ))}
+          </div>
+
+          {tab === 'signin' && isDemoMode && (
+            <div className="mb-5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-800 space-y-1.5">
+              <p className="font-bold text-amber-900 mb-1">Demo credentials</p>
+              <p>
+                <span className="font-semibold">Admin —</span>{' '}
+                admin@tenakasifresh.com · admin123
+              </p>
+              <p>
+                <span className="font-semibold">Customer —</span>{' '}
+                priya@example.com · customer123
+              </p>
+            </div>
+          )}
+
+          {tab === 'signin' ? (
+            <SignInForm onSuccess={(u) => { login(u); void navigate({ to: redirect as never }) }} />
+          ) : (
+            <RegisterForm onSuccess={(u) => { login(u); void navigate({ to: redirect as never }) }} />
+          )}
+
+          <Link
+            to="/"
+            className="mt-6 flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-[#2f6a4a] transition-colors no-underline"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SignInForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').User) => void }) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPw, setShowPw] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: { preventDefault(): void }) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const user = await loginUser({ email, password })
+      onSuccess(user)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+          {error}
+        </div>
+      )}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="signin-email">
+          Email address
+        </label>
+        <input
+          id="signin-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="signin-pw">
+          Password
+        </label>
+        <div className="relative">
+          <input
+            id="signin-pw"
+            type={showPw ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+            className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw(!showPw)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            aria-label={showPw ? 'Hide password' : 'Show password'}
+          >
+            {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
+          </button>
+        </div>
+      </div>
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-[#2f6a4a] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {loading ? 'Signing in…' : 'Sign In'}
+      </button>
+    </form>
+  )
+}
+
+function RegisterForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').User) => void }) {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' })
+  const [showPw, setShowPw] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  function set(field: keyof typeof form) {
+    return (e: React.ChangeEvent<HTMLInputElement>) => setForm((prev) => ({ ...prev, [field]: e.target.value }))
+  }
+
+  async function handleSubmit(e: { preventDefault(): void }) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const user = await registerUser(form)
+      onSuccess(user)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+          {error}
+        </div>
+      )}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="reg-name">
+          Full name
+        </label>
+        <input
+          id="reg-name"
+          type="text"
+          value={form.name}
+          onChange={set('name')}
+          placeholder="Ravi Kumar"
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="reg-email">
+          Email address
+        </label>
+        <input
+          id="reg-email"
+          type="email"
+          value={form.email}
+          onChange={set('email')}
+          placeholder="you@example.com"
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="reg-phone">
+          Phone number
+        </label>
+        <input
+          id="reg-phone"
+          type="tel"
+          value={form.phone}
+          onChange={set('phone')}
+          placeholder="+91 98400 12345"
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="reg-pw">
+          Password
+        </label>
+        <div className="relative">
+          <input
+            id="reg-pw"
+            type={showPw ? 'text' : 'password'}
+            value={form.password}
+            onChange={set('password')}
+            placeholder="Min 8 characters"
+            required
+            minLength={8}
+            className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw(!showPw)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            aria-label={showPw ? 'Hide password' : 'Show password'}
+          >
+            {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
+          </button>
+        </div>
+      </div>
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-[#2f6a4a] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {loading ? 'Creating account…' : 'Create Account'}
+      </button>
+      <p className="text-center text-xs text-gray-400 leading-relaxed">
+        By registering, you agree to our terms. All accounts start as customer — admin access is assigned by the team.
+      </p>
+    </form>
+  )
+}
