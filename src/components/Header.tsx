@@ -2,6 +2,7 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { ShoppingCart, Search, Heart, Menu, X, Phone, LogOut, User } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '#/context/AuthContext'
+import { useCart } from '#/context/CartContext'
 
 const BASE_NAV = [
   { label: 'Home', to: '/' },
@@ -13,9 +14,9 @@ const BASE_NAV = [
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [cartCount] = useState(2)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const { user, isAdmin, logout } = useAuth()
+  const { count: cartCount } = useCart()
   const navigate = useNavigate()
 
   function handleLogout() {
