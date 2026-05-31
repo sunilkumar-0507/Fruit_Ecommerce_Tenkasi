@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
+import { useOrders } from '#/context/OrderContext'
 import {
   LayoutDashboard, Package, ShoppingBag, Truck, Leaf, Settings,
   Search, Bell, Plus, TrendingUp, TrendingDown, ChevronDown,
@@ -227,9 +228,33 @@ function AddProductModal({ onClose, onSave }: AddProductModalProps) {
 // ─── Panel: Overview ────────────────────────────────────────────────────────
 
 function OverviewPanel() {
+  const { orders: contextOrders } = useOrders()
   const [timePeriod, setTimePeriod] = useState('Last 7 days')
   const [chartView, setChartView] = useState<'Day' | 'Week' | 'Month'>('Week')
-  const chartMax = Math.max(...CHART_DATA)
+
+  const STATIC_REVENUE = 482000
+  const STATIC_ORDERS  = 1284
+  const realRevenue    = contextOrders.reduce((s, o) => s + o.total, 0)
+  const totalRevenue   = STATIC_REVENUE + realRevenue
+  const totalOrders    = STATIC_ORDERS + contextOrders.length
+
+  function fmtRevenue(n: number) {
+    if (n >= 100000) return `₹${(n / 100000).toFixed(2)} L`
+    return `₹${n.toLocaleString('en-IN')}`
+  }
+
+  const stats = [
+    { label: 'Revenue',          value: fmtRevenue(totalRevenue), change: '+18.4%', up: true,  sub: 'vs last week' },
+    { label: 'Orders',           value: totalOrders.toLocaleString('en-IN'), change: '+9.2%', up: true, sub: `${212 + contextOrders.length} today` },
+    { label: 'Avg Basket',       value: '₹376',    change: '-2.1%',  up: false, sub: '12 items avg' },
+    { label: 'Active Customers', value: '8,940',   change: '+24.6%', up: true,  sub: '642 new' },
+  ]
+
+  // Merge chart: last bar gets today's real orders (each order ≈ ₹ subtotal / 1000)
+  const chartData = CHART_DATA.map((v, i) =>
+    i === CHART_DATA.length - 1 ? v + Math.round(realRevenue / 1000) : v,
+  )
+  const chartMax = Math.max(...chartData)
 
   return (
     <div className="p-4 sm:p-6">
@@ -237,7 +262,7 @@ function OverviewPanel() {
         <div>
           <p className="text-xs font-bold tracking-widest text-[#2f6a4a] uppercase mb-1">Wednesday, 21 May 2026</p>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Good morning, Arun</h1>
-          <p className="text-gray-500 text-sm">3 trucks loading · 84 orders queued</p>
+          <p className="text-gray-500 text-sm">3 trucks loading · {84 + contextOrders.length} orders queued</p>
         </div>
         <div className="relative">
           <select title="Time period" value={timePeriod} onChange={(e) => setTimePeriod(e.target.value)} className="appearance-none border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 bg-white pr-8 outline-none cursor-pointer">
@@ -250,12 +275,7 @@ function OverviewPanel() {
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        {[
-          { label: 'Revenue',          value: '₹4.82 L', change: '+18.4%', up: true,  sub: 'vs last week' },
-          { label: 'Orders',           value: '1,284',   change: '+9.2%',  up: true,  sub: '212 today' },
-          { label: 'Avg Basket',       value: '₹376',    change: '-2.1%',  up: false, sub: '12 items avg' },
-          { label: 'Active Customers', value: '8,940',   change: '+24.6%', up: true,  sub: '642 new' },
-        ].map((stat) => (
+        {stats.map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-sm">
             <p className="text-xs text-gray-500 font-medium tracking-wide uppercase mb-2">{stat.label}</p>
             <p className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{stat.value}</p>
@@ -267,6 +287,27 @@ function OverviewPanel() {
           </div>
         ))}
       </div>
+
+      {/* Recent live orders banner */}
+      {contextOrders.length > 0 && (
+        <div className="mb-4 bg-[#e7f3ec] border border-[#2f6a4a]/20 rounded-xl p-4">
+          <p className="text-xs font-bold text-[#2f6a4a] uppercase tracking-widest mb-2">
+            New Orders Today ({contextOrders.length})
+          </p>
+          <div className="space-y-2">
+            {contextOrders.slice(0, 3).map((o) => (
+              <div key={o.id} className="flex items-center justify-between text-sm">
+                <span className="font-mono text-xs font-semibold text-gray-600">{o.id}</span>
+                <span className="text-gray-700 font-medium truncate flex-1 px-3">{o.customerName}</span>
+                <span className="font-bold text-gray-900">₹{o.total}</span>
+                <span className="ml-3 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold">
+                  {o.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2 bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-sm">
@@ -284,13 +325,21 @@ function OverviewPanel() {
             </div>
           </div>
           <div className="flex items-end gap-1 sm:gap-1.5 h-32 sm:h-36 mt-2">
-            {CHART_DATA.map((val, i) => (
+            {chartData.map((val, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div className="w-full bg-[#2f6a4a] rounded-t-sm opacity-80 hover:opacity-100 transition-opacity" style={{ height: `${(val / chartMax) * 100}%` }} />
+                <div
+                  className={`w-full rounded-t-sm transition-opacity ${i === chartData.length - 1 && contextOrders.length > 0 ? 'bg-[#d4af37] opacity-90 hover:opacity-100' : 'bg-[#2f6a4a] opacity-80 hover:opacity-100'}`}
+                  style={{ height: `${(val / chartMax) * 100}%` }}
+                />
                 <span className="text-[9px] sm:text-[10px] text-gray-400">{CHART_LABELS[i]}</span>
               </div>
             ))}
           </div>
+          {contextOrders.length > 0 && (
+            <p className="text-[10px] text-[#d4af37] font-semibold mt-2 text-right">
+              ★ Today's bar includes {contextOrders.length} live order{contextOrders.length > 1 ? 's' : ''}
+            </p>
+          )}
         </div>
 
         <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-sm">
@@ -415,9 +464,39 @@ function InventoryPanel() {
 // ─── Panel: Orders ──────────────────────────────────────────────────────────
 
 function OrdersPanel() {
+  const { orders: contextOrders } = useOrders()
   const [filter, setFilter] = useState('All')
+  const [expandedId, setExpandedId] = useState<string | null>(null)
   const statuses = ['All', 'Processing', 'Pending', 'Delivered', 'Cancelled']
-  const filtered = filter === 'All' ? ORDERS : ORDERS.filter((o) => o.status === filter)
+
+  // Merge real (context) orders first, then static demo orders
+  const allOrders = [
+    ...contextOrders.map((o) => ({
+      id: o.id,
+      customer: o.customerName,
+      date: o.date,
+      itemCount: o.items.length,
+      amount: o.total,
+      status: o.status as string,
+      address: o.address,
+      items: o.items,
+      isReal: true,
+    })),
+    ...ORDERS.map((o) => ({
+      id: o.id,
+      customer: o.customer,
+      date: o.date,
+      itemCount: o.items,
+      amount: o.amount,
+      status: o.status,
+      address: null as null,
+      items: [] as typeof contextOrders[0]['items'],
+      isReal: false,
+    })),
+  ]
+
+  const filtered = filter === 'All' ? allOrders : allOrders.filter((o) => o.status === filter)
+  const processingCount = allOrders.filter((o) => o.status === 'Processing').length
 
   const statusIcon = (s: string) => {
     if (s === 'Delivered')  return <CheckCircle2 size={13} className="text-emerald-500" />
@@ -430,7 +509,12 @@ function OrdersPanel() {
     <div className="p-4 sm:p-6">
       <div className="mb-6">
         <h1 className="font-serif text-2xl font-bold text-gray-900">Orders</h1>
-        <p className="text-gray-500 text-sm mt-0.5">{ORDERS.length} orders · {ORDERS.filter(o => o.status === 'Processing').length} in progress</p>
+        <p className="text-gray-500 text-sm mt-0.5">
+          {allOrders.length} orders · {processingCount} in progress
+          {contextOrders.length > 0 && (
+            <span className="ml-2 text-[#2f6a4a] font-semibold">· {contextOrders.length} new live</span>
+          )}
+        </p>
       </div>
       <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
         {statuses.map((s) => (
@@ -449,27 +533,86 @@ function OrdersPanel() {
               <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Items</th>
               <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Amount</th>
               <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-              <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">View</th>
+              <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Details</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {filtered.map((order) => (
-              <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">{order.id}</td>
-                <td className="px-4 py-3 font-medium text-gray-900 text-sm">{order.customer}</td>
-                <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell">{order.date}</td>
-                <td className="px-4 py-3 text-center text-gray-700">{order.items}</td>
-                <td className="px-4 py-3 text-right font-semibold text-gray-900">₹{order.amount}</td>
-                <td className="px-4 py-3 text-center">
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${orderStatusStyle(order.status)}`}>
-                    {statusIcon(order.status)}
-                    <span className="hidden sm:inline">{order.status}</span>
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <button type="button" className="p-1.5 text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec] rounded-lg transition-colors" aria-label="View order"><Eye size={14} /></button>
-                </td>
-              </tr>
+              <>
+                <tr
+                  key={order.id}
+                  className={`hover:bg-gray-50/50 transition-colors ${order.isReal ? 'bg-[#f9fef9]' : ''}`}
+                >
+                  <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">
+                    <div className="flex items-center gap-1.5">
+                      {order.id}
+                      {order.isReal && <span className="w-1.5 h-1.5 rounded-full bg-[#2f6a4a] flex-shrink-0" />}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 font-medium text-gray-900 text-sm">{order.customer}</td>
+                  <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell">{order.date}</td>
+                  <td className="px-4 py-3 text-center text-gray-700">{order.itemCount}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-gray-900">₹{order.amount}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${orderStatusStyle(order.status)}`}>
+                      {statusIcon(order.status)}
+                      <span className="hidden sm:inline">{order.status}</span>
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
+                      className={`p-1.5 rounded-lg transition-colors ${expandedId === order.id ? 'text-[#2f6a4a] bg-[#e7f3ec]' : 'text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec]'}`}
+                      aria-label="View order details"
+                    >
+                      <Eye size={14} />
+                    </button>
+                  </td>
+                </tr>
+
+                {/* Expanded address + items row */}
+                {expandedId === order.id && (
+                  <tr key={`${order.id}-detail`} className="bg-[#f5f9f7]">
+                    <td colSpan={7} className="px-4 py-4">
+                      {order.address ? (
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          <div className="flex-1">
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Shipping Address</p>
+                            <div className="flex items-start gap-2">
+                              <MapPin size={14} className="text-[#2f6a4a] mt-0.5 flex-shrink-0" />
+                              <div>
+                                <p className="text-sm font-semibold text-gray-900">{order.address.name} · {order.address.phone}</p>
+                                <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+                                  {order.address.line1}
+                                  {order.address.line2 ? `, ${order.address.line2}` : ''}<br />
+                                  {order.address.city}, {order.address.state} — {order.address.pincode}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          {order.items.length > 0 && (
+                            <div className="flex-1">
+                              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Items Ordered</p>
+                              <div className="space-y-1.5">
+                                {order.items.map((item) => (
+                                  <div key={item.id} className="flex items-center gap-2 text-xs text-gray-600">
+                                    <span className="font-semibold text-gray-800">{item.qty}×</span>
+                                    <span className="truncate">{item.name}</span>
+                                    <span className="ml-auto font-semibold text-gray-900 flex-shrink-0">₹{item.price * item.qty}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">No address details for demo orders.</p>
+                      )}
+                    </td>
+                  </tr>
+                )}
+              </>
             ))}
           </tbody>
         </table>

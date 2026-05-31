@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Eye, EyeOff, Leaf, Truck, Users } from 'lucide-react'
 import { useAuth } from '#/context/AuthContext'
 import { loginUser, registerUser } from '#/services/auth'
@@ -108,19 +108,21 @@ function LoginPage() {
   const { login, user } = useAuth()
   const [tab, setTab] = useState<'signin' | 'register'>('signin')
   const [successUser, setSuccessUser] = useState<{ name: string } | null>(null)
+  const redirectTarget = useRef(redirect)
 
   useEffect(() => {
     if (user && !successUser) void navigate({ to: redirect as never })
   }, [user, successUser])
 
   const handleLoginSuccess = useCallback((u: import('#/services/auth').User) => {
+    redirectTarget.current = u.role === 'admin' ? '/admin' : redirect
     login(u)
     setSuccessUser({ name: u.name })
-  }, [login])
+  }, [login, redirect])
 
   const handleAnimationDone = useCallback(() => {
-    void navigate({ to: redirect as never })
-  }, [navigate, redirect])
+    void navigate({ to: redirectTarget.current as never })
+  }, [navigate])
 
   return (
     <>
