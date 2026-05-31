@@ -390,3 +390,7 @@ a {
     color: var(--foreground);
   }
 }
+
+.product-img-enhance {
+  filter: brightness(1.08) contrast(1.06) saturate(1.25);
+}
