@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import type { User } from '#/services/auth'
+import { logoutUser } from '#/services/auth'
 
 interface AuthContextValue {
   user: User | null
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
+    void logoutUser()
     setUser(null)
     localStorage.removeItem(STORAGE_KEY)
   }

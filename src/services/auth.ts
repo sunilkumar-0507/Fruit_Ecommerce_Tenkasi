@@ -19,9 +19,24 @@ export interface RegisterPayload {
   password: string
 }
 
+interface ApiAuthResponse {
+  accessToken: string
+  refreshToken: string
+  expiresAtUtc: string
+  user: {
+    id: string
+    fullName: string | null
+    email: string | null
+    phoneNumber: string | null
+    emailConfirmed: boolean
+    roles: string[] | null
+  }
+}
+
 const BASE = (import.meta.env as Record<string, string>).VITE_API_URL ?? ''
 
-// Demo users — active only when VITE_API_URL is not set
+// ── Demo users (used only when VITE_API_URL is not set) ─────────────────────
+
 const DEMO_USERS: User[] = [
   {
     id: 'admin-001',
@@ -46,6 +61,8 @@ const DEMO_PASSWORDS: Record<string, string> = {
   'priya@example.com': 'customer123',
 }
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
 async function request<T>(path: string, options: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     ...options,
@@ -55,6 +72,20 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   if (!res.ok) throw new Error((data as { message?: string }).message ?? 'Request failed')
   return data as T
 }
+
+function mapAuthResponse(r: ApiAuthResponse): User {
+  const roles = r.user.roles ?? []
+  return {
+    id: r.user.id,
+    name: r.user.fullName ?? r.user.email ?? '',
+    email: r.user.email ?? '',
+    phone: r.user.phoneNumber ?? undefined,
+    role: roles.some((x) => x.toLowerCase() === 'admin') ? 'admin' : 'customer',
+    token: r.accessToken,
+  }
+}
+
+// ── Public API ────────────────────────────────────────────────────────────────
 
 export function loginUser(payload: LoginPayload): Promise<User> {
   if (!BASE) {
@@ -69,7 +100,13 @@ export function loginUser(payload: LoginPayload): Promise<User> {
       }, 600),
     )
   }
-  return request<User>('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) })
+  return request<ApiAuthResponse>('/api/Auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email: payload.email, password: payload.password }),
+  }).then((r) => {
+    if (r.refreshToken) localStorage.setItem('tf_refresh', r.refreshToken)
+    return mapAuthResponse(r)
+  })
 }
 
 export function registerUser(payload: RegisterPayload): Promise<User> {
@@ -89,5 +126,26 @@ export function registerUser(payload: RegisterPayload): Promise<User> {
       ),
     )
   }
-  return request<User>('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) })
+  return request<ApiAuthResponse>('/api/Auth/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      fullName: payload.name,
+      email: payload.email,
+      password: payload.password,
+      phoneNumber: payload.phone,
+    }),
+  }).then((r) => {
+    if (r.refreshToken) localStorage.setItem('tf_refresh', r.refreshToken)
+    return mapAuthResponse(r)
+  })
+}
+
+export function logoutUser(): Promise<void> {
+  const refreshToken = localStorage.getItem('tf_refresh') ?? ''
+  localStorage.removeItem('tf_refresh')
+  if (!BASE) return Promise.resolve()
+  return request<void>('/api/Auth/logout', {
+    method: 'POST',
+    body: JSON.stringify({ refreshToken }),
+  }).catch(() => {})
 }

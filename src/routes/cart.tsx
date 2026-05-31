@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import {
   Trash2, Plus, Minus, X, MapPin, ChevronLeft,
-  Check, Package, ShoppingBag,
+  Check, Package, ShoppingBag, Loader2,
 } from 'lucide-react'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
 import { useCart } from '#/context/CartContext'
@@ -51,14 +51,18 @@ function AddressCard({ address, selected, onSelect }: {
         <RadioDot selected={selected} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-            <p className="font-semibold text-gray-900 text-sm">{address.name}</p>
+            {address.name && (
+              <p className="font-semibold text-gray-900 text-sm">{address.name}</p>
+            )}
             {address.isDefault && (
               <span className="text-[10px] font-bold bg-[#2f6a4a] text-white px-2 py-0.5 rounded-full tracking-wide">
                 DEFAULT
               </span>
             )}
           </div>
-          <p className="text-gray-500 text-xs mb-1">{address.phone}</p>
+          {address.phone && (
+            <p className="text-gray-500 text-xs mb-1">{address.phone}</p>
+          )}
           <p className="text-gray-700 text-sm leading-relaxed">
             {address.line1}
             {address.line2 ? `, ${address.line2}` : ''}
@@ -71,7 +75,7 @@ function AddressCard({ address, selected, onSelect }: {
 }
 
 function CheckoutModal({ onClose }: { onClose: () => void }) {
-  const { addresses, addAddress, placeOrder } = useOrders()
+  const { addresses, addAddress, placeOrder, loadAddresses } = useOrders()
   const { items, clearCart } = useCart()
   const { user } = useAuth()
 
@@ -82,10 +86,12 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
     addresses.find((a) => a.isDefault) ?? addresses[0] ?? null,
   )
   const [orderId, setOrderId] = useState('')
+  const [placing, setPlacing] = useState(false)
+  const [orderError, setOrderError] = useState('')
 
   const emptyForm = {
     name: user?.name ?? '',
-    phone: '',
+    phone: user?.phone ?? '',
     line1: '',
     line2: '',
     city: '',
@@ -103,30 +109,31 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
       setForm((p) => ({ ...p, [k]: e.target.value }))
   }
 
-  function handleSaveAddress() {
-    if (!form.name || !form.phone || !form.line1 || !form.city || !form.pincode) return
-    const saved = addAddress(form)
+  async function handleSaveAddress() {
+    if (!form.line1 || !form.city || !form.pincode) return
+    const saved = await addAddress(form)
     setSelectedAddr(saved)
+    await loadAddresses()
     setStep('confirm')
   }
 
-  function handlePlaceOrder() {
-    if (!selectedAddr || !user) return
-    const order = placeOrder({
-      items,
-      address: selectedAddr,
-      subtotal,
-      delivery: DELIVERY_FEE,
-      total,
-      customerName: user.name,
-      customerEmail: user.email,
-    })
-    setOrderId(order.id)
-    clearCart()
-    setStep('success')
+  async function handlePlaceOrder() {
+    if (!selectedAddr) return
+    setPlacing(true)
+    setOrderError('')
+    try {
+      const result = await placeOrder(selectedAddr.id)
+      setOrderId(result.id)
+      clearCart()
+      setStep('success')
+    } catch (err) {
+      setOrderError(err instanceof Error ? err.message : 'Failed to place order. Please try again.')
+    } finally {
+      setPlacing(false)
+    }
   }
 
-  const formValid = form.name && form.phone && form.line1 && form.city && form.pincode
+  const formValid = form.line1 && form.city && form.pincode
 
   const STEP_TITLE: Record<CheckoutStep, string> = {
     address: 'Select delivery address',
@@ -214,7 +221,7 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
-                    Full Name <span className="text-red-500">*</span>
+                    Full Name
                   </label>
                   <input
                     value={form.name}
@@ -225,7 +232,7 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
-                    Phone <span className="text-red-500">*</span>
+                    Phone
                   </label>
                   <input
                     value={form.phone}
@@ -317,7 +324,7 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
 
               <button
                 type="button"
-                onClick={handleSaveAddress}
+                onClick={() => void handleSaveAddress()}
                 disabled={!formValid}
                 className="w-full bg-[#2f6a4a] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -345,11 +352,17 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
                 <div className="bg-[#f5f9f7] rounded-xl p-4 flex items-start gap-3">
                   <MapPin size={16} className="text-[#2f6a4a] mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold text-gray-900 text-sm">
-                      {selectedAddr.name}
-                      <span className="text-gray-400 font-normal"> · </span>
-                      {selectedAddr.phone}
-                    </p>
+                    {selectedAddr.name && (
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {selectedAddr.name}
+                        {selectedAddr.phone && (
+                          <>
+                            <span className="text-gray-400 font-normal"> · </span>
+                            {selectedAddr.phone}
+                          </>
+                        )}
+                      </p>
+                    )}
                     <p className="text-gray-600 text-xs mt-0.5 leading-relaxed">
                       {selectedAddr.line1}
                       {selectedAddr.line2 ? `, ${selectedAddr.line2}` : ''}<br />
@@ -400,12 +413,24 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
                 </div>
               </div>
 
+              {orderError && (
+                <p className="text-sm text-red-500 text-center mb-3">{orderError}</p>
+              )}
+
               <button
                 type="button"
-                onClick={handlePlaceOrder}
-                className="w-full bg-[#2f6a4a] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors"
+                onClick={() => void handlePlaceOrder()}
+                disabled={placing}
+                className="w-full bg-[#2f6a4a] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                Place Order · ₹{total}
+                {placing ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Placing order…
+                  </>
+                ) : (
+                  `Place Order · ₹${total}`
+                )}
               </button>
               <p className="text-center text-xs text-gray-400 mt-3">
                 Estimated delivery: Today by 7 PM
