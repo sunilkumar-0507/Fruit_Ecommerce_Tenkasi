@@ -394,3 +394,54 @@ a {
 .product-img-enhance {
   filter: brightness(1.08) contrast(1.06) saturate(1.25);
 }
+
+/* ─── Header nav links ─────────────────────────────────────────────────────── */
+.header-nav-link {
+  position: relative;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1e4d35;
+  text-decoration: none;
+  padding-bottom: 3px;
+  transition: color 200ms ease;
+}
+
+.header-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #d4af37, #f5d060);
+  border-radius: 2px;
+  transition: width 250ms ease;
+}
+
+.header-nav-link:hover {
+  color: #d4af37;
+}
+
+.header-nav-link:hover::after,
+.header-nav-link.active::after {
+  width: 100%;
+}
+
+.header-nav-link.active {
+  color: #c49a00;
+  font-weight: 800;
+}
+
+/* ─── Input / select text readability ─────────────────────────────────────── */
+input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+select,
+textarea {
+  color: #111827;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
+}

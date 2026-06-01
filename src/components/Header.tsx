@@ -28,18 +28,18 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40">
       {/* Top Banner */}
-      <div className="bg-[#2f6a4a] text-white py-2 px-4">
+      <div className="bg-gradient-to-r from-[#1a3d2b] via-[#2f6a4a] to-[#1a3d2b] text-white py-2 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-sm">
-          <span className="font-semibold tracking-wide text-xs sm:text-sm">
-            FRESH FRUITS DELIVERED ACROSS TAMIL NADU
+          <span className="font-bold tracking-widest text-[10px] sm:text-xs uppercase text-[#f0e6a0]">
+            🌿 Fresh Fruits Delivered Across Tamil Nadu
           </span>
           <div className="hidden sm:flex items-center gap-6">
-            <span className="flex items-center gap-1.5">
-              <Phone size={13} />
+            <span className="flex items-center gap-1.5 text-white/90 text-xs font-medium">
+              <Phone size={13} className="text-[#d4af37]" />
               +91 98400 12345
             </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
+            <span className="flex items-center gap-1.5 text-white/90 text-xs font-medium">
+              <span className="w-2 h-2 rounded-full bg-[#4ade80] inline-block animate-pulse" />
               Same Day Delivery
             </span>
           </div>
@@ -51,14 +51,12 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-18 py-3">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 no-underline flex-shrink-0">
-              <div className="w-11 h-11 bg-[#2f6a4a] rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-lg leading-none font-serif">த</span>
-              </div>
-              <div>
-                <p className="font-serif text-lg font-bold text-gray-900 leading-tight">Tenkasi Fresh</p>
-                <p className="text-[10px] text-gray-500 tracking-widest uppercase">Farm to Home · Since 1987</p>
-              </div>
+            <Link to="/" className="flex items-center no-underline flex-shrink-0">
+              <img
+                src="/images/products/Logo.jpeg"
+                alt="Tenkasi Fresh"
+                className="h-14 w-auto object-contain"
+              />
             </Link>
 
             {/* Desktop Nav */}
@@ -67,8 +65,8 @@ export default function Header() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="text-gray-700 font-medium text-sm hover:text-[#2f6a4a] transition-colors no-underline"
-                  activeProps={{ className: 'text-[#2f6a4a] font-semibold no-underline' }}
+                  className="header-nav-link"
+                  activeProps={{ className: 'header-nav-link active' }}
                 >
                   {link.label}
                 </Link>
@@ -76,8 +74,8 @@ export default function Header() {
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className="text-gray-700 font-medium text-sm hover:text-[#2f6a4a] transition-colors no-underline"
-                  activeProps={{ className: 'text-[#2f6a4a] font-semibold no-underline' }}
+                  className="header-nav-link"
+                  activeProps={{ className: 'header-nav-link active' }}
                 >
                   Admin
                 </Link>
@@ -174,8 +172,8 @@ export default function Header() {
                   key={link.to}
                   to={link.to}
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2.5 text-gray-700 font-medium text-sm hover:bg-gray-50 rounded-lg no-underline"
-                  activeProps={{ className: 'block px-4 py-2.5 text-[#2f6a4a] font-semibold text-sm bg-[#e7f3ec] rounded-lg no-underline' }}
+                  className="block px-4 py-2.5 text-[#1a3d2b] font-semibold text-sm hover:bg-[#f0faf4] hover:text-[#2f6a4a] rounded-lg no-underline transition-colors"
+                  activeProps={{ className: 'block px-4 py-2.5 text-[#c8a000] font-bold text-sm bg-[#fdf8e7] rounded-lg no-underline border-l-4 border-[#d4af37]' }}
                 >
                   {link.label}
                 </Link>
@@ -184,8 +182,8 @@ export default function Header() {
                 <Link
                   to="/admin"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2.5 text-gray-700 font-medium text-sm hover:bg-gray-50 rounded-lg no-underline"
-                  activeProps={{ className: 'block px-4 py-2.5 text-[#2f6a4a] font-semibold text-sm bg-[#e7f3ec] rounded-lg no-underline' }}
+                  className="block px-4 py-2.5 text-[#1a3d2b] font-semibold text-sm hover:bg-[#f0faf4] hover:text-[#2f6a4a] rounded-lg no-underline transition-colors"
+                  activeProps={{ className: 'block px-4 py-2.5 text-[#c8a000] font-bold text-sm bg-[#fdf8e7] rounded-lg no-underline border-l-4 border-[#d4af37]' }}
                 >
                   Admin
                 </Link>

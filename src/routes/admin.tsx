@@ -26,10 +26,10 @@ const NAV_ITEMS = [
 ]
 
 const TOP_SELLERS = [
-  { rank: 1, name: 'Banganapalli Mango', category: 'Mangoes', revenue: 14000, sold: 50, image: '/images/products/p-mango.jpg' },
-  { rank: 2, name: 'Malai Vazhaipalam', category: 'Banana', revenue: 3570, sold: 42, image: '/images/products/p-banana.jpg' },
-  { rank: 3, name: 'Kabul Ruby Pomeg…', category: 'Imported Fruits', revenue: 8160, sold: 34, image: '/images/products/p-pomegranate.jpg' },
-  { rank: 4, name: 'Alangulam Guava', category: 'Organic Fruits', revenue: 2400, sold: 20, image: '/images/categories/fruit-baskets.jpg' },
+  { rank: 1, name: 'Tenkasi Local Mango',    category: 'Mangoes',         revenue: 14000, sold: 50, image: '/images/categories/mangoes.jpg' },
+  { rank: 2, name: 'Fresh Rambutan',         category: 'Imported Fruits', revenue: 8800,  sold: 40, image: '/images/products/wa2-rambutan.jpeg' },
+  { rank: 3, name: 'Ruby Pomegranate',       category: 'Imported Fruits', revenue: 8160,  sold: 34, image: '/images/categories/p-pomegranate.jpg' },
+  { rank: 4, name: 'Dragon Fruit',           category: 'Imported Fruits', revenue: 7600,  sold: 20, image: '/images/products/wa2-dragon-fruit.jpeg' },
 ]
 
 const CHART_DATA = [10, 14, 9, 18, 12, 22, 16, 25, 19, 28, 24, 30]
@@ -37,14 +37,14 @@ const CHART_LABELS = ['10', '11', '12', '13', '14', '15', '16', '17', '18', '19'
 
 // Static fallback inventory for demo mode
 const INVENTORY_INIT = [
-  { id: '1',  name: 'Banganapalli Mango',     category: 'Mangoes',         price: 280,  stock: 142, image: '/images/products/p-mango.jpg' },
-  { id: '2',  name: 'Malai Vazhaipalam',       category: 'Banana',          price: 85,   stock: 8,   image: '/images/products/p-banana.jpg' },
-  { id: '3',  name: 'Kabul Ruby Pomegranate',  category: 'Imported Fruits', price: 240,  stock: 0,   image: '/images/products/p-pomegranate.jpg' },
-  { id: '4',  name: 'Alangulam Guava',         category: 'Organic Fruits',  price: 120,  stock: 65,  image: '/images/categories/fruit-baskets.jpg' },
-  { id: '5',  name: 'Kilakarai Watermelon',    category: 'Seasonal Fruits', price: 60,   stock: 34,  image: '/images/products/p-watermelon.jpg' },
-  { id: '6',  name: 'Panneer Grapes',          category: 'Organic Fruits',  price: 180,  stock: 12,  image: '/images/products/p-grapes.jpg' },
+  { id: '1',  name: 'Tenkasi Local Mango',     category: 'Mangoes',         price: 280,  stock: 142, image: '/images/categories/mangoes.jpg' },
+  { id: '2',  name: 'Fresh Rambutan',          category: 'Imported Fruits', price: 220,  stock: 8,   image: '/images/products/wa2-rambutan.jpeg' },
+  { id: '3',  name: 'Ruby Pomegranate',        category: 'Imported Fruits', price: 240,  stock: 0,   image: '/images/categories/p-pomegranate.jpg' },
+  { id: '4',  name: 'Green Rose Apple',        category: 'Organic Fruits',  price: 120,  stock: 65,  image: '/images/products/wa2-green-jambu.jpeg' },
+  { id: '5',  name: 'Soursop (Sitaphal)',       category: 'Seasonal Fruits', price: 180,  stock: 34,  image: '/images/products/wa2-soursop.jpeg' },
+  { id: '6',  name: 'Passion Fruit',           category: 'Imported Fruits', price: 260,  stock: 12,  image: '/images/products/wa2-passion-fruit.jpeg' },
   { id: '7',  name: 'Pongal Festival Basket',  category: 'Fruit Baskets',   price: 1450, stock: 22,  image: '/images/categories/fruit-baskets.jpg' },
-  { id: '8',  name: 'Heritage Dry Fruit Mix',  category: 'Dry Fruits',      price: 540,  stock: 38,  image: '/images/categories/dry-fruits.jpg' },
+  { id: '8',  name: 'Premium Durian',          category: 'Imported Fruits', price: 1800, stock: 38,  image: '/images/products/wa2-durian.jpeg' },
 ]
 
 const ORDERS_STATIC = [
@@ -122,8 +122,41 @@ function mapApiProduct(p: ProductDto): InventoryRow {
     category: p.category?.nameEn ?? '',
     price: p.price,
     stock: p.stockQuantity,
-    image: primary?.url ?? '/images/products/p-mango.jpg',
+    image: primary?.url ?? '/images/categories/mangoes.jpg',
   }
+}
+
+// ─── Image Upload Field ───────────────────────────────────────────────────────
+
+function ProductImageField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        Product Image <span className="text-gray-400 font-normal">(optional)</span>
+      </label>
+      <div className="flex items-center gap-3">
+        {value && (
+          <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#f5f0e8] flex-shrink-0 border border-gray-200">
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          </div>
+        )}
+        <label className="flex-1 cursor-pointer">
+          <div className={`w-full px-3 py-2.5 border border-dashed rounded-lg text-sm text-center transition hover:border-[#2f6a4a] hover:text-[#2f6a4a] ${value ? 'border-[#2f6a4a] text-[#2f6a4a]' : 'border-gray-300 text-gray-500'}`}>
+            {value ? 'Change image' : 'Choose from device'}
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) onChange(URL.createObjectURL(file))
+            }}
+          />
+        </label>
+      </div>
+    </div>
+  )
 }
 
 // ─── Add Product Modal ────────────────────────────────────────────────────────
@@ -235,10 +268,7 @@ function AddProductModal({
               <input type="number" value={form.stock} onChange={set('stock')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Image URL <span className="text-gray-400 font-normal">(optional)</span></label>
-            <input type="text" value={form.image} onChange={set('image')} placeholder="/images/products/p-mango.jpg" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
-          </div>
+          <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} />
         </div>
 
         <div className="flex gap-3 p-5 sm:p-6 border-t border-gray-100">
@@ -254,6 +284,135 @@ function AddProductModal({
             }`}
           >
             {saved ? '✓ Product Added!' : 'Save Product'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Edit Product Modal ───────────────────────────────────────────────────────
+
+function EditProductModal({
+  product,
+  onClose,
+  onSave,
+  apiCategories,
+}: {
+  product: InventoryRow
+  onClose: () => void
+  onSave: (p: InventoryRow) => void
+  apiCategories: CategoryDto[]
+}) {
+  const matchedCatId = apiCategories.find((c) => c.nameEn === product.category)?.id ?? product.category
+  const [form, setForm] = useState({
+    nameEn: product.name,
+    categoryId: matchedCatId,
+    price: String(product.price),
+    stock: String(product.stock),
+    image: product.image,
+  })
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  function set(field: keyof typeof form) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setForm((p) => ({ ...p, [field]: e.target.value }))
+  }
+
+  async function handleSave() {
+    if (!form.nameEn || !form.price || !form.stock) return
+    setSaving(true)
+
+    if (isApiMode() && getStoredToken()) {
+      try {
+        const dto = await api.put<ProductDto>(`/api/admin/products/${product.id}`, {
+          nameEn: form.nameEn,
+          price: Number(form.price),
+          stockQuantity: Number(form.stock),
+          categoryId: form.categoryId,
+          images: form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [],
+        })
+        setSaved(true)
+        setTimeout(() => { onSave(mapApiProduct(dto)); onClose() }, 900)
+      } catch {
+        setSaving(false)
+      }
+      return
+    }
+
+    setSaved(true)
+    setTimeout(() => {
+      const cat = apiCategories.find((c) => c.id === form.categoryId)
+      onSave({
+        ...product,
+        name: form.nameEn,
+        category: cat?.nameEn ?? form.categoryId,
+        price: Number(form.price),
+        stock: Number(form.stock),
+        image: form.image,
+      })
+      onClose()
+    }, 900)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gray-100">
+          <div>
+            <h2 className="font-serif text-xl font-bold text-gray-900">Edit Product</h2>
+            <p className="text-gray-400 text-xs mt-0.5">Update the details for {product.name}</p>
+          </div>
+          <button type="button" onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" aria-label="Close">
+            <X size={18} className="text-gray-500" />
+          </button>
+        </div>
+
+        <div className="p-5 sm:p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Product Name <span className="text-red-500">*</span></label>
+            <input type="text" value={form.nameEn} onChange={set('nameEn')} placeholder="e.g. Alphonso Mango" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
+            {apiCategories.length > 0 ? (
+              <select value={form.categoryId} onChange={set('categoryId')} title="Category" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white appearance-none">
+                {apiCategories.map((c) => <option key={c.id} value={c.id}>{c.nameEn}</option>)}
+              </select>
+            ) : (
+              <input type="text" value={form.categoryId} onChange={set('categoryId')} placeholder="Category name" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
+              <input type="number" value={form.price} onChange={set('price')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock (units) <span className="text-red-500">*</span></label>
+              <input type="number" value={form.stock} onChange={set('stock')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            </div>
+          </div>
+          <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} />
+        </div>
+
+        <div className="flex gap-3 p-5 sm:p-6 border-t border-gray-100">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleSave()}
+            disabled={!form.nameEn || !form.price || !form.stock || saving}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
+            }`}
+          >
+            {saved ? '✓ Saved!' : 'Save Changes'}
           </button>
         </div>
       </div>
@@ -417,6 +576,7 @@ function OverviewPanel() {
 function InventoryPanel() {
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<InventoryRow | null>(null)
   const [inventory, setInventory] = useState<InventoryRow[]>(isApiMode() ? [] : INVENTORY_INIT)
   const [apiCategories, setApiCategories] = useState<CategoryDto[]>([])
   const [loading, setLoading] = useState(isApiMode())
@@ -441,6 +601,10 @@ function InventoryPanel() {
 
   function handleAddProduct(p: InventoryRow) {
     setInventory((prev) => [p, ...prev])
+  }
+
+  function handleEditProduct(p: InventoryRow) {
+    setInventory((prev) => prev.map((item) => (item.id === p.id ? p : item)))
   }
 
   function handleDelete(id: string) {
@@ -513,7 +677,7 @@ function InventoryPanel() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
-                        <button type="button" className="p-1.5 text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec] rounded-lg transition-colors" aria-label="Edit"><Pencil size={14} /></button>
+                        <button type="button" onClick={() => setEditingProduct(item)} className="p-1.5 text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec] rounded-lg transition-colors" aria-label="Edit"><Pencil size={14} /></button>
                         <button type="button" onClick={() => handleDelete(item.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" aria-label="Delete"><Trash2 size={14} /></button>
                       </div>
                     </td>
@@ -529,6 +693,14 @@ function InventoryPanel() {
         <AddProductModal
           onClose={() => setShowModal(false)}
           onSave={handleAddProduct}
+          apiCategories={apiCategories}
+        />
+      )}
+      {editingProduct && (
+        <EditProductModal
+          product={editingProduct}
+          onClose={() => setEditingProduct(null)}
+          onSave={handleEditProduct}
           apiCategories={apiCategories}
         />
       )}
