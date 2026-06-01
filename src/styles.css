@@ -395,14 +395,14 @@ a {
   filter: brightness(1.08) contrast(1.06) saturate(1.25);
 }
 
-/* ─── Header nav links ─────────────────────────────────────────────────────── */
+/* ─── Header nav links (on dark green navbar) ──────────────────────────────── */
 .header-nav-link {
   position: relative;
   font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
+  font-size: 0.79rem;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: #1e4d35;
+  color: #d4e8db;
   text-decoration: none;
   padding-bottom: 3px;
   transition: color 200ms ease;
@@ -421,7 +421,7 @@ a {
 }
 
 .header-nav-link:hover {
-  color: #d4af37;
+  color: #f5d060;
 }
 
 .header-nav-link:hover::after,
@@ -430,8 +430,30 @@ a {
 }
 
 .header-nav-link.active {
-  color: #c49a00;
+  color: #f5d060;
   font-weight: 800;
+}
+
+/* ─── Login success: seasonal card slide-up ──────────────────────────────── */
+@keyframes slide-up-card {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(80px) scale(0.9); }
+  60%  { opacity: 1; transform: translateX(-50%) translateY(-8px) scale(1.02); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+.animate-seasonal-card {
+  animation: slide-up-card 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.85s both;
+}
+
+/* ─── Welcome screen leaf float ───────────────────────────────────────────── */
+@keyframes float-leaf {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.18; }
+  33%       { transform: translateY(-18px) rotate(12deg); opacity: 0.24; }
+  66%       { transform: translateY(-8px) rotate(-8deg); opacity: 0.14; }
+}
+
+.animate-float-leaf {
+  animation: float-leaf 3.6s ease-in-out infinite;
 }
 
 /* ─── Input / select text readability ─────────────────────────────────────── */

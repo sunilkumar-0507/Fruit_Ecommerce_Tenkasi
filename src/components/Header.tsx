@@ -1,8 +1,9 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import { ShoppingCart, Search, Heart, Menu, X, Phone, LogOut, User } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '#/context/AuthContext'
 import { useCart } from '#/context/CartContext'
+import { useFav } from '#/context/FavContext'
 
 const BASE_NAV = [
   { label: 'Home', to: '/' },
@@ -12,12 +13,117 @@ const BASE_NAV = [
   { label: 'Mobile App', to: '/mobile-app' },
 ] as const
 
+function FavPopup({ onClose }: { onClose: () => void }) {
+  const { items, toggle } = useFav()
+
+  return (
+    <div className="absolute right-0 top-full mt-2 z-50 w-[min(320px,calc(100vw-1rem))] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-[#faf9f4]">
+        <div className="flex items-center gap-2">
+          <Heart size={16} className="text-red-500 fill-red-500" />
+          <span className="font-serif font-bold text-gray-900 text-sm">Wishlist</span>
+          {items.length > 0 && (
+            <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+              {items.length}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-1 hover:bg-gray-100 rounded-lg transition"
+          aria-label="Close wishlist"
+        >
+          <X size={15} className="text-gray-400" />
+        </button>
+      </div>
+
+      {/* Items */}
+      {items.length === 0 ? (
+        <div className="px-4 py-10 text-center">
+          <Heart size={36} className="text-gray-200 mx-auto mb-3" />
+          <p className="text-gray-600 text-sm font-semibold">Your wishlist is empty</p>
+          <p className="text-gray-400 text-xs mt-1 leading-relaxed">
+            Tap the ♥ on any product to save it here
+          </p>
+          <Link
+            to="/shop"
+            onClick={onClose}
+            className="inline-block mt-4 bg-[#2f6a4a] text-white text-xs font-bold px-5 py-2 rounded-full no-underline hover:bg-[#1f4a2f] transition-colors"
+          >
+            Browse Products
+          </Link>
+        </div>
+      ) : (
+        <>
+          <ul className="max-h-[300px] sm:max-h-[360px] overflow-y-auto divide-y divide-gray-50">
+            {items.map((item) => (
+              <li key={item.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate leading-tight">{item.name}</p>
+                  <p className="text-[11px] text-gray-400 truncate">{item.nameTamil}</p>
+                  <p className="text-sm font-bold text-[#2f6a4a] mt-0.5">
+                    ₹{item.price}
+                    <span className="text-[10px] font-normal text-gray-400 ml-0.5">/{item.unit}</span>
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => toggle(item)}
+                  className="p-1.5 hover:bg-red-50 rounded-lg transition flex-shrink-0 group"
+                  aria-label={`Remove ${item.name} from wishlist`}
+                >
+                  <X size={15} className="text-gray-300 group-hover:text-red-500 transition-colors" />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="px-4 py-3 bg-[#faf9f4] border-t border-gray-100">
+            <Link
+              to="/shop"
+              onClick={onClose}
+              className="block w-full text-center text-sm font-bold text-white bg-[#2f6a4a] py-2.5 rounded-xl no-underline hover:bg-[#1f4a2f] transition-colors"
+            >
+              Shop Now
+            </Link>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [favOpen, setFavOpen] = useState(false)
   const { user, isAdmin, logout } = useAuth()
   const { count: cartCount } = useCart()
+  const { items: favItems } = useFav()
   const navigate = useNavigate()
+  const favRef = useRef<HTMLDivElement>(null)
+  const userRef = useRef<HTMLDivElement>(null)
+
+  // Close popups on outside click
+  useEffect(() => {
+    if (!favOpen && !userMenuOpen) return
+    function handleClick(e: MouseEvent) {
+      if (favOpen && favRef.current && !favRef.current.contains(e.target as Node)) {
+        setFavOpen(false)
+      }
+      if (userMenuOpen && userRef.current && !userRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [favOpen, userMenuOpen])
 
   function handleLogout() {
     logout()
@@ -47,15 +153,15 @@ export default function Header() {
       </div>
 
       {/* Main Header */}
-      <nav className="bg-white border-b border-gray-100 shadow-sm">
+      <nav className="bg-[#1a3d2b] border-b border-[#d4af37]/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-18 py-3">
+          <div className="flex items-center justify-between h-18 py-2.5">
             {/* Logo */}
             <Link to="/" className="flex items-center no-underline flex-shrink-0">
               <img
-                src="/images/products/Logo.jpeg"
+                src="/images/logo.svg"
                 alt="Tenkasi Fresh"
-                className="h-14 w-auto object-contain"
+                className="h-[58px] w-auto object-contain"
               />
             </Link>
 
@@ -83,31 +189,31 @@ export default function Header() {
             </div>
 
             {/* Search */}
-            <div className="hidden lg:flex items-center bg-gray-100 rounded-full px-4 py-2 w-56 gap-2">
-              <Search size={15} className="text-gray-400 flex-shrink-0" />
+            <div className="hidden lg:flex items-center bg-white/10 rounded-full px-4 py-2 w-56 gap-2 border border-white/10">
+              <Search size={15} className="text-white/50 flex-shrink-0" />
               <input
                 type="text"
                 placeholder="Search mangoes, baskets..."
-                className="bg-transparent w-full outline-none text-sm text-gray-600 placeholder-gray-400"
+                className="bg-transparent w-full outline-none text-sm text-white/80 placeholder-white/40"
               />
             </div>
 
             {/* Icons */}
             <div className="flex items-center gap-1">
               {user ? (
-                <div className="relative">
+                <div className="relative" ref={userRef}>
                   <button
                     type="button"
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-full transition"
+                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 rounded-full transition"
                     aria-label="Account menu"
                   >
-                    <div className="w-8 h-8 bg-[#2f6a4a] rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-bold text-sm leading-none">
+                    <div className="w-8 h-8 bg-[#d4af37] rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#1a3d2b] font-bold text-sm leading-none">
                         {user.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
-                    <span className="hidden sm:block text-sm font-medium text-gray-700 max-w-[80px] truncate">
+                    <span className="hidden sm:block text-sm font-medium text-white/85 max-w-[80px] truncate">
                       {user.name.split(' ')[0]}
                     </span>
                   </button>
@@ -136,44 +242,65 @@ export default function Header() {
               ) : (
                 <Link
                   to="/login"
-                  className="flex items-center gap-1.5 px-4 py-2 bg-[#2f6a4a] text-white text-sm font-semibold rounded-full hover:bg-[#1f4a2f] transition-colors no-underline"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-[#d4af37] text-[#1a3d2b] text-sm font-bold rounded-full hover:bg-[#f5d060] transition-colors no-underline"
                 >
                   <User size={15} />
                   Sign In
                 </Link>
               )}
-              <Link to="/shop" className="p-2 hover:bg-gray-100 rounded-full transition" aria-label="Wishlist">
-                <Heart size={20} className="text-gray-600" />
-              </Link>
-              <Link to="/cart" className="relative p-2 hover:bg-gray-100 rounded-full transition" aria-label="Cart">
-                <ShoppingCart size={20} className="text-gray-600" />
+
+              {/* Favourites */}
+              <div className="relative" ref={favRef}>
+                <button
+                  type="button"
+                  onClick={() => { setFavOpen(!favOpen); setUserMenuOpen(false) }}
+                  className="relative p-2 hover:bg-white/10 rounded-full transition"
+                  aria-label="Wishlist"
+                >
+                  <Heart
+                    size={20}
+                    className={favItems.length > 0 ? 'text-red-400 fill-red-400' : 'text-white/75'}
+                  />
+                  {favItems.length > 0 && (
+                    <span className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                      {favItems.length > 9 ? '9+' : favItems.length}
+                    </span>
+                  )}
+                </button>
+                {favOpen && <FavPopup onClose={() => setFavOpen(false)} />}
+              </div>
+
+              {/* Cart */}
+              <Link to="/cart" className="relative p-2 hover:bg-white/10 rounded-full transition" aria-label="Cart">
+                <ShoppingCart size={20} className="text-white/75" />
                 {cartCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-0.5 right-0.5 w-5 h-5 bg-[#d4af37] text-[#1a3d2b] text-[10px] font-bold rounded-full flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
               </Link>
+
               <button
                 type="button"
-                className="md:hidden p-2 hover:bg-gray-100 rounded-full transition ml-1"
+                className="md:hidden p-2 hover:bg-white/10 rounded-full transition ml-1"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle menu"
               >
-                {isMenuOpen ? <X size={22} className="text-gray-700" /> : <Menu size={22} className="text-gray-700" />}
+                {isMenuOpen ? <X size={22} className="text-white" /> : <Menu size={22} className="text-white" />}
               </button>
             </div>
           </div>
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="md:hidden border-t border-gray-100 py-3 space-y-1">
+            <div className="md:hidden border-t border-white/10 py-3 space-y-1">
               {BASE_NAV.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2.5 text-[#1a3d2b] font-semibold text-sm hover:bg-[#f0faf4] hover:text-[#2f6a4a] rounded-lg no-underline transition-colors"
-                  activeProps={{ className: 'block px-4 py-2.5 text-[#c8a000] font-bold text-sm bg-[#fdf8e7] rounded-lg no-underline border-l-4 border-[#d4af37]' }}
+                  className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white rounded-lg no-underline transition-colors"
+                  activeProps={{ className: 'block px-4 py-2.5 text-[#f5d060] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#d4af37]' }}
                 >
                   {link.label}
                 </Link>
@@ -182,17 +309,31 @@ export default function Header() {
                 <Link
                   to="/admin"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2.5 text-[#1a3d2b] font-semibold text-sm hover:bg-[#f0faf4] hover:text-[#2f6a4a] rounded-lg no-underline transition-colors"
-                  activeProps={{ className: 'block px-4 py-2.5 text-[#c8a000] font-bold text-sm bg-[#fdf8e7] rounded-lg no-underline border-l-4 border-[#d4af37]' }}
+                  className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white rounded-lg no-underline transition-colors"
+                  activeProps={{ className: 'block px-4 py-2.5 text-[#f5d060] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#d4af37]' }}
                 >
                   Admin
                 </Link>
               )}
+              {/* Mobile wishlist summary */}
+              <button
+                type="button"
+                onClick={() => { setIsMenuOpen(false); setFavOpen(true) }}
+                className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <Heart size={16} className={favItems.length > 0 ? 'text-red-400 fill-red-400' : 'text-white/60'} />
+                Wishlist
+                {favItems.length > 0 && (
+                  <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-auto">
+                    {favItems.length}
+                  </span>
+                )}
+              </button>
               {!user && (
                 <Link
                   to="/login"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2.5 text-[#2f6a4a] font-semibold text-sm bg-[#e7f3ec] rounded-lg no-underline"
+                  className="block px-4 py-2.5 text-[#1a3d2b] font-bold text-sm bg-[#d4af37] rounded-lg no-underline"
                 >
                   Sign In / Register
                 </Link>
@@ -201,7 +342,7 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => { handleLogout(); setIsMenuOpen(false) }}
-                  className="w-full text-left block px-4 py-2.5 text-red-600 font-medium text-sm hover:bg-red-50 rounded-lg"
+                  className="w-full text-left block px-4 py-2.5 text-red-300 font-medium text-sm hover:bg-white/10 rounded-lg"
                 >
                   Sign Out
                 </button>

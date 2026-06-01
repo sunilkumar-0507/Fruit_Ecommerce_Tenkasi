@@ -2,6 +2,7 @@ import { Heart, Plus, Check } from 'lucide-react'
 import { useState } from 'react'
 import type { Product } from '#/data/products'
 import { useCart } from '#/context/CartContext'
+import { useFav } from '#/context/FavContext'
 
 export default function ProductCard({
   id,
@@ -17,7 +18,8 @@ export default function ProductCard({
   unit,
 }: Product) {
   const { addToCart } = useCart()
-  const [isFavorite, setIsFavorite] = useState(false)
+  const { toggle, isFav } = useFav()
+  const fav = isFav(id)
   const [added, setAdded] = useState(false)
   const discount = Math.round(((originalPrice - price) / originalPrice) * 100)
 
@@ -47,11 +49,11 @@ export default function ProductCard({
         )}
         <button
           type="button"
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          aria-label={isFavorite ? `Remove ${name} from wishlist` : `Add ${name} to wishlist`}
+          onClick={() => toggle({ id, name, nameTamil, image, price, unit, category })}
+          className={`absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center transition-all duration-200 ${fav ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+          aria-label={fav ? `Remove ${name} from wishlist` : `Add ${name} to wishlist`}
         >
-          <Heart size={15} className={isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-500'} />
+          <Heart size={15} className={fav ? 'text-red-500 fill-red-500' : 'text-gray-500'} />
         </button>
       </div>
 

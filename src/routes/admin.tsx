@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
 import {
@@ -6,7 +6,9 @@ import {
   Search, Bell, Plus, TrendingUp, TrendingDown, ChevronDown,
   Pencil, Trash2, Eye, Star, MapPin, Phone, Save, Building2,
   CheckCircle2, AlertTriangle, Clock, XCircle, Award, Menu, X,
+  Tag, Sun, ChevronLeft,
 } from 'lucide-react'
+import { PRODUCTS } from '#/data/products'
 import {
   api, isApiMode, getStoredToken,
   type ProductDto, type ProductDtoPagedResult,
@@ -19,6 +21,8 @@ export const Route = createFileRoute('/admin')({ component: AdminPage })
 const NAV_ITEMS = [
   { label: 'Overview',   icon: LayoutDashboard },
   { label: 'Inventory',  icon: Package },
+  { label: 'Discounts',  icon: Tag },
+  { label: 'Seasonal',   icon: Sun },
   { label: 'Orders',     icon: ShoppingBag },
   { label: 'Delivery',   icon: Truck },
   { label: 'Farmers',    icon: Leaf },
@@ -36,15 +40,15 @@ const CHART_DATA = [10, 14, 9, 18, 12, 22, 16, 25, 19, 28, 24, 30]
 const CHART_LABELS = ['10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']
 
 // Static fallback inventory for demo mode
-const INVENTORY_INIT = [
-  { id: '1',  name: 'Tenkasi Local Mango',     category: 'Mangoes',         price: 280,  stock: 142, image: '/images/categories/mangoes.jpg' },
-  { id: '2',  name: 'Fresh Rambutan',          category: 'Imported Fruits', price: 220,  stock: 8,   image: '/images/products/wa2-rambutan.jpeg' },
-  { id: '3',  name: 'Ruby Pomegranate',        category: 'Imported Fruits', price: 240,  stock: 0,   image: '/images/categories/p-pomegranate.jpg' },
-  { id: '4',  name: 'Green Rose Apple',        category: 'Organic Fruits',  price: 120,  stock: 65,  image: '/images/products/wa2-green-jambu.jpeg' },
-  { id: '5',  name: 'Soursop (Sitaphal)',       category: 'Seasonal Fruits', price: 180,  stock: 34,  image: '/images/products/wa2-soursop.jpeg' },
-  { id: '6',  name: 'Passion Fruit',           category: 'Imported Fruits', price: 260,  stock: 12,  image: '/images/products/wa2-passion-fruit.jpeg' },
-  { id: '7',  name: 'Pongal Festival Basket',  category: 'Fruit Baskets',   price: 1450, stock: 22,  image: '/images/categories/fruit-baskets.jpg' },
-  { id: '8',  name: 'Premium Durian',          category: 'Imported Fruits', price: 1800, stock: 38,  image: '/images/products/wa2-durian.jpeg' },
+const INVENTORY_INIT: InventoryRow[] = [
+  { id: '1',  name: 'Tenkasi Local Mango',     category: 'Mangoes',         price: 280,  stock: 142, image: '/images/categories/mangoes.jpg',          discount: 10 },
+  { id: '2',  name: 'Fresh Rambutan',          category: 'Imported Fruits', price: 220,  stock: 8,   image: '/images/products/wa2-rambutan.jpeg',        discount: 0  },
+  { id: '3',  name: 'Ruby Pomegranate',        category: 'Imported Fruits', price: 240,  stock: 0,   image: '/images/categories/p-pomegranate.jpg',      discount: 15 },
+  { id: '4',  name: 'Green Rose Apple',        category: 'Organic Fruits',  price: 120,  stock: 65,  image: '/images/products/wa2-green-jambu.jpeg',     discount: 0  },
+  { id: '5',  name: 'Soursop (Sitaphal)',       category: 'Seasonal Fruits', price: 180,  stock: 34,  image: '/images/products/wa2-soursop.jpeg',         discount: 20 },
+  { id: '6',  name: 'Passion Fruit',           category: 'Imported Fruits', price: 260,  stock: 12,  image: '/images/products/wa2-passion-fruit.jpeg',   discount: 0  },
+  { id: '7',  name: 'Pongal Festival Basket',  category: 'Fruit Baskets',   price: 1450, stock: 22,  image: '/images/categories/fruit-baskets.jpg',      discount: 5  },
+  { id: '8',  name: 'Premium Durian',          category: 'Imported Fruits', price: 1800, stock: 38,  image: '/images/products/wa2-durian.jpeg',          discount: 0  },
 ]
 
 const ORDERS_STATIC = [
@@ -112,7 +116,7 @@ function Stars({ rating }: { rating: number }) {
 
 // ─── Map API → inventory row ──────────────────────────────────────────────────
 
-type InventoryRow = { id: string; name: string; category: string; price: number; stock: number; image: string }
+type InventoryRow = { id: string; name: string; category: string; price: number; stock: number; image: string; discount?: number }
 
 function mapApiProduct(p: ProductDto): InventoryRow {
   const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
@@ -1098,6 +1102,246 @@ function SettingsPanel() {
   )
 }
 
+// ─── Panel: Discounts ─────────────────────────────────────────────────────────
+
+function DiscountsPanel() {
+  const [items, setItems] = useState<InventoryRow[]>(
+    INVENTORY_INIT.map((p) => ({ ...p, discount: p.discount ?? 0 })),
+  )
+  const [saved, setSaved] = useState<string | null>(null)
+
+  function setDiscount(id: string, value: number) {
+    setItems((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, discount: Math.min(90, Math.max(0, value)) } : p)),
+    )
+  }
+
+  function handleApply(id: string) {
+    setSaved(id)
+    setTimeout(() => setSaved(null), 1500)
+  }
+
+  const activeDiscounts = items.filter((p) => (p.discount ?? 0) > 0)
+  const maxDiscount = items.reduce((m, p) => Math.max(m, p.discount ?? 0), 0)
+
+  return (
+    <div className="p-4 sm:p-6">
+      <div className="mb-6">
+        <h1 className="font-serif text-2xl font-bold text-gray-900">Discounts</h1>
+        <p className="text-gray-500 text-sm mt-0.5">
+          {activeDiscounts.length} active discounts · Set % off per product
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Active Sales</p>
+          <p className="text-2xl font-bold text-gray-900">{activeDiscounts.length}</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Highest Off</p>
+          <p className="text-2xl font-bold text-[#2f6a4a]">{maxDiscount}%</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hidden sm:block">
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Products on Sale</p>
+          <p className="text-2xl font-bold text-amber-600">{activeDiscounts.length}/{items.length}</p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        {items.map((item, idx) => {
+          const disc = item.discount ?? 0
+          const discountedPrice = Math.round(item.price * (1 - disc / 100))
+          return (
+            <div
+              key={item.id}
+              className={`flex items-center gap-3 px-4 py-3.5 ${idx < items.length - 1 ? 'border-b border-gray-50' : ''}`}
+            >
+              <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#f5f0e8] flex-shrink-0">
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">{item.name}</p>
+                <p className="text-xs text-gray-400">{item.category}</p>
+              </div>
+              <div className="text-right flex-shrink-0 hidden sm:block min-w-[80px]">
+                <p className="text-sm font-bold text-gray-900">₹{item.price}</p>
+                {disc > 0 && (
+                  <p className="text-xs text-emerald-600 font-semibold">→ ₹{discountedPrice}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={disc}
+                    onChange={(e) => setDiscount(item.id, Number(e.target.value))}
+                    min="0"
+                    max="90"
+                    className="w-16 pl-2 pr-5 py-1.5 border border-gray-200 rounded-lg text-sm text-center outline-none focus:border-[#2f6a4a] transition"
+                  />
+                  <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">%</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleApply(item.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                    saved === item.id
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f]'
+                  }`}
+                >
+                  {saved === item.id ? '✓' : 'Apply'}
+                </button>
+              </div>
+              {disc > 0 && (
+                <div className="flex-shrink-0 w-9 h-9 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center hidden sm:flex">
+                  -{disc}%
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ─── Panel: Seasonal ──────────────────────────────────────────────────────────
+
+function SeasonalPanel() {
+  type SeasonalEntry = { id: string; name: string; nameTamil: string; category: string; price: number; unit: string; image: string; isSeasonal: boolean }
+
+  const [products, setProducts] = useState<SeasonalEntry[]>(
+    PRODUCTS.map((p) => ({
+      id: p.id,
+      name: p.name,
+      nameTamil: p.nameTamil,
+      category: p.category,
+      price: p.price,
+      unit: p.unit,
+      image: p.image,
+      isSeasonal: p.seasonal === true || p.categorySlug === 'seasonal-fruits',
+    })),
+  )
+  const [showAddModal, setShowAddModal] = useState(false)
+
+  function toggle(id: string) {
+    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, isSeasonal: !p.isSeasonal } : p)))
+  }
+
+  const seasonal    = products.filter((p) => p.isSeasonal)
+  const nonSeasonal = products.filter((p) => !p.isSeasonal)
+
+  return (
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-gray-900">Seasonal Fruits</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{seasonal.length} products currently in season</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto"
+        >
+          <Plus size={15} />
+          Add Seasonal Product
+        </button>
+      </div>
+
+      {/* Currently seasonal */}
+      <div className="mb-7">
+        <p className="text-[10px] font-bold text-[#2f6a4a] uppercase tracking-widest mb-3">
+          Currently in Season ({seasonal.length})
+        </p>
+        {seasonal.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {seasonal.map((p) => (
+              <div key={p.id} className="bg-white rounded-xl border border-[#2f6a4a]/20 p-3 flex items-center gap-3 shadow-sm">
+                <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f5f0e8] flex-shrink-0">
+                  <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
+                  <p className="text-xs text-gray-400 mb-1">{p.nameTamil}</p>
+                  <span className="inline-block text-[10px] font-bold text-[#2f6a4a] bg-[#e7f3ec] px-2 py-0.5 rounded-full">
+                    Seasonal · ₹{p.price}/{p.unit}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => toggle(p.id)}
+                  className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition flex-shrink-0"
+                  title="Remove from seasonal"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+            <p className="text-amber-700 text-sm font-medium">No seasonal products active right now.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Other products — add to seasonal */}
+      <div>
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+          Other Products — mark as seasonal ({nonSeasonal.length})
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {nonSeasonal.map((p) => (
+            <div key={p.id} className="bg-white rounded-xl border border-gray-100 p-3 flex items-center gap-3 shadow-sm">
+              <div className="w-11 h-11 rounded-lg overflow-hidden bg-[#f5f0e8] flex-shrink-0">
+                <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
+                <p className="text-xs text-gray-400">{p.category}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => toggle(p.id)}
+                className="flex items-center gap-1 px-2.5 py-1.5 text-[#2f6a4a] border border-[#2f6a4a]/30 hover:bg-[#e7f3ec] rounded-lg text-xs font-semibold transition flex-shrink-0"
+              >
+                <Plus size={12} />
+                Season
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {showAddModal && (
+        <AddProductModal
+          onClose={() => setShowAddModal(false)}
+          onSave={(newP) => {
+            setProducts((prev) => [
+              ...prev,
+              {
+                id: newP.id,
+                name: newP.name,
+                nameTamil: '',
+                category: newP.category,
+                price: newP.price,
+                unit: '1 kg',
+                image: newP.image || '/images/products/wa2-soursop.jpeg',
+                isSeasonal: true,
+              },
+            ])
+            setShowAddModal(false)
+          }}
+          apiCategories={[]}
+        />
+      )}
+    </div>
+  )
+}
+
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
@@ -1183,6 +1427,14 @@ function AdminPage() {
             <Menu size={20} className="text-gray-600" />
           </button>
 
+          <Link
+            to="/"
+            className="flex items-center gap-1 text-sm font-semibold text-[#2f6a4a] hover:bg-[#e7f3ec] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
+          >
+            <ChevronLeft size={16} />
+            <span className="hidden xs:inline sm:inline">Back to Store</span>
+          </Link>
+
           <div className="flex-1 flex items-center bg-gray-100 rounded-lg px-3 py-2 gap-2 max-w-md">
             <Search size={15} className="text-gray-400 flex-shrink-0" />
             <input type="text" placeholder="Search orders, products..." className="bg-transparent text-sm text-gray-600 placeholder-gray-400 outline-none w-full" />
@@ -1206,12 +1458,14 @@ function AdminPage() {
         </header>
 
         <div className="flex-1 overflow-y-auto">
-          {activeNav === 'Overview'  && <OverviewPanel />}
-          {activeNav === 'Inventory' && <InventoryPanel />}
-          {activeNav === 'Orders'    && <OrdersPanel />}
-          {activeNav === 'Delivery'  && <DeliveryPanel />}
-          {activeNav === 'Farmers'   && <FarmersPanel />}
-          {activeNav === 'Settings'  && <SettingsPanel />}
+          {activeNav === 'Overview'   && <OverviewPanel />}
+          {activeNav === 'Inventory'  && <InventoryPanel />}
+          {activeNav === 'Discounts'  && <DiscountsPanel />}
+          {activeNav === 'Seasonal'   && <SeasonalPanel />}
+          {activeNav === 'Orders'     && <OrdersPanel />}
+          {activeNav === 'Delivery'   && <DeliveryPanel />}
+          {activeNav === 'Farmers'    && <FarmersPanel />}
+          {activeNav === 'Settings'   && <SettingsPanel />}
         </div>
       </div>
     </div>

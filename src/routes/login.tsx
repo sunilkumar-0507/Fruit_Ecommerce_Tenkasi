@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Eye, EyeOff, Leaf, Truck, Users } from 'lucide-react'
 import { useAuth } from '#/context/AuthContext'
 import { loginUser, registerUser } from '#/services/auth'
+import { PRODUCTS } from '#/data/products'
 
 export const Route = createFileRoute('/login')({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -13,8 +14,12 @@ export const Route = createFileRoute('/login')({
 
 const FRUITS = ['🥭', '🍌', '🍇', '🍎', '🫐', '🍊', '🌿', '🍋', '🫒', '🍓']
 
+const SEASONAL_PRODUCTS = PRODUCTS.filter((p) => p.seasonal || p.categorySlug === 'seasonal-fruits')
+
 function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => void }) {
   const [fading, setFading] = useState(false)
+
+  const featured = SEASONAL_PRODUCTS[Math.floor(Math.random() * SEASONAL_PRODUCTS.length)] ?? PRODUCTS[0]
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => setFading(true), 2400)
@@ -90,6 +95,22 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
         </div>
       </div>
 
+      {/* Seasonal product card — slides up from bottom */}
+      <div className="absolute left-1/2 bottom-8 sm:bottom-10 z-20 animate-seasonal-card">
+        <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 max-w-[260px] sm:max-w-[300px]">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border border-white/20">
+            <img src={featured.image} alt={featured.name} className="w-full h-full object-cover" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold text-[#d4af37] uppercase tracking-widest mb-0.5">
+              🌿 Now in Season
+            </p>
+            <p className="text-white font-semibold text-sm leading-tight truncate">{featured.name}</p>
+            <p className="text-white/50 text-xs mt-0.5">{featured.nameTamil} · ₹{featured.price}/{featured.unit}</p>
+          </div>
+        </div>
+      </div>
+
       <style>{`
         @keyframes grow-bar {
           from { width: 0%; }
@@ -113,13 +134,17 @@ function LoginPage() {
   }, [user, successUser])
 
   const handleLoginSuccess = useCallback((u: import('#/services/auth').User) => {
-    redirectTarget.current = u.role === 'admin' ? '/admin' : redirect
+    redirectTarget.current = u.role === 'admin' ? '/admin' : '/'
     login(u)
     setSuccessUser({ name: u.name })
-  }, [login, redirect])
+  }, [login])
 
   const handleAnimationDone = useCallback(() => {
-    void navigate({ to: redirectTarget.current as never })
+    const target = redirectTarget.current
+    if (target !== '/admin') {
+      try { sessionStorage.setItem('tf_show_welcome', '1') } catch {}
+    }
+    void navigate({ to: target as never })
   }, [navigate])
 
   return (

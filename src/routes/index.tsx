@@ -1,10 +1,12 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { ShoppingCart, Leaf, Zap, Award, Truck, Smartphone } from 'lucide-react'
 import { useState } from 'react'
 import ProductCard from '#/components/ProductCard'
 import CategoryCard from '#/components/CategoryCard'
 import TestimonialCard from '#/components/TestimonialCard'
 import Marquee from '#/components/Marquee'
+import WelcomeScreen from '#/components/WelcomeScreen'
+import { useAuth } from '#/context/AuthContext'
 import { PRODUCTS, HOME_CATEGORIES } from '#/data/products'
 
 export const Route = createFileRoute('/')({ component: HomePage })
@@ -43,10 +45,46 @@ const TESTIMONIALS = [
 ]
 
 function HomePage() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  // Show welcome if: first visit this session (!tf_home_seen) OR coming from login (tf_show_welcome)
+  const [showWelcome] = useState(() => {
+    try {
+      return !sessionStorage.getItem('tf_home_seen') || !!sessionStorage.getItem('tf_show_welcome')
+    } catch { return true }
+  })
+  const [homeVisible, setHomeVisible] = useState(() => {
+    try {
+      return !!sessionStorage.getItem('tf_home_seen') && !sessionStorage.getItem('tf_show_welcome')
+    } catch { return false }
+  })
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
 
+  function handleWelcomeDone() {
+    try {
+      sessionStorage.setItem('tf_home_seen', '1')
+      sessionStorage.removeItem('tf_show_welcome')
+    } catch {}
+    if (!user) {
+      void navigate({ to: '/login' })
+    } else {
+      setHomeVisible(true)
+    }
+  }
+
   return (
-    <main className="bg-[#faf9f4] min-h-screen overflow-hidden">
+    <>
+      {showWelcome && <WelcomeScreen onDone={handleWelcomeDone} />}
+      <main
+        className="bg-[#faf9f4] min-h-screen overflow-hidden"
+        style={{
+          opacity: homeVisible ? 1 : 0,
+          transform: homeVisible ? 'translateY(0)' : 'translateY(18px)',
+          transition: homeVisible ? 'opacity 0.85s ease, transform 0.85s cubic-bezier(0.16,1,0.3,1)' : 'none',
+          pointerEvents: homeVisible ? 'auto' : 'none',
+        }}
+      >
       {/* HERO */}
       <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 px-4">
         <div className="max-w-7xl mx-auto">
@@ -311,5 +349,6 @@ function HomePage() {
         </div>
       </section>
     </main>
+    </>
   )
 }

@@ -33,7 +33,7 @@ const DEMO_ITEMS: CartItem[] = isApiMode()
         name: 'Tenkasi Local Mango',
         nameTamil: 'மாம்பழம்',
         category: 'Mangoes',
-        image: '/images/products/wa-mangosteen-mango.jpeg',
+        image: '/images/categories/mangoes.jpg',
         price: 280,
         unit: '1 kg',
         qty: 1,
