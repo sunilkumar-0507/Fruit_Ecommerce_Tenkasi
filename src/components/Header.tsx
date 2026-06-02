@@ -5,6 +5,30 @@ import { useCart } from '#/context/CartContext'
 import { useFav } from '#/context/FavContext'
 import TiIcon from '#/components/TiIcon'
 
+const TICKER_ITEMS = ['🍎 Farm Fresh', '🥭 Premium Quality', '🌿 Organic Certified', '🚚 Fast Delivery', '💚 Best Prices', '🌾 240+ Farmers']
+
+function HeaderTicker() {
+  return (
+    <div className="overflow-hidden bg-gradient-to-r from-[#2f6a4a] via-[#4fb8b2] to-[#2f6a4a] py-1.5">
+      <style>{`
+        @keyframes header-ticker {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .header-ticker-content { animation: header-ticker 28s linear infinite; }
+      `}</style>
+      <div className="header-ticker-content flex gap-6 whitespace-nowrap">
+        {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, idx) => (
+          <div key={idx} className="inline-flex items-center gap-6 flex-shrink-0">
+            <span className="text-white text-xs font-semibold tracking-wide">{item}</span>
+            <span className="text-white/40 text-xs">✦</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 const BASE_NAV = [
   { label: 'Home', to: '/' },
   { label: 'Shop', to: '/shop' },
@@ -46,16 +70,23 @@ function FavPopup({ onClose }: { onClose: () => void }) {
         <>
           <ul className="max-h-[300px] sm:max-h-[360px] overflow-y-auto divide-y divide-gray-50">
             {items.map((item) => (
-              <li key={item.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                <img src={item.image} alt={item.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 truncate leading-tight">{item.name}</p>
-                  <p className="text-[11px] text-gray-400 truncate">{item.nameTamil}</p>
-                  <p className="text-sm font-bold text-[#2f6a4a] mt-0.5">
-                    ₹{item.price}<span className="text-[10px] font-normal text-gray-400 ml-0.5">/{item.unit}</span>
-                  </p>
-                </div>
-                <button type="button" onClick={() => toggle(item)} className="p-1.5 hover:bg-red-50 rounded-lg transition flex-shrink-0 group" aria-label={`Remove ${item.name}`}>
+              <li key={item.id} className="flex items-center gap-3 hover:bg-gray-50 transition-colors">
+                <Link
+                  to="/product/$productId"
+                  params={{ productId: item.id }}
+                  onClick={onClose}
+                  className="flex items-center gap-3 flex-1 min-w-0 px-4 py-3 no-underline"
+                >
+                  <img src={item.image} alt={item.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate leading-tight">{item.name}</p>
+                    <p className="text-[11px] text-gray-400 truncate">{item.nameTamil}</p>
+                    <p className="text-sm font-bold text-[#2f6a4a] mt-0.5">
+                      ₹{item.price}<span className="text-[10px] font-normal text-gray-400 ml-0.5">/{item.unit}</span>
+                    </p>
+                  </div>
+                </Link>
+                <button type="button" onClick={() => toggle(item)} className="p-1.5 mr-3 hover:bg-red-50 rounded-lg transition flex-shrink-0 group" aria-label={`Remove ${item.name}`}>
                   <TiIcon name="close" size={15} className="text-gray-300 group-hover:text-red-500 transition-colors" />
                 </button>
               </li>
@@ -102,23 +133,34 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-[#1a3d2b] via-[#2f6a4a] to-[#1a3d2b] text-white py-2 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-sm">
-          <span className="font-bold tracking-widest text-[10px] sm:text-xs uppercase text-[#f0e6a0]">
-            🌿 Fresh Fruits Delivered Across Tamil Nadu
-          </span>
-          <div className="hidden sm:flex items-center gap-6">
-            <span className="flex items-center gap-1.5 text-white/90 text-xs font-medium">
-              <TiIcon name="headphone" size={13} className="text-[#d4af37]" />
-              +91 98400 12345
+      <div className="bg-[#1a3d2b] border-b border-[#d4af37]/20 px-4 py-1.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] inline-block" />
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-[#d4af37]">
+              Fresh Fruits Delivered Across Tamil Nadu
             </span>
-            <span className="flex items-center gap-1.5 text-white/90 text-xs font-medium">
-              <span className="w-2 h-2 rounded-full bg-[#4ade80] inline-block animate-pulse" />
+          </div>
+          <div className="flex items-center gap-4 sm:gap-6">
+            <a href="tel:+919840012345" className="flex items-center gap-1.5 text-white/70 hover:text-[#d4af37] transition-colors text-[10px] sm:text-[11px] font-medium no-underline">
+              <TiIcon name="headphone" size={12} className="text-[#d4af37]" />
+              <span className="hidden xs:inline">+91 98400 12345</span>
+              <span className="xs:hidden">Call Us</span>
+            </a>
+            <span className="hidden sm:flex items-center gap-1.5 text-white/70 text-[11px] font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] inline-block animate-pulse" />
               Same Day Delivery
+            </span>
+            <span className="hidden md:flex items-center gap-1.5 text-white/70 text-[11px] font-medium">
+              <TiIcon name="tag" size={11} className="text-[#d4af37]" />
+              Free delivery above ₹499
             </span>
           </div>
         </div>
       </div>
+
+      {/* Ticker */}
+      <HeaderTicker />
 
       {/* Main Header */}
       <nav className="bg-[#1a3d2b] border-b border-[#d4af37]/20 shadow-lg">

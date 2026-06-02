@@ -1,10 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { SlidersHorizontal } from 'lucide-react'
+import TiIcon from '#/components/TiIcon'
 import ProductCard from '#/components/ProductCard'
+import { BasketCard } from '#/components/BasketCard'
 import { PRODUCTS, SHOP_CATEGORIES } from '#/data/products'
 import type { Product } from '#/data/products'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
+import { useBaskets } from '#/context/BasketContext'
 import { api, isApiMode, type ProductDto, type ProductDtoPagedResult, type CategoryDto } from '#/lib/apiClient'
 
 export const Route = createFileRoute('/shop')({ component: ShopPage })
@@ -27,11 +29,14 @@ function mapProduct(p: ProductDto): Product {
   }
 }
 
+const ALL_CATEGORIES = ['All', 'Combos & Baskets', ...SHOP_CATEGORIES.filter((c) => c !== 'All')]
+
 function ShopPage() {
   const user = useAuthGuard()
+  const { baskets } = useBaskets()
   const [activeCategory, setActiveCategory] = useState('All')
   const [products, setProducts] = useState<Product[]>(isApiMode() ? [] : PRODUCTS)
-  const [categories, setCategories] = useState<string[]>(isApiMode() ? ['All'] : SHOP_CATEGORIES)
+  const [categories, setCategories] = useState<string[]>(isApiMode() ? ['All', 'Combos & Baskets'] : ALL_CATEGORIES)
   const [loading, setLoading] = useState(isApiMode())
   const [error, setError] = useState('')
 
@@ -44,7 +49,7 @@ function ShopPage() {
     ])
       .then(([result, cats]) => {
         setProducts((result.items ?? []).map(mapProduct))
-        setCategories(['All', ...cats.map((c) => c.nameEn ?? '').filter(Boolean)])
+        setCategories(['All', 'Combos & Baskets', ...cats.map((c) => c.nameEn ?? '').filter(Boolean)])
       })
       .catch(() => setError('Failed to load products. Please refresh.'))
       .finally(() => setLoading(false))
@@ -58,8 +63,10 @@ function ShopPage() {
     )
   }
 
-  const filtered =
-    activeCategory === 'All'
+  const showCombos = activeCategory === 'Combos & Baskets'
+  const filtered = showCombos
+    ? []
+    : activeCategory === 'All'
       ? products
       : products.filter((p) => p.category === activeCategory)
 
@@ -72,15 +79,17 @@ function ShopPage() {
             The Orchard
           </p>
           <h1 className="font-serif text-5xl sm:text-6xl font-bold text-gray-900 mb-4">
-            All fruits
+            {showCombos ? 'Combos & Baskets' : 'All fruits'}
           </h1>
           <p className="text-gray-500 max-w-xl leading-relaxed">
-            From mountain hill bananas to Kabul pomegranates — every fruit traceable to a farmer we know by name.
+            {showCombos
+              ? 'Curated fruit combos and gift baskets — hand-assembled with the finest produce.'
+              : 'From mountain hill bananas to Kabul pomegranates — every fruit traceable to a farmer we know by name.'}
           </p>
         </div>
       </section>
 
-      {/* Category Filter + Sort */}
+      {/* Category Filter */}
       <div className="sticky top-[72px] z-30 bg-white border-b border-gray-200 px-4 py-0">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-3 pr-4">
@@ -89,12 +98,15 @@ function ShopPage() {
                 type="button"
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors flex-shrink-0 ${
+                className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors flex-shrink-0 flex items-center gap-1.5 ${
                   activeCategory === cat
                     ? 'bg-[#2f6a4a] text-white'
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
+                {cat === 'Combos & Baskets' && (
+                  <TiIcon name="gift" size={13} className={activeCategory === cat ? 'text-white' : 'text-[#d4af37]'} />
+                )}
                 {cat}
               </button>
             ))}
@@ -103,13 +115,13 @@ function ShopPage() {
             type="button"
             className="flex items-center gap-2 text-sm font-medium text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex-shrink-0 ml-4"
           >
-            <SlidersHorizontal size={16} />
+            <TiIcon name="settings" size={15} className="text-gray-500" />
             Sort &amp; Filter
           </button>
         </div>
       </div>
 
-      {/* Product Grid */}
+      {/* Grid */}
       <div className="max-w-7xl mx-auto px-4 py-10">
         {loading ? (
           <div className="flex items-center justify-center py-24">
@@ -119,6 +131,20 @@ function ShopPage() {
           <div className="text-center py-24 text-red-500">
             <p>{error}</p>
           </div>
+        ) : showCombos ? (
+          baskets.length === 0 ? (
+            <div className="text-center py-24 text-gray-400">
+              <TiIcon name="gift" size={48} className="text-gray-200 mb-4" />
+              <p className="text-lg">No combos available yet.</p>
+              <p className="text-sm mt-1">Check back soon or ask admin to add combos.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {baskets.map((b) => (
+                <BasketCard key={b.id} basket={b} />
+              ))}
+            </div>
+          )
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 text-gray-400">
             <p className="text-lg">No products found in this category.</p>

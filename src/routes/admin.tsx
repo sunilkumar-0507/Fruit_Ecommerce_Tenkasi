@@ -2,6 +2,8 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
 import TiIcon from '#/components/TiIcon'
+import { ImageCollage } from '#/components/BasketCard'
+import { useBaskets, type BasketEntry } from '#/context/BasketContext'
 import { PRODUCTS } from '#/data/products'
 import {
   api, isApiMode, getStoredToken,
@@ -1242,62 +1244,6 @@ function DiscountsPanel() {
 
 // ─── Panel: Baskets / Combos ──────────────────────────────────────────────────
 
-type BasketEntry = {
-  id: string
-  name: string
-  description: string
-  price: number
-  images: string[]
-  items: string
-}
-
-const BASKETS_INIT: BasketEntry[] = [
-  { id: 'b1', name: 'Pongal Festival Basket', description: 'Handcrafted festival hamper with premium mangoes, bananas, and pomegranates.', price: 1450, images: ['/images/categories/fruit-baskets.jpg', '/images/categories/mangoes.jpg', '/images/categories/p-pomegranate.jpg'], items: 'Mango × 4, Banana × 6, Pomegranate × 2' },
-  { id: 'b2', name: 'Exotic Mix Combo',       description: 'Imported tropical selection — rambutan, dragon fruit, and mangosteen.',       price: 850,  images: ['/images/products/wa2-rambutan.jpeg', '/images/products/wa2-dragon-fruit.jpeg', '/images/products/wa2-mangosteen.jpeg', '/images/categories/p-pomegranate.jpg'], items: 'Rambutan × 6, Dragon Fruit × 2, Mangosteen × 3' },
-]
-
-function ImageCollage({ images, name }: { images: string[]; name: string }) {
-  if (images.length === 1) {
-    return (
-      <div className="w-full h-32 rounded-xl overflow-hidden">
-        <img src={images[0]} alt={name} className="w-full h-full object-cover" />
-      </div>
-    )
-  }
-  if (images.length === 2) {
-    return (
-      <div className="w-full h-32 rounded-xl overflow-hidden grid grid-cols-2 gap-0.5">
-        {images.slice(0, 2).map((img, i) => (
-          <img key={i} src={img} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
-        ))}
-      </div>
-    )
-  }
-  if (images.length === 3) {
-    return (
-      <div className="w-full h-32 rounded-xl overflow-hidden grid grid-cols-3 gap-0.5">
-        {images.slice(0, 3).map((img, i) => (
-          <img key={i} src={img} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
-        ))}
-      </div>
-    )
-  }
-  return (
-    <div className="w-full h-32 rounded-xl overflow-hidden grid grid-cols-2 grid-rows-2 gap-0.5">
-      {images.slice(0, 4).map((img, i) => (
-        <div key={i} className="relative overflow-hidden">
-          <img src={img} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
-          {i === 3 && images.length > 4 && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">+{images.length - 4}</span>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  )
-}
-
 function AddBasketModal({ onClose, onSave }: { onClose: () => void; onSave: (b: BasketEntry) => void }) {
   const [form, setForm] = useState({ name: '', description: '', price: '', items: '' })
   const [imageUrls, setImageUrls] = useState<string[]>([])
@@ -1400,7 +1346,7 @@ function AddBasketModal({ onClose, onSave }: { onClose: () => void; onSave: (b: 
 }
 
 function BasketsPanel() {
-  const [baskets, setBaskets] = useState<BasketEntry[]>(BASKETS_INIT)
+  const { baskets, addBasket, removeBasket } = useBaskets()
   const [showModal, setShowModal] = useState(false)
 
   return (
@@ -1437,7 +1383,7 @@ function BasketsPanel() {
                     <TiIcon name="layers" size={9} className="inline mr-0.5" />{b.images.length} images
                   </span>
                 )}
-                <button type="button" onClick={() => setBaskets((prev) => prev.filter((x) => x.id !== b.id))} className="ml-auto p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition" aria-label="Delete basket">
+                <button type="button" onClick={() => removeBasket(b.id)} className="ml-auto p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition" aria-label="Delete basket">
                   <TiIcon name="trash" size={14} />
                 </button>
               </div>
@@ -1449,7 +1395,7 @@ function BasketsPanel() {
       {showModal && (
         <AddBasketModal
           onClose={() => setShowModal(false)}
-          onSave={(b) => { setBaskets((prev) => [b, ...prev]); setShowModal(false) }}
+          onSave={(b) => { addBasket(b); setShowModal(false) }}
         />
       )}
     </div>

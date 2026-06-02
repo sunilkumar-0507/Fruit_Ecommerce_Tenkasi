@@ -4,7 +4,6 @@ import { useState } from 'react'
 import ProductCard from '#/components/ProductCard'
 import CategoryCard from '#/components/CategoryCard'
 import TestimonialCard from '#/components/TestimonialCard'
-import Marquee from '#/components/Marquee'
 import WelcomeScreen from '#/components/WelcomeScreen'
 import { useAuth } from '#/context/AuthContext'
 import { PRODUCTS, HOME_CATEGORIES } from '#/data/products'
@@ -146,11 +145,6 @@ function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* MARQUEE */}
-      <Marquee
-        items={['🍎 Farm Fresh', '🥭 Premium Quality', '🌿 Organic Certified', '🚚 Fast Delivery', '💚 Best Prices', '🌾 240+ Farmers']}
-      />
 
       {/* CATEGORIES */}
       <section className="py-16 sm:py-24 px-4">

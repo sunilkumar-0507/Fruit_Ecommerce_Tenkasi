@@ -7,6 +7,7 @@ import {
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import { AuthProvider } from '../context/AuthContext'
+import { BasketProvider } from '../context/BasketContext'
 import { CartProvider } from '../context/CartContext'
 import { FavProvider } from '../context/FavContext'
 import { FeedbackProvider } from '../context/FeedbackContext'
@@ -50,6 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
         <AuthProvider>
+        <BasketProvider>
         <CartProvider>
         <FavProvider>
         <FeedbackProvider>
@@ -61,6 +63,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </FeedbackProvider>
         </FavProvider>
         </CartProvider>
+        </BasketProvider>
         {!hideChrome && (
           <a
             href="https://wa.me/919840012345"
