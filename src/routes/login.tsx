@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Eye, EyeOff, Leaf, Truck, Users } from 'lucide-react'
+import TiIcon from '#/components/TiIcon'
 import { useAuth } from '#/context/AuthContext'
 import { loginUser, registerUser } from '#/services/auth'
 import { PRODUCTS } from '#/data/products'
@@ -183,12 +183,12 @@ function LoginPage() {
             </div>
             <div className="space-y-4">
               {[
-                { icon: <Leaf size={16} />, label: '100% Chemical Free' },
-                { icon: <Truck size={16} />, label: 'Same Day Delivery across TN' },
-                { icon: <Users size={16} />, label: '240+ Farmer Families' },
+                { icon: 'shine', label: '100% Chemical Free' },
+                { icon: 'truck', label: 'Same Day Delivery across TN' },
+                { icon: 'user', label: '240+ Farmer Families' },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 text-sm text-white/75">
-                  <span className="text-[#d4af37]">{item.icon}</span>
+                  <TiIcon name={item.icon} size={16} className="text-[#d4af37]" />
                   {item.label}
                 </div>
               ))}
@@ -284,7 +284,7 @@ function SignInForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').Us
         <div className="relative">
           <input id="signin-pw" type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white" />
           <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label={showPw ? 'Hide password' : 'Show password'}>
-            {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
+            <TiIcon name="eye" size={17} className="text-gray-400" />
           </button>
         </div>
       </div>
@@ -337,7 +337,7 @@ function RegisterForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').
         <div className="relative">
           <input id="reg-pw" type={showPw ? 'text' : 'password'} value={form.password} onChange={set('password')} placeholder="Min 8 characters" required minLength={8} className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white" />
           <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label={showPw ? 'Hide password' : 'Show password'}>
-            {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
+            <TiIcon name="eye" size={17} className="text-gray-400" />
           </button>
         </div>
       </div>

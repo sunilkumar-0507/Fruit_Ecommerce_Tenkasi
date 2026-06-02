@@ -1,13 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
-import {
-  LayoutDashboard, Package, ShoppingBag, Truck, Leaf, Settings,
-  Search, Bell, Plus, TrendingUp, TrendingDown, ChevronDown,
-  Pencil, Trash2, Eye, Star, MapPin, Phone, Save, Building2,
-  CheckCircle2, AlertTriangle, Clock, XCircle, Award, Menu, X,
-  Tag, Sun, ChevronLeft,
-} from 'lucide-react'
+import TiIcon from '#/components/TiIcon'
 import { PRODUCTS } from '#/data/products'
 import {
   api, isApiMode, getStoredToken,
@@ -18,15 +12,28 @@ import {
 
 export const Route = createFileRoute('/admin')({ component: AdminPage })
 
+const NAV_ICONS: Record<string, string> = {
+  Overview:  'dashboard',
+  Inventory: 'package',
+  Discounts: 'tag',
+  Seasonal:  'shine',
+  Baskets:   'gift',
+  Orders:    'bag',
+  Delivery:  'truck',
+  Farmers:   'layers',
+  Settings:  'settings',
+}
+
 const NAV_ITEMS = [
-  { label: 'Overview',   icon: LayoutDashboard },
-  { label: 'Inventory',  icon: Package },
-  { label: 'Discounts',  icon: Tag },
-  { label: 'Seasonal',   icon: Sun },
-  { label: 'Orders',     icon: ShoppingBag },
-  { label: 'Delivery',   icon: Truck },
-  { label: 'Farmers',    icon: Leaf },
-  { label: 'Settings',   icon: Settings },
+  { label: 'Overview' },
+  { label: 'Inventory' },
+  { label: 'Discounts' },
+  { label: 'Seasonal' },
+  { label: 'Baskets' },
+  { label: 'Orders' },
+  { label: 'Delivery' },
+  { label: 'Farmers' },
+  { label: 'Settings' },
 ]
 
 const TOP_SELLERS = [
@@ -52,10 +59,10 @@ const INVENTORY_INIT: InventoryRow[] = [
 ]
 
 const ORDERS_STATIC = [
-  { id: '#TF-1284', customer: 'Priya Sharma', date: '21 May 2026', items: 3, amount: 640,  status: 'Delivered' },
-  { id: '#TF-1283', customer: 'Murugan P.',   date: '21 May 2026', items: 2, amount: 1240, status: 'Processing' },
-  { id: '#TF-1282', customer: 'Kavitha R.',   date: '20 May 2026', items: 1, amount: 320,  status: 'Delivered' },
-  { id: '#TF-1281', customer: 'Ravi Kumar',   date: '20 May 2026', items: 4, amount: 850,  status: 'Delivered' },
+  { id: '#TF-1284', customer: 'Priya Sharma', date: '21 May 2026', items: 3, amount: 640,  status: 'Delivered',  address: '12, Anna Nagar, Chennai – 600 040' },
+  { id: '#TF-1283', customer: 'Murugan P.',   date: '21 May 2026', items: 2, amount: 1240, status: 'Processing', address: '45, Ganesh St, Madurai – 625 001' },
+  { id: '#TF-1282', customer: 'Kavitha R.',   date: '20 May 2026', items: 1, amount: 320,  status: 'Delivered',  address: '7, RS Puram, Coimbatore – 641 002' },
+  { id: '#TF-1281', customer: 'Ravi Kumar',   date: '20 May 2026', items: 4, amount: 850,  status: 'Delivered',  address: '3, Main Rd, Tenkasi – 627 811' },
 ]
 
 const DELIVERIES = [
@@ -107,7 +114,7 @@ function Stars({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((s) => (
-        <Star key={s} size={12} className={s <= Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'} />
+        <TiIcon key={s} name="star" size={12} className={s <= Math.round(rating) ? 'text-amber-400' : 'text-gray-200'} />
       ))}
       <span className="text-xs text-gray-500 ml-1">{rating}</span>
     </div>
@@ -177,13 +184,13 @@ function AddProductModal({
   const defaultCatId = apiCategories[0]?.id ?? ''
   const [form, setForm] = useState({
     nameEn: '', nameTa: '', categoryId: defaultCatId,
-    price: '', stock: '', image: '',
+    price: '', stock: '', image: '', description: '',
   })
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
   function set(field: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm((p) => ({ ...p, [field]: e.target.value }))
   }
 
@@ -239,7 +246,7 @@ function AddProductModal({
             <p className="text-gray-400 text-xs mt-0.5">Fill in the details below to add to inventory</p>
           </div>
           <button type="button" onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" aria-label="Close">
-            <X size={18} className="text-gray-500" />
+            <TiIcon name="close" size={18} className="text-gray-500" />
           </button>
         </div>
 
@@ -273,6 +280,16 @@ function AddProductModal({
             </div>
           </div>
           <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea
+              value={form.description}
+              onChange={set('description')}
+              placeholder="Brief description of the product…"
+              rows={3}
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none"
+            />
+          </div>
         </div>
 
         <div className="flex gap-3 p-5 sm:p-6 border-t border-gray-100">
@@ -372,7 +389,7 @@ function EditProductModal({
             <p className="text-gray-400 text-xs mt-0.5">Update the details for {product.name}</p>
           </div>
           <button type="button" onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" aria-label="Close">
-            <X size={18} className="text-gray-500" />
+            <TiIcon name="close" size={18} className="text-gray-500" />
           </button>
         </div>
 
@@ -477,7 +494,7 @@ function OverviewPanel() {
             <option>Last 30 days</option>
             <option>Last 90 days</option>
           </select>
-          <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <TiIcon name="angle-down" size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>
       </div>
 
@@ -487,7 +504,7 @@ function OverviewPanel() {
             <p className="text-xs text-gray-500 font-medium tracking-wide uppercase mb-2">{stat.label}</p>
             <p className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{stat.value}</p>
             <div className="flex items-center gap-1.5 flex-wrap">
-              {stat.up ? <TrendingUp size={14} className="text-emerald-500" /> : <TrendingDown size={14} className="text-red-500" />}
+              {stat.up ? <TiIcon name="stats-up" size={14} className="text-emerald-500" /> : <TiIcon name="stats-down" size={14} className="text-red-500" />}
               <span className={`text-sm font-semibold ${stat.up ? 'text-emerald-500' : 'text-red-500'}`}>{stat.change}</span>
               <span className="text-xs text-gray-400 hidden sm:inline">{stat.sub}</span>
             </div>
@@ -630,13 +647,13 @@ function InventoryPanel() {
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto"
         >
-          <Plus size={15} />
+          <TiIcon name="plus" size={15} />
           Add Product
         </button>
       </div>
 
       <div className="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-2 gap-2 w-full sm:w-72 mb-5">
-        <Search size={15} className="text-gray-400 flex-shrink-0" />
+        <TiIcon name="search" size={15} className="text-gray-400 flex-shrink-0" />
         <input type="text" placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-transparent text-sm text-gray-600 placeholder-gray-400 outline-none w-full" />
       </div>
 
@@ -674,15 +691,15 @@ function InventoryPanel() {
                     <td className="px-4 py-3 text-right font-semibold text-gray-900">₹{item.price}</td>
                     <td className="px-4 py-3 text-right text-gray-700 font-medium">
                       {item.stock === 0 ? '—' : item.stock}
-                      {item.stock > 0 && item.stock < 20 && <AlertTriangle size={12} className="inline ml-1 text-amber-500" />}
+                      {item.stock > 0 && item.stock < 20 && <TiIcon name="alert" size={12} className="inline ml-1 text-amber-500" />}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${s.cls}`}>{s.label}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
-                        <button type="button" onClick={() => setEditingProduct(item)} className="p-1.5 text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec] rounded-lg transition-colors" aria-label="Edit"><Pencil size={14} /></button>
-                        <button type="button" onClick={() => handleDelete(item.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" aria-label="Delete"><Trash2 size={14} /></button>
+                        <button type="button" onClick={() => setEditingProduct(item)} className="p-1.5 text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec] rounded-lg transition-colors" aria-label="Edit"><TiIcon name="pencil" size={14} /></button>
+                        <button type="button" onClick={() => handleDelete(item.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" aria-label="Delete"><TiIcon name="trash" size={14} /></button>
                       </div>
                     </td>
                   </tr>
@@ -740,6 +757,7 @@ function OrdersPanel() {
         amount: o.total,
         status: ORDER_STATUS[o.status] ?? 'Pending',
         items: o.items ?? [],
+        address: '',
         isReal: true,
       }))
     : ORDERS_STATIC.map((o) => ({
@@ -751,6 +769,7 @@ function OrdersPanel() {
         amount: o.amount,
         status: o.status,
         items: [] as OrderDto['items'],
+        address: o.address,
         isReal: false,
       }))
 
@@ -758,10 +777,10 @@ function OrdersPanel() {
   const processingCount = allOrders.filter((o) => o.status === 'Processing').length
 
   const statusIcon = (s: string) => {
-    if (s === 'Delivered')  return <CheckCircle2 size={13} className="text-emerald-500" />
-    if (s === 'Processing') return <Clock size={13} className="text-blue-500" />
-    if (s === 'Cancelled')  return <XCircle size={13} className="text-red-500" />
-    return <AlertTriangle size={13} className="text-amber-500" />
+    if (s === 'Delivered')  return <TiIcon name="check-box" size={13} className="text-emerald-500" />
+    if (s === 'Processing') return <TiIcon name="time" size={13} className="text-blue-500" />
+    if (s === 'Cancelled')  return <TiIcon name="close" size={13} className="text-red-500" />
+    return <TiIcon name="alert" size={13} className="text-amber-500" />
   }
 
   async function handleStatusChange(rawId: string, newStatus: number) {
@@ -845,7 +864,7 @@ function OrdersPanel() {
                         className={`p-1.5 rounded-lg transition-colors ${expandedId === order.id ? 'text-[#2f6a4a] bg-[#e7f3ec]' : 'text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec]'}`}
                         aria-label="View order details"
                       >
-                        <Eye size={14} />
+                        <TiIcon name="eye" size={14} />
                       </button>
                     </td>
                   </tr>
@@ -853,22 +872,35 @@ function OrdersPanel() {
                   {expandedId === order.id && (
                     <tr key={`${order.id}-detail`} className="bg-[#f5f9f7]">
                       <td colSpan={6} className="px-4 py-4">
-                        {order.items && order.items.length > 0 ? (
-                          <div>
-                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Items Ordered</p>
-                            <div className="space-y-1.5">
-                              {order.items.map((item) => (
-                                <div key={item.productId} className="flex items-center gap-2 text-xs text-gray-600">
-                                  <span className="font-semibold text-gray-800">{item.quantity}×</span>
-                                  <span className="truncate">{item.productName ?? item.productId}</span>
-                                  <span className="ml-auto font-semibold text-gray-900 flex-shrink-0">₹{(item.unitPrice * item.quantity).toFixed(2)}</span>
-                                </div>
-                              ))}
+                        <div className="space-y-3">
+                          {/* Customer address */}
+                          {order.address && (
+                            <div className="flex items-start gap-2">
+                              <TiIcon name="location-pin" size={13} className="text-[#2f6a4a] flex-shrink-0 mt-0.5" />
+                              <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Delivery Address</p>
+                                <p className="text-sm text-gray-700">{order.address}</p>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <p className="text-xs text-gray-400 italic">No item details available.</p>
-                        )}
+                          )}
+                          {/* Items */}
+                          {order.items && order.items.length > 0 ? (
+                            <div>
+                              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Items Ordered</p>
+                              <div className="space-y-1.5">
+                                {order.items.map((item) => (
+                                  <div key={item.productId} className="flex items-center gap-2 text-xs text-gray-600">
+                                    <span className="font-semibold text-gray-800">{item.quantity}×</span>
+                                    <span className="truncate">{item.productName ?? item.productId}</span>
+                                    <span className="ml-auto font-semibold text-gray-900 flex-shrink-0">₹{(item.unitPrice * item.quantity).toFixed(2)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            !order.address && <p className="text-xs text-gray-400 italic">No details available.</p>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   )}
@@ -897,9 +929,9 @@ function DeliveryPanel() {
       </div>
       <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
         {[
-          { label: 'In Transit',      value: inTransit, cls: 'text-blue-600',    bg: 'bg-blue-50',    icon: <Truck size={18} className="text-blue-500" /> },
-          { label: 'Delivered Today', value: delivered, cls: 'text-emerald-600', bg: 'bg-emerald-50', icon: <CheckCircle2 size={18} className="text-emerald-500" /> },
-          { label: 'Pending',         value: pending,   cls: 'text-amber-600',   bg: 'bg-amber-50',   icon: <Clock size={18} className="text-amber-500" /> },
+          { label: 'In Transit',      value: inTransit, cls: 'text-blue-600',    bg: 'bg-blue-50',    icon: <TiIcon name="truck" size={18} className="text-blue-500" /> },
+          { label: 'Delivered Today', value: delivered, cls: 'text-emerald-600', bg: 'bg-emerald-50', icon: <TiIcon name="check-box" size={18} className="text-emerald-500" /> },
+          { label: 'Pending',         value: pending,   cls: 'text-amber-600',   bg: 'bg-amber-50',   icon: <TiIcon name="time" size={18} className="text-amber-500" /> },
         ].map((s) => (
           <div key={s.label} className="bg-white rounded-xl p-3 sm:p-4 border border-gray-100 shadow-sm flex items-center gap-2 sm:gap-3">
             <div className={`w-8 h-8 sm:w-10 sm:h-10 ${s.bg} rounded-lg flex items-center justify-center flex-shrink-0`}>{s.icon}</div>
@@ -928,7 +960,7 @@ function DeliveryPanel() {
                 <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">{d.id}</td>
                 <td className="px-4 py-3 font-medium text-gray-900 text-sm">{d.customer}</td>
                 <td className="px-4 py-3 hidden sm:table-cell">
-                  <div className="flex items-center gap-1 text-gray-500 text-xs"><MapPin size={11} />{d.area}</div>
+                  <div className="flex items-center gap-1 text-gray-500 text-xs"><TiIcon name="location-pin" size={11} />{d.area}</div>
                 </td>
                 <td className="px-4 py-3 text-gray-700 text-sm hidden md:table-cell">{d.driver}</td>
                 <td className="px-4 py-3 text-center text-sm font-medium text-gray-700">{d.eta}</td>
@@ -955,15 +987,15 @@ function FarmersPanel() {
           <p className="text-gray-500 text-sm mt-0.5">{FARMERS.length} partner farmers · {FARMERS.filter(f => f.active).length} active this month</p>
         </div>
         <button type="button" className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto">
-          <Plus size={15} />
+          <TiIcon name="plus" size={15} />
           Add Farmer
         </button>
       </div>
       <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
         {[
-          { label: 'Total Partners',    value: '240+',  icon: <Leaf size={18} className="text-[#2f6a4a]" /> },
-          { label: 'Active This Month', value: '186',   icon: <TrendingUp size={18} className="text-emerald-500" /> },
-          { label: 'Avg Rating',        value: '4.7 ★', icon: <Award size={18} className="text-amber-500" /> },
+          { label: 'Total Partners',    value: '240+',  icon: <TiIcon name="shine" size={18} className="text-[#2f6a4a]" /> },
+          { label: 'Active This Month', value: '186',   icon: <TiIcon name="stats-up" size={18} className="text-emerald-500" /> },
+          { label: 'Avg Rating',        value: '4.7 ★', icon: <TiIcon name="crown" size={18} className="text-amber-500" /> },
         ].map((s) => (
           <div key={s.label} className="bg-white rounded-xl p-3 sm:p-4 border border-gray-100 shadow-sm flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">{s.icon}</div>
@@ -992,15 +1024,15 @@ function FarmersPanel() {
               <tr key={f.id} className="hover:bg-gray-50/50 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[#e7f3ec] rounded-full flex items-center justify-center flex-shrink-0"><Leaf size={14} className="text-[#2f6a4a]" /></div>
+                    <div className="w-8 h-8 bg-[#e7f3ec] rounded-full flex items-center justify-center flex-shrink-0"><TiIcon name="shine" size={14} className="text-[#2f6a4a]" /></div>
                     <span className="font-medium text-gray-900 text-sm">{f.name}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell"><div className="flex items-center gap-1"><MapPin size={11} />{f.village}</div></td>
+                <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell"><div className="flex items-center gap-1"><TiIcon name="location-pin" size={11} />{f.village}</div></td>
                 <td className="px-4 py-3 text-gray-600 text-xs">{f.produce}</td>
                 <td className="px-4 py-3 text-right font-medium text-gray-900 hidden md:table-cell">{f.supply}</td>
                 <td className="px-4 py-3 text-center"><Stars rating={f.rating} /></td>
-                <td className="px-4 py-3 hidden lg:table-cell"><div className="flex items-center gap-1 text-xs text-gray-500"><Phone size={11} />{f.phone}</div></td>
+                <td className="px-4 py-3 hidden lg:table-cell"><div className="flex items-center gap-1 text-xs text-gray-500"><TiIcon name="headphone" size={11} />{f.phone}</div></td>
                 <td className="px-4 py-3 text-center">
                   <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${f.active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>{f.active ? 'Active' : 'Inactive'}</span>
                 </td>
@@ -1029,7 +1061,7 @@ function SettingsPanel() {
       <h1 className="font-serif text-2xl font-bold text-gray-900 mb-6">Settings</h1>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sm:p-6 mb-5">
-        <div className="flex items-center gap-2 mb-5"><Building2 size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Business Information</h2></div>
+        <div className="flex items-center gap-2 mb-5"><TiIcon name="home" size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Business Information</h2></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
             { label: 'Shop Name',       value: 'Tenkasi Fresh Fruits' },
@@ -1051,7 +1083,7 @@ function SettingsPanel() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sm:p-6 mb-5">
-        <div className="flex items-center gap-2 mb-5"><Truck size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Delivery Settings</h2></div>
+        <div className="flex items-center gap-2 mb-5"><TiIcon name="truck" size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Delivery Settings</h2></div>
         <div className="grid grid-cols-2 gap-4">
           {[
             { label: 'Minimum Order (₹)',          value: '200' },
@@ -1068,7 +1100,7 @@ function SettingsPanel() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sm:p-6 mb-6">
-        <div className="flex items-center gap-2 mb-5"><Bell size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Notification Preferences</h2></div>
+        <div className="flex items-center gap-2 mb-5"><TiIcon name="bell" size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Notification Preferences</h2></div>
         <div className="space-y-4">
           {[
             { key: 'newOrder' as const,    label: 'New Order Alert',             desc: 'Notify when a new order is placed' },
@@ -1095,7 +1127,7 @@ function SettingsPanel() {
       </div>
 
       <button type="button" onClick={handleSave} className="flex items-center gap-2 bg-[#2f6a4a] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors">
-        <Save size={15} />
+        <TiIcon name="save" size={15} />
         {saved ? 'Saved!' : 'Save Changes'}
       </button>
     </div>
@@ -1208,6 +1240,222 @@ function DiscountsPanel() {
   )
 }
 
+// ─── Panel: Baskets / Combos ──────────────────────────────────────────────────
+
+type BasketEntry = {
+  id: string
+  name: string
+  description: string
+  price: number
+  images: string[]
+  items: string
+}
+
+const BASKETS_INIT: BasketEntry[] = [
+  { id: 'b1', name: 'Pongal Festival Basket', description: 'Handcrafted festival hamper with premium mangoes, bananas, and pomegranates.', price: 1450, images: ['/images/categories/fruit-baskets.jpg', '/images/categories/mangoes.jpg', '/images/categories/p-pomegranate.jpg'], items: 'Mango × 4, Banana × 6, Pomegranate × 2' },
+  { id: 'b2', name: 'Exotic Mix Combo',       description: 'Imported tropical selection — rambutan, dragon fruit, and mangosteen.',       price: 850,  images: ['/images/products/wa2-rambutan.jpeg', '/images/products/wa2-dragon-fruit.jpeg', '/images/products/wa2-mangosteen.jpeg', '/images/categories/p-pomegranate.jpg'], items: 'Rambutan × 6, Dragon Fruit × 2, Mangosteen × 3' },
+]
+
+function ImageCollage({ images, name }: { images: string[]; name: string }) {
+  if (images.length === 1) {
+    return (
+      <div className="w-full h-32 rounded-xl overflow-hidden">
+        <img src={images[0]} alt={name} className="w-full h-full object-cover" />
+      </div>
+    )
+  }
+  if (images.length === 2) {
+    return (
+      <div className="w-full h-32 rounded-xl overflow-hidden grid grid-cols-2 gap-0.5">
+        {images.slice(0, 2).map((img, i) => (
+          <img key={i} src={img} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
+        ))}
+      </div>
+    )
+  }
+  if (images.length === 3) {
+    return (
+      <div className="w-full h-32 rounded-xl overflow-hidden grid grid-cols-3 gap-0.5">
+        {images.slice(0, 3).map((img, i) => (
+          <img key={i} src={img} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
+        ))}
+      </div>
+    )
+  }
+  return (
+    <div className="w-full h-32 rounded-xl overflow-hidden grid grid-cols-2 grid-rows-2 gap-0.5">
+      {images.slice(0, 4).map((img, i) => (
+        <div key={i} className="relative overflow-hidden">
+          <img src={img} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
+          {i === 3 && images.length > 4 && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <span className="text-white font-bold text-sm">+{images.length - 4}</span>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function AddBasketModal({ onClose, onSave }: { onClose: () => void; onSave: (b: BasketEntry) => void }) {
+  const [form, setForm] = useState({ name: '', description: '', price: '', items: '' })
+  const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [saved, setSaved] = useState(false)
+
+  function setField(f: keyof typeof form) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setForm((p) => ({ ...p, [f]: e.target.value }))
+  }
+
+  function handleFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? [])
+    const urls = files.map((f) => URL.createObjectURL(f))
+    setImageUrls((prev) => [...prev, ...urls].slice(0, 6))
+    e.target.value = ''
+  }
+
+  function removeImage(idx: number) {
+    setImageUrls((prev) => prev.filter((_, i) => i !== idx))
+  }
+
+  function handleSave() {
+    if (!form.name || !form.price) return
+    setSaved(true)
+    setTimeout(() => {
+      onSave({ id: String(Date.now()), name: form.name, description: form.description, price: Number(form.price), images: imageUrls, items: form.items })
+      onClose()
+    }, 800)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <div>
+            <h2 className="font-serif text-xl font-bold text-gray-900">Add Basket / Combo</h2>
+            <p className="text-gray-400 text-xs mt-0.5">Create a curated fruit basket or combo</p>
+          </div>
+          <button type="button" onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg" aria-label="Close"><TiIcon name="close" size={18} className="text-gray-500" /></button>
+        </div>
+        <div className="p-5 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Basket Name <span className="text-red-500">*</span></label>
+            <input type="text" value={form.name} onChange={setField('name')} placeholder="e.g. Pongal Special Hamper" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
+            <input type="number" value={form.price} onChange={setField('price')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Items Included</label>
+            <input type="text" value={form.items} onChange={setField('items')} placeholder="e.g. Mango × 4, Banana × 6" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+            <textarea value={form.description} onChange={setField('description')} placeholder="Describe the basket…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+          </div>
+          {/* Multi-image upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Images <span className="text-gray-400 font-normal">(up to 6 — will be shown as collage)</span>
+            </label>
+            <label className="block cursor-pointer">
+              <div className="w-full px-3 py-2.5 border border-dashed border-gray-300 rounded-lg text-sm text-center text-gray-500 hover:border-[#2f6a4a] hover:text-[#2f6a4a] transition">
+                + Add images from device
+              </div>
+              <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileAdd} />
+            </label>
+            {imageUrls.length > 0 && (
+              <div className="flex gap-2 flex-wrap mt-3">
+                {imageUrls.map((url, i) => (
+                  <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200">
+                    <img src={url} alt={`img ${i + 1}`} className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => removeImage(i)} className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center" aria-label="Remove">
+                      <TiIcon name="close" size={10} className="text-white" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {imageUrls.length > 1 && (
+              <div className="mt-3">
+                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1.5">Collage preview</p>
+                <div className="w-40">
+                  <ImageCollage images={imageUrls} name={form.name || 'Basket'} />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex gap-3 p-5 border-t border-gray-100">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+          <button type="button" onClick={handleSave} disabled={!form.name || !form.price} className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'}`}>
+            {saved ? '✓ Basket Added!' : 'Save Basket'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BasketsPanel() {
+  const [baskets, setBaskets] = useState<BasketEntry[]>(BASKETS_INIT)
+  const [showModal, setShowModal] = useState(false)
+
+  return (
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-gray-900">Baskets &amp; Combos</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{baskets.length} active baskets · Multiple images collaged automatically</p>
+        </div>
+        <button type="button" onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto">
+          <TiIcon name="plus" size={15} />
+          Add Basket
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {baskets.map((b) => (
+          <div key={b.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <ImageCollage images={b.images.length > 0 ? b.images : ['/images/categories/fruit-baskets.jpg']} name={b.name} />
+            <div className="p-4">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h3 className="font-serif font-bold text-gray-900 text-sm leading-snug">{b.name}</h3>
+                <span className="text-[#2f6a4a] font-bold text-sm flex-shrink-0">₹{b.price}</span>
+              </div>
+              {b.description && <p className="text-gray-500 text-xs leading-relaxed mb-2 line-clamp-2">{b.description}</p>}
+              {b.items && (
+                <p className="text-[10px] text-gray-400 bg-gray-50 rounded-lg px-2.5 py-1.5 mb-3 leading-relaxed">
+                  <span className="font-semibold text-gray-600">Includes: </span>{b.items}
+                </p>
+              )}
+              <div className="flex items-center gap-2">
+                {b.images.length > 1 && (
+                  <span className="text-[10px] font-bold text-[#2f6a4a] bg-[#e7f3ec] px-2 py-0.5 rounded-full">
+                    <TiIcon name="layers" size={9} className="inline mr-0.5" />{b.images.length} images
+                  </span>
+                )}
+                <button type="button" onClick={() => setBaskets((prev) => prev.filter((x) => x.id !== b.id))} className="ml-auto p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition" aria-label="Delete basket">
+                  <TiIcon name="trash" size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showModal && (
+        <AddBasketModal
+          onClose={() => setShowModal(false)}
+          onSave={(b) => { setBaskets((prev) => [b, ...prev]); setShowModal(false) }}
+        />
+      )}
+    </div>
+  )
+}
+
 // ─── Panel: Seasonal ──────────────────────────────────────────────────────────
 
 function SeasonalPanel() {
@@ -1246,7 +1494,7 @@ function SeasonalPanel() {
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto"
         >
-          <Plus size={15} />
+          <TiIcon name="plus" size={15} />
           Add Seasonal Product
         </button>
       </div>
@@ -1276,7 +1524,7 @@ function SeasonalPanel() {
                   className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition flex-shrink-0"
                   title="Remove from seasonal"
                 >
-                  <X size={15} />
+                  <TiIcon name="close" size={15} />
                 </button>
               </div>
             ))}
@@ -1308,7 +1556,7 @@ function SeasonalPanel() {
                 onClick={() => toggle(p.id)}
                 className="flex items-center gap-1 px-2.5 py-1.5 text-[#2f6a4a] border border-[#2f6a4a]/30 hover:bg-[#e7f3ec] rounded-lg text-xs font-semibold transition flex-shrink-0"
               >
-                <Plus size={12} />
+                <TiIcon name="plus" size={12} />
                 Season
               </button>
             </div>
@@ -1362,7 +1610,7 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
         <p className="text-white/40 text-[10px] tracking-widest uppercase ml-11">Admin Console</p>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {NAV_ITEMS.map(({ label, icon: Icon }) => (
+        {NAV_ITEMS.map(({ label }) => (
           <button
             type="button"
             key={label}
@@ -1371,7 +1619,7 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
               activeNav === label ? 'bg-white/15 text-white' : 'text-white/60 hover:text-white hover:bg-white/8'
             }`}
           >
-            <Icon size={17} />
+            <TiIcon name={NAV_ICONS[label] ?? 'layout'} size={17} />
             {label}
           </button>
         ))}
@@ -1424,25 +1672,25 @@ function AdminPage() {
             className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
             aria-label="Open sidebar"
           >
-            <Menu size={20} className="text-gray-600" />
+            <TiIcon name="menu" size={20} className="text-gray-600" />
           </button>
 
           <Link
             to="/"
             className="flex items-center gap-1 text-sm font-semibold text-[#2f6a4a] hover:bg-[#e7f3ec] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
           >
-            <ChevronLeft size={16} />
+            <TiIcon name="angle-left" size={16} />
             <span className="hidden xs:inline sm:inline">Back to Store</span>
           </Link>
 
           <div className="flex-1 flex items-center bg-gray-100 rounded-lg px-3 py-2 gap-2 max-w-md">
-            <Search size={15} className="text-gray-400 flex-shrink-0" />
+            <TiIcon name="search" size={15} className="text-gray-400 flex-shrink-0" />
             <input type="text" placeholder="Search orders, products..." className="bg-transparent text-sm text-gray-600 placeholder-gray-400 outline-none w-full" />
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
             <button type="button" className="relative p-2 hover:bg-gray-100 rounded-lg flex-shrink-0" aria-label="Notifications">
-              <Bell size={18} className="text-gray-600" />
+              <TiIcon name="bell" size={18} className="text-gray-600" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </button>
             <div className="flex items-center gap-2">
@@ -1462,6 +1710,7 @@ function AdminPage() {
           {activeNav === 'Inventory'  && <InventoryPanel />}
           {activeNav === 'Discounts'  && <DiscountsPanel />}
           {activeNav === 'Seasonal'   && <SeasonalPanel />}
+          {activeNav === 'Baskets'    && <BasketsPanel />}
           {activeNav === 'Orders'     && <OrdersPanel />}
           {activeNav === 'Delivery'   && <DeliveryPanel />}
           {activeNav === 'Farmers'    && <FarmersPanel />}

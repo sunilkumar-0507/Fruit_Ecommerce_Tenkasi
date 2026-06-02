@@ -9,9 +9,11 @@ import Header from '../components/Header'
 import { AuthProvider } from '../context/AuthContext'
 import { CartProvider } from '../context/CartContext'
 import { FavProvider } from '../context/FavContext'
+import { FeedbackProvider } from '../context/FeedbackContext'
 import { OrderProvider } from '../context/OrderContext'
 
 import appCss from '../styles.css?url'
+import themifyUrl from '../themify-icons.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -28,7 +30,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'Tenkasi Fresh — Farm to Home Since 1987' },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'stylesheet', href: themifyUrl },
+    ],
   }),
   shellComponent: RootDocument,
 })
@@ -47,11 +52,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <AuthProvider>
         <CartProvider>
         <FavProvider>
+        <FeedbackProvider>
         <OrderProvider>
         {!hideChrome && <Header />}
         {children}
         {!hideChrome && <Footer />}
         </OrderProvider>
+        </FeedbackProvider>
         </FavProvider>
         </CartProvider>
         {!hideChrome && (

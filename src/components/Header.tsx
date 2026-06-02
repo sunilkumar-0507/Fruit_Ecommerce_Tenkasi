@@ -1,9 +1,9 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { ShoppingCart, Search, Heart, Menu, X, Phone, LogOut, User } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '#/context/AuthContext'
 import { useCart } from '#/context/CartContext'
 import { useFav } from '#/context/FavContext'
+import TiIcon from '#/components/TiIcon'
 
 const BASE_NAV = [
   { label: 'Home', to: '/' },
@@ -18,10 +18,9 @@ function FavPopup({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="absolute right-0 top-full mt-2 z-50 w-[min(320px,calc(100vw-1rem))] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-[#faf9f4]">
         <div className="flex items-center gap-2">
-          <Heart size={16} className="text-red-500 fill-red-500" />
+          <TiIcon name="heart" size={16} className="text-red-500" />
           <span className="font-serif font-bold text-gray-900 text-sm">Wishlist</span>
           {items.length > 0 && (
             <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -29,29 +28,17 @@ function FavPopup({ onClose }: { onClose: () => void }) {
             </span>
           )}
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="p-1 hover:bg-gray-100 rounded-lg transition"
-          aria-label="Close wishlist"
-        >
-          <X size={15} className="text-gray-400" />
+        <button type="button" onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg transition" aria-label="Close wishlist">
+          <TiIcon name="close" size={15} className="text-gray-400" />
         </button>
       </div>
 
-      {/* Items */}
       {items.length === 0 ? (
         <div className="px-4 py-10 text-center">
-          <Heart size={36} className="text-gray-200 mx-auto mb-3" />
+          <TiIcon name="heart" size={36} className="text-gray-200 mb-3" />
           <p className="text-gray-600 text-sm font-semibold">Your wishlist is empty</p>
-          <p className="text-gray-400 text-xs mt-1 leading-relaxed">
-            Tap the ♥ on any product to save it here
-          </p>
-          <Link
-            to="/shop"
-            onClick={onClose}
-            className="inline-block mt-4 bg-[#2f6a4a] text-white text-xs font-bold px-5 py-2 rounded-full no-underline hover:bg-[#1f4a2f] transition-colors"
-          >
+          <p className="text-gray-400 text-xs mt-1 leading-relaxed">Tap the ♥ on any product to save it here</p>
+          <Link to="/shop" onClick={onClose} className="inline-block mt-4 bg-[#2f6a4a] text-white text-xs font-bold px-5 py-2 rounded-full no-underline hover:bg-[#1f4a2f] transition-colors">
             Browse Products
           </Link>
         </div>
@@ -60,36 +47,22 @@ function FavPopup({ onClose }: { onClose: () => void }) {
           <ul className="max-h-[300px] sm:max-h-[360px] overflow-y-auto divide-y divide-gray-50">
             {items.map((item) => (
               <li key={item.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100"
-                />
+                <img src={item.image} alt={item.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900 truncate leading-tight">{item.name}</p>
                   <p className="text-[11px] text-gray-400 truncate">{item.nameTamil}</p>
                   <p className="text-sm font-bold text-[#2f6a4a] mt-0.5">
-                    ₹{item.price}
-                    <span className="text-[10px] font-normal text-gray-400 ml-0.5">/{item.unit}</span>
+                    ₹{item.price}<span className="text-[10px] font-normal text-gray-400 ml-0.5">/{item.unit}</span>
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => toggle(item)}
-                  className="p-1.5 hover:bg-red-50 rounded-lg transition flex-shrink-0 group"
-                  aria-label={`Remove ${item.name} from wishlist`}
-                >
-                  <X size={15} className="text-gray-300 group-hover:text-red-500 transition-colors" />
+                <button type="button" onClick={() => toggle(item)} className="p-1.5 hover:bg-red-50 rounded-lg transition flex-shrink-0 group" aria-label={`Remove ${item.name}`}>
+                  <TiIcon name="close" size={15} className="text-gray-300 group-hover:text-red-500 transition-colors" />
                 </button>
               </li>
             ))}
           </ul>
           <div className="px-4 py-3 bg-[#faf9f4] border-t border-gray-100">
-            <Link
-              to="/shop"
-              onClick={onClose}
-              className="block w-full text-center text-sm font-bold text-white bg-[#2f6a4a] py-2.5 rounded-xl no-underline hover:bg-[#1f4a2f] transition-colors"
-            >
+            <Link to="/shop" onClick={onClose} className="block w-full text-center text-sm font-bold text-white bg-[#2f6a4a] py-2.5 rounded-xl no-underline hover:bg-[#1f4a2f] transition-colors">
               Shop Now
             </Link>
           </div>
@@ -110,16 +83,11 @@ export default function Header() {
   const favRef = useRef<HTMLDivElement>(null)
   const userRef = useRef<HTMLDivElement>(null)
 
-  // Close popups on outside click
   useEffect(() => {
     if (!favOpen && !userMenuOpen) return
     function handleClick(e: MouseEvent) {
-      if (favOpen && favRef.current && !favRef.current.contains(e.target as Node)) {
-        setFavOpen(false)
-      }
-      if (userMenuOpen && userRef.current && !userRef.current.contains(e.target as Node)) {
-        setUserMenuOpen(false)
-      }
+      if (favOpen && favRef.current && !favRef.current.contains(e.target as Node)) setFavOpen(false)
+      if (userMenuOpen && userRef.current && !userRef.current.contains(e.target as Node)) setUserMenuOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -141,7 +109,7 @@ export default function Header() {
           </span>
           <div className="hidden sm:flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-white/90 text-xs font-medium">
-              <Phone size={13} className="text-[#d4af37]" />
+              <TiIcon name="headphone" size={13} className="text-[#d4af37]" />
               +91 98400 12345
             </span>
             <span className="flex items-center gap-1.5 text-white/90 text-xs font-medium">
@@ -156,111 +124,60 @@ export default function Header() {
       <nav className="bg-[#1a3d2b] border-b border-[#d4af37]/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-18 py-2.5">
-            {/* Logo */}
             <Link to="/" className="flex items-center no-underline flex-shrink-0">
-              <img
-                src="/images/logo.svg"
-                alt="Tenkasi Fresh"
-                className="h-[58px] w-auto object-contain"
-              />
+              <img src="/images/logo.svg" alt="Tenkasi Fresh" className="h-[58px] w-auto object-contain" />
             </Link>
 
-            {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-7">
               {BASE_NAV.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="header-nav-link"
-                  activeProps={{ className: 'header-nav-link active' }}
-                >
+                <Link key={link.to} to={link.to} className="header-nav-link" activeProps={{ className: 'header-nav-link active' }}>
                   {link.label}
                 </Link>
               ))}
               {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="header-nav-link"
-                  activeProps={{ className: 'header-nav-link active' }}
-                >
-                  Admin
-                </Link>
+                <Link to="/admin" className="header-nav-link" activeProps={{ className: 'header-nav-link active' }}>Admin</Link>
               )}
             </div>
 
-            {/* Search */}
             <div className="hidden lg:flex items-center bg-white/10 rounded-full px-4 py-2 w-56 gap-2 border border-white/10">
-              <Search size={15} className="text-white/50 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search mangoes, baskets..."
-                className="bg-transparent w-full outline-none text-sm text-white/80 placeholder-white/40"
-              />
+              <TiIcon name="search" size={15} className="text-white/50 flex-shrink-0" />
+              <input type="text" placeholder="Search mangoes, baskets..." className="bg-transparent w-full outline-none text-sm text-white/80 placeholder-white/40" />
             </div>
 
-            {/* Icons */}
             <div className="flex items-center gap-1">
               {user ? (
                 <div className="relative" ref={userRef}>
-                  <button
-                    type="button"
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 rounded-full transition"
-                    aria-label="Account menu"
-                  >
+                  <button type="button" onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 rounded-full transition" aria-label="Account menu">
                     <div className="w-8 h-8 bg-[#d4af37] rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-[#1a3d2b] font-bold text-sm leading-none">
-                        {user.name.charAt(0).toUpperCase()}
-                      </span>
+                      <span className="text-[#1a3d2b] font-bold text-sm leading-none">{user.name.charAt(0).toUpperCase()}</span>
                     </div>
-                    <span className="hidden sm:block text-sm font-medium text-white/85 max-w-[80px] truncate">
-                      {user.name.split(' ')[0]}
-                    </span>
+                    <span className="hidden sm:block text-sm font-medium text-white/85 max-w-[80px] truncate">{user.name.split(' ')[0]}</span>
                   </button>
                   {userMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
                       <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
                         <p className="text-xs text-gray-400 truncate">{user.email}</p>
-                        {isAdmin && (
-                          <span className="inline-block mt-1 text-[10px] font-bold text-[#2f6a4a] bg-[#e7f3ec] px-2 py-0.5 rounded-full tracking-wide uppercase">
-                            Admin
-                          </span>
-                        )}
+                        {isAdmin && <span className="inline-block mt-1 text-[10px] font-bold text-[#2f6a4a] bg-[#e7f3ec] px-2 py-0.5 rounded-full tracking-wide uppercase">Admin</span>}
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
-                      >
-                        <LogOut size={15} />
+                      <button type="button" onClick={handleLogout} className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors text-left">
+                        <TiIcon name="power-off" size={15} className="text-red-600" />
                         Sign Out
                       </button>
                     </div>
                   )}
                 </div>
               ) : (
-                <Link
-                  to="/login"
-                  className="flex items-center gap-1.5 px-4 py-2 bg-[#d4af37] text-[#1a3d2b] text-sm font-bold rounded-full hover:bg-[#f5d060] transition-colors no-underline"
-                >
-                  <User size={15} />
+                <Link to="/login" className="flex items-center gap-1.5 px-4 py-2 bg-[#d4af37] text-[#1a3d2b] text-sm font-bold rounded-full hover:bg-[#f5d060] transition-colors no-underline">
+                  <TiIcon name="user" size={15} className="text-[#1a3d2b]" />
                   Sign In
                 </Link>
               )}
 
               {/* Favourites */}
               <div className="relative" ref={favRef}>
-                <button
-                  type="button"
-                  onClick={() => { setFavOpen(!favOpen); setUserMenuOpen(false) }}
-                  className="relative p-2 hover:bg-white/10 rounded-full transition"
-                  aria-label="Wishlist"
-                >
-                  <Heart
-                    size={20}
-                    className={favItems.length > 0 ? 'text-red-400 fill-red-400' : 'text-white/75'}
-                  />
+                <button type="button" onClick={() => { setFavOpen(!favOpen); setUserMenuOpen(false) }} className="relative p-2 hover:bg-white/10 rounded-full transition" aria-label="Wishlist">
+                  <TiIcon name="heart" size={20} className={favItems.length > 0 ? 'text-red-400' : 'text-white/75'} />
                   {favItems.length > 0 && (
                     <span className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
                       {favItems.length > 9 ? '9+' : favItems.length}
@@ -272,7 +189,7 @@ export default function Header() {
 
               {/* Cart */}
               <Link to="/cart" className="relative p-2 hover:bg-white/10 rounded-full transition" aria-label="Cart">
-                <ShoppingCart size={20} className="text-white/75" />
+                <TiIcon name="shopping-cart" size={20} className="text-white/75" />
                 {cartCount > 0 && (
                   <span className="absolute top-0.5 right-0.5 w-5 h-5 bg-[#d4af37] text-[#1a3d2b] text-[10px] font-bold rounded-full flex items-center justify-center">
                     {cartCount}
@@ -280,13 +197,8 @@ export default function Header() {
                 )}
               </Link>
 
-              <button
-                type="button"
-                className="md:hidden p-2 hover:bg-white/10 rounded-full transition ml-1"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? <X size={22} className="text-white" /> : <Menu size={22} className="text-white" />}
+              <button type="button" className="md:hidden p-2 hover:bg-white/10 rounded-full transition ml-1" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+                <TiIcon name={isMenuOpen ? 'close' : 'menu'} size={22} className="text-white" />
               </button>
             </div>
           </div>
@@ -295,55 +207,31 @@ export default function Header() {
           {isMenuOpen && (
             <div className="md:hidden border-t border-white/10 py-3 space-y-1">
               {BASE_NAV.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setIsMenuOpen(false)}
+                <Link key={link.to} to={link.to} onClick={() => setIsMenuOpen(false)}
                   className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white rounded-lg no-underline transition-colors"
-                  activeProps={{ className: 'block px-4 py-2.5 text-[#f5d060] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#d4af37]' }}
-                >
+                  activeProps={{ className: 'block px-4 py-2.5 text-[#f5d060] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#d4af37]' }}>
                   {link.label}
                 </Link>
               ))}
               {isAdmin && (
-                <Link
-                  to="/admin"
-                  onClick={() => setIsMenuOpen(false)}
+                <Link to="/admin" onClick={() => setIsMenuOpen(false)}
                   className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white rounded-lg no-underline transition-colors"
-                  activeProps={{ className: 'block px-4 py-2.5 text-[#f5d060] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#d4af37]' }}
-                >
+                  activeProps={{ className: 'block px-4 py-2.5 text-[#f5d060] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#d4af37]' }}>
                   Admin
                 </Link>
               )}
-              {/* Mobile wishlist summary */}
-              <button
-                type="button"
-                onClick={() => { setIsMenuOpen(false); setFavOpen(true) }}
-                className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <Heart size={16} className={favItems.length > 0 ? 'text-red-400 fill-red-400' : 'text-white/60'} />
+              <button type="button" onClick={() => { setIsMenuOpen(false); setFavOpen(true) }} className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 rounded-lg transition-colors">
+                <TiIcon name="heart" size={16} className={favItems.length > 0 ? 'text-red-400' : 'text-white/60'} />
                 Wishlist
-                {favItems.length > 0 && (
-                  <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-auto">
-                    {favItems.length}
-                  </span>
-                )}
+                {favItems.length > 0 && <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-auto">{favItems.length}</span>}
               </button>
               {!user && (
-                <Link
-                  to="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2.5 text-[#1a3d2b] font-bold text-sm bg-[#d4af37] rounded-lg no-underline"
-                >
+                <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2.5 text-[#1a3d2b] font-bold text-sm bg-[#d4af37] rounded-lg no-underline">
                   Sign In / Register
                 </Link>
               )}
               {user && (
-                <button
-                  type="button"
-                  onClick={() => { handleLogout(); setIsMenuOpen(false) }}
-                  className="w-full text-left block px-4 py-2.5 text-red-300 font-medium text-sm hover:bg-white/10 rounded-lg"
-                >
+                <button type="button" onClick={() => { handleLogout(); setIsMenuOpen(false) }} className="w-full text-left block px-4 py-2.5 text-red-300 font-medium text-sm hover:bg-white/10 rounded-lg">
                   Sign Out
                 </button>
               )}

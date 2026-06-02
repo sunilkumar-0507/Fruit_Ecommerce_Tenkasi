@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Gift, Star, Truck } from 'lucide-react'
+import TiIcon from '#/components/TiIcon'
 import ProductCard from '#/components/ProductCard'
 import { PRODUCTS } from '#/data/products'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
@@ -17,17 +17,17 @@ const OCCASIONS = [
 
 const FEATURES = [
   {
-    icon: <Gift size={24} className="text-[#2f6a4a]" />,
+    icon: <TiIcon name="gift" size={24} className="text-[#2f6a4a]" />,
     title: 'Hand-arranged',
     desc: 'Each basket is hand-assembled by our team with care and attention to detail.',
   },
   {
-    icon: <Star size={24} className="text-[#2f6a4a]" />,
+    icon: <TiIcon name="star" size={24} className="text-[#2f6a4a]" />,
     title: 'Premium selection',
     desc: 'Only the finest, ripest fruits hand-picked from trusted farmers make it in.',
   },
   {
-    icon: <Truck size={24} className="text-[#2f6a4a]" />,
+    icon: <TiIcon name="truck" size={24} className="text-[#2f6a4a]" />,
     title: 'Same-day delivery',
     desc: 'Order by noon for same-day delivery wrapped in traditional banana leaves.',
   },

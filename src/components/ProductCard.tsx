@@ -1,8 +1,9 @@
-import { Heart, Plus, Check } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import type { Product } from '#/data/products'
 import { useCart } from '#/context/CartContext'
 import { useFav } from '#/context/FavContext'
+import TiIcon from '#/components/TiIcon'
 
 export default function ProductCard({
   id,
@@ -31,8 +32,8 @@ export default function ProductCard({
 
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col">
-      {/* Image */}
-      <div className="relative h-56 overflow-hidden bg-[#f5f0e8]">
+      {/* Image — click to go to product detail */}
+      <Link to="/product/$productId" params={{ productId: id }} className="no-underline block relative h-56 overflow-hidden bg-[#f5f0e8]">
         <img
           src={image}
           alt={name}
@@ -49,13 +50,13 @@ export default function ProductCard({
         )}
         <button
           type="button"
-          onClick={() => toggle({ id, name, nameTamil, image, price, unit, category })}
-          className={`absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center transition-all duration-200 ${fav ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+          onClick={(e) => { e.preventDefault(); toggle({ id, name, nameTamil, image, price, unit, category }) }}
+          className={`absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center transition-all duration-200 z-10 ${fav ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
           aria-label={fav ? `Remove ${name} from wishlist` : `Add ${name} to wishlist`}
         >
-          <Heart size={15} className={fav ? 'text-red-500 fill-red-500' : 'text-gray-500'} />
+          <TiIcon name="heart" size={15} className={fav ? 'text-red-500' : 'text-gray-500'} />
         </button>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
@@ -90,7 +91,7 @@ export default function ProductCard({
             }`}
             aria-label={`Add ${name} to cart`}
           >
-            {added ? <Check size={18} strokeWidth={2.5} className="text-white" /> : <Plus size={18} strokeWidth={2.5} className="text-white" />}
+            <TiIcon name={added ? 'check' : 'plus'} size={16} className="text-white" />
           </button>
         </div>
       </div>

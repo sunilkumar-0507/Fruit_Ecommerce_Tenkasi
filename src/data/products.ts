@@ -7,6 +7,7 @@ export interface Product {
   price: number
   originalPrice: number
   image: string
+  images?: string[]
   typeBadge?: string
   rating: number
   reviews: number
@@ -14,6 +15,8 @@ export interface Product {
   seasonal?: boolean
   featured?: boolean
   isBasket?: boolean
+  description?: string
+  uses?: string[]
 }
 
 export const PRODUCTS: Product[] = [
@@ -31,6 +34,8 @@ export const PRODUCTS: Product[] = [
     reviews: 312,
     unit: '1 kg',
     featured: true,
+    description: 'Hand-picked from the foothills of Tenkasi, these mangoes are slow-ripened on the tree without carbide. Their golden flesh is intensely sweet with a floral aroma unique to the Tenkasi micro-climate. Each fruit is individually checked for ripeness before packing.',
+    uses: ['Eat fresh as a healthy snack', 'Make mango lassi or milkshake', 'Use in salads and salsas', 'Prepare mango pickle (urugai)', 'Add to desserts and smoothies'],
   },
   {
     id: '2',
@@ -46,6 +51,8 @@ export const PRODUCTS: Product[] = [
     reviews: 188,
     unit: '500 g',
     featured: true,
+    description: 'Imported directly from Thailand and Malaysia, these rambutans arrive in Tamil Nadu within 48 hours of harvest. The hairy exterior hides a juicy, lychee-like white flesh that is refreshingly sweet with a hint of tartness.',
+    uses: ['Eat fresh — peel and enjoy', 'Add to fruit salads', 'Make rambutan juice', 'Use in desserts and ice cream', 'Freeze for later use'],
   },
   {
     id: '3',
@@ -60,6 +67,8 @@ export const PRODUCTS: Product[] = [
     reviews: 144,
     unit: '1 kg',
     featured: true,
+    description: 'Sourced from premium farms in Maharashtra, these ruby-red pomegranates are celebrated for their deep colour, high juice content, and jewel-like arils. Rich in antioxidants and vitamin C, they are a superfood that tastes exceptional.',
+    uses: ['Eat arils as a snack', 'Extract fresh juice', 'Add to yogurt and oatmeal', 'Use as garnish for biryanis', 'Prepare pomegranate raita'],
   },
   {
     id: '4',
@@ -75,6 +84,8 @@ export const PRODUCTS: Product[] = [
     reviews: 96,
     unit: '500 g',
     featured: true,
+    description: 'Grown organically in Tenkasi home gardens, the Green Rose Apple is a mild, refreshing tropical fruit with a crisp bell-like texture. Naturally low in calories and high in fibre, it is a favourite evening snack for children and adults alike.',
+    uses: ['Eat fresh — crisp and hydrating', 'Add to fruit chaat', 'Make jams and preserves', 'Use in fruit punch', 'Great for fasting days'],
   },
   {
     id: '5',
