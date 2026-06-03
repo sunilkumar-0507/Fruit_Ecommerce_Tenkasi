@@ -1977,7 +1977,7 @@ function AdminPage() {
 
           <Link
             to="/"
-            className="flex items-center gap-1 text-sm font-semibold text-white bg-[#2f6a4a] hover:bg-[#1f4a2f] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
+            className="flex items-center gap-1 text-sm font-semibold !text-white hover:!text-white bg-[#2f6a4a] hover:bg-[#1f4a2f] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
           >
             <TiIcon name="angle-left" size={16} />
             <span className="hidden xs:inline sm:inline">Back to Store</span>
