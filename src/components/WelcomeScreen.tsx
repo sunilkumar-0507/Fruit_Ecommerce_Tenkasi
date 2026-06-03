@@ -50,12 +50,13 @@ export default function WelcomeScreen({ onDone }: Props) {
             animation: 'welcome-fade-up 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards',
           }}
         >
-          <img
-            src="/images/logo.svg"
-            alt="Tenkasi Fresh"
-            className="w-20 h-20 sm:w-24 sm:h-24"
-            style={{ filter: 'drop-shadow(0 0 22px rgba(212,175,55,0.45))' }}
-          />
+          <div className="bg-[#e8f5ec] rounded-3xl p-3 sm:p-4" style={{ boxShadow: '0 0 40px rgba(212,175,55,0.35)' }}>
+            <img
+              src="/images/products/Logo.jpeg"
+              alt="Tenkasi Fresh"
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-contain"
+            />
+          </div>
           <div>
             <h1 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-wide leading-tight">
               Tenkasi Fresh

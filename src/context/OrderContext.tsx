@@ -30,7 +30,7 @@ interface OrderContextValue {
   loadAddresses: () => Promise<void>
   addAddress: (a: Omit<Address, 'id'>) => Promise<Address>
   setDefaultAddress: (id: string) => Promise<void>
-  placeOrder: (shippingAddressId: string) => Promise<{ id: string }>
+  placeOrder: (shippingAddressId: string, couponCode?: string) => Promise<{ id: string; discountAmount?: number }>
 }
 
 const OrderContext = createContext<OrderContextValue | null>(null)
@@ -150,16 +150,29 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     setAddresses((prev) => prev.map((a) => ({ ...a, isDefault: a.id === id })))
   }
 
-  async function placeOrder(shippingAddressId: string): Promise<{ id: string }> {
+  async function placeOrder(shippingAddressId: string, couponCode?: string): Promise<{ id: string; discountAmount?: number }> {
     if (!isApiMode() || !getStoredToken()) {
       // Demo mode: not expected when using API, but fallback
       orderSeq += 1
       return { id: `#TF-${orderSeq}` }
     }
 
+    let validatedCode: string | null = null
+    let discountAmount: number | undefined
+
+    if (couponCode?.trim()) {
+      const validation = await api.post<{ isValid: boolean; discountAmount: number; message: string }>(
+        '/api/Coupons/validate',
+        couponCode.trim(),
+      )
+      if (!validation.isValid) throw new Error(validation.message)
+      validatedCode = couponCode.trim()
+      discountAmount = validation.discountAmount
+    }
+
     const dto = await api.post<OrderDto>('/api/Orders', {
       shippingAddressId,
-      couponCode: null,
+      couponCode: validatedCode,
     })
 
     const displayId = dto.orderNumber ?? `#${dto.id.slice(0, 8).toUpperCase()}`
@@ -180,12 +193,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       date: new Date(dto.createdAtUtc).toLocaleDateString('en-IN', {
         day: '2-digit', month: 'short', year: 'numeric',
       }),
-      status: 'Processing',
+      status: 'Confirmed',
     }
 
     setOrders((prev) => [newOrder, ...prev])
 
-    return { id: displayId }
+    return { id: displayId, discountAmount }
   }
 
   return (

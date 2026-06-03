@@ -53,11 +53,11 @@ export default function Footer() {
             <p className="text-white/70 text-sm leading-relaxed mb-5">
               Hand-picked at sunrise from the foothills of the Western Ghats. Wrapped in banana leaves, delivered to your door before dusk.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 mb-5">
               <a href="#" aria-label="Facebook" className="text-white/60 hover:text-white transition-colors">
                 <FacebookIcon />
               </a>
-              <a href="#" aria-label="Instagram" className="text-white/60 hover:text-white transition-colors">
+              <a href="https://www.instagram.com/p/DZH08RFGF9l/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-white/60 hover:text-white transition-colors">
                 <InstagramIcon />
               </a>
               <a href="#" aria-label="YouTube" className="text-white/60 hover:text-white transition-colors">
@@ -65,6 +65,21 @@ export default function Footer() {
               </a>
               <a href="#" aria-label="WhatsApp" className="text-white/60 hover:text-white transition-colors">
                 <WhatsappIcon />
+              </a>
+            </div>
+            <div className="space-y-1 text-xs leading-relaxed border-t border-white/10 pt-4">
+              <p className="font-semibold text-white/85 text-[11px] leading-snug">
+                O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative Marketing Society
+              </p>
+              <p className="text-white/55">42C/1A Rail Nagar Road, Tenkasi – 627 811</p>
+              <a href="tel:+917094402579" className="text-white/55 hover:text-white transition-colors no-underline block">
+                +91 70944 02579
+              </a>
+              <a
+                href="mailto:01919cmstenkasi@gmail.com"
+                className="text-[#d4af37]/80 hover:text-[#d4af37] transition-colors no-underline block"
+              >
+                01919cmstenkasi@gmail.com
               </a>
             </div>
           </div>

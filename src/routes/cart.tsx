@@ -88,6 +88,8 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
   const [orderId, setOrderId] = useState('')
   const [placing, setPlacing] = useState(false)
   const [orderError, setOrderError] = useState('')
+  const [couponCode, setCouponCode] = useState('')
+  const [couponDiscount, setCouponDiscount] = useState(0)
 
   const emptyForm = {
     name: user?.name ?? '',
@@ -122,8 +124,9 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
     setPlacing(true)
     setOrderError('')
     try {
-      const result = await placeOrder(selectedAddr.id)
+      const result = await placeOrder(selectedAddr.id, couponCode || undefined)
       setOrderId(result.id)
+      if (result.discountAmount) setCouponDiscount(result.discountAmount)
       clearCart()
       setStep('success')
     } catch (err) {
@@ -394,6 +397,19 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
                 </div>
               </div>
 
+              <div className="mb-5">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
+                  Coupon Code
+                </label>
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  placeholder="e.g. FRESH10"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition uppercase"
+                />
+              </div>
+
               <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-2.5">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Subtotal</span>
@@ -446,6 +462,9 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
               </div>
               <h2 className="font-serif text-2xl font-bold text-gray-900 mb-1">Order Placed!</h2>
               <p className="text-gray-500 text-sm mb-3">Your fresh fruits are on their way 🎉</p>
+              {couponDiscount > 0 && (
+                <p className="text-emerald-600 text-sm font-semibold mb-2">Coupon applied · ₹{couponDiscount} off</p>
+              )}
               <p className="text-[#2f6a4a] font-mono font-bold text-lg mb-1">{orderId}</p>
               <p className="text-gray-400 text-xs mb-5">You'll receive a confirmation shortly</p>
               <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mb-6 bg-gray-50 rounded-xl py-3">

@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment, useRef } from 'react'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
 import TiIcon from '#/components/TiIcon'
 import { ImageCollage } from '#/components/BasketCard'
 import { useBaskets, type BasketEntry } from '#/context/BasketContext'
 import { PRODUCTS } from '#/data/products'
 import {
-  api, isApiMode, getStoredToken,
+  api, isApiMode, getStoredToken, uploadProductImage,
   type ProductDto, type ProductDtoPagedResult,
   type CategoryDto, type OrderDto, type OrderDtoPagedResult,
   ORDER_STATUS,
@@ -38,15 +38,58 @@ const NAV_ITEMS = [
   { label: 'Settings' },
 ]
 
-const TOP_SELLERS = [
-  { rank: 1, name: 'Tenkasi Local Mango',    category: 'Mangoes',         revenue: 14000, sold: 50, image: '/images/categories/mangoes.jpg' },
-  { rank: 2, name: 'Fresh Rambutan',         category: 'Imported Fruits', revenue: 8800,  sold: 40, image: '/images/products/wa2-rambutan.jpeg' },
-  { rank: 3, name: 'Ruby Pomegranate',       category: 'Imported Fruits', revenue: 8160,  sold: 34, image: '/images/categories/p-pomegranate.jpg' },
-  { rank: 4, name: 'Dragon Fruit',           category: 'Imported Fruits', revenue: 7600,  sold: 20, image: '/images/products/wa2-dragon-fruit.jpeg' },
-]
+const OVERVIEW_PERIODS = ['Today', 'Last 7 days', 'Last 30 days'] as const
+type OverviewPeriod = typeof OVERVIEW_PERIODS[number]
 
-const CHART_DATA = [10, 14, 9, 18, 12, 22, 16, 25, 19, 28, 24, 30]
-const CHART_LABELS = ['10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']
+// TODO: replace PERIOD_DATA with a real /api/admin/analytics endpoint when available
+const PERIOD_DATA: Record<OverviewPeriod, {
+  revenue:  { value: string; change: string; up: boolean; sub: string }
+  orders:   { value: string; change: string; up: boolean; sub: string }
+  sales:    { value: string; change: string; up: boolean; sub: string }
+  chartData:   number[]
+  chartLabels: string[]
+  topSellers: Array<{ rank: number; name: string; category: string; revenue: number; sold: number; image: string }>
+}> = {
+  Today: {
+    revenue:  { value: '₹12,400',  change: '+6.2%',  up: true, sub: 'total today' },
+    orders:   { value: '28',       change: '+12.5%', up: true, sub: 'placed today' },
+    sales:    { value: '24',       change: '+8.3%',  up: true, sub: 'delivered today' },
+    chartData:   [3, 5, 8, 12, 7, 9, 11, 8],
+    chartLabels: ['9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm'],
+    topSellers: [
+      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 560, sold: 2, image: '/images/categories/mangoes.jpg' },
+      { rank: 2, name: 'Fresh Rambutan',      category: 'Imported Fruits', revenue: 440, sold: 2, image: '/images/products/wa2-rambutan.jpeg' },
+      { rank: 3, name: 'Ruby Pomegranate',    category: 'Imported Fruits', revenue: 480, sold: 2, image: '/images/categories/p-pomegranate.jpg' },
+      { rank: 4, name: 'Dragon Fruit',        category: 'Imported Fruits', revenue: 380, sold: 1, image: '/images/products/wa2-dragon-fruit.jpeg' },
+    ],
+  },
+  'Last 7 days': {
+    revenue:  { value: '₹84,600',  change: '+18.4%', up: true, sub: 'vs prev week' },
+    orders:   { value: '212',      change: '+9.2%',  up: true, sub: 'placed' },
+    sales:    { value: '198',      change: '+11.4%', up: true, sub: 'delivered' },
+    chartData:   [10, 14, 9, 18, 12, 22, 16],
+    chartLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    topSellers: [
+      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 3267, sold: 12, image: '/images/categories/mangoes.jpg' },
+      { rank: 2, name: 'Fresh Rambutan',      category: 'Imported Fruits', revenue: 2053, sold: 9,  image: '/images/products/wa2-rambutan.jpeg' },
+      { rank: 3, name: 'Ruby Pomegranate',    category: 'Imported Fruits', revenue: 1904, sold: 8,  image: '/images/categories/p-pomegranate.jpg' },
+      { rank: 4, name: 'Dragon Fruit',        category: 'Imported Fruits', revenue: 1773, sold: 5,  image: '/images/products/wa2-dragon-fruit.jpeg' },
+    ],
+  },
+  'Last 30 days': {
+    revenue:  { value: '₹4.82 L',  change: '+22.1%', up: true, sub: 'vs prev month' },
+    orders:   { value: '1,284',    change: '+15.3%', up: true, sub: 'placed' },
+    sales:    { value: '1,190',    change: '+14.8%', up: true, sub: 'delivered' },
+    chartData:   [8,12,10,15,11,18,14,20,16,22,19,25,21,17,23,28,24,26,22,29,18,24,27,30,25,28,26,31,29,33],
+    chartLabels: ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'],
+    topSellers: [
+      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 14000, sold: 50, image: '/images/categories/mangoes.jpg' },
+      { rank: 2, name: 'Fresh Rambutan',      category: 'Imported Fruits', revenue: 8800,  sold: 40, image: '/images/products/wa2-rambutan.jpeg' },
+      { rank: 3, name: 'Ruby Pomegranate',    category: 'Imported Fruits', revenue: 8160,  sold: 34, image: '/images/categories/p-pomegranate.jpg' },
+      { rank: 4, name: 'Dragon Fruit',        category: 'Imported Fruits', revenue: 7600,  sold: 20, image: '/images/products/wa2-dragon-fruit.jpeg' },
+    ],
+  },
+}
 
 // Static fallback inventory for demo mode
 const INVENTORY_INIT: InventoryRow[] = [
@@ -62,17 +105,17 @@ const INVENTORY_INIT: InventoryRow[] = [
 
 const ORDERS_STATIC = [
   { id: '#TF-1284', customer: 'Priya Sharma', date: '21 May 2026', items: 3, amount: 640,  status: 'Delivered',  address: '12, Anna Nagar, Chennai – 600 040' },
-  { id: '#TF-1283', customer: 'Murugan P.',   date: '21 May 2026', items: 2, amount: 1240, status: 'Processing', address: '45, Ganesh St, Madurai – 625 001' },
+  { id: '#TF-1283', customer: 'Murugan P.',   date: '21 May 2026', items: 2, amount: 1240, status: 'Confirmed', address: '45, Ganesh St, Madurai – 625 001' },
   { id: '#TF-1282', customer: 'Kavitha R.',   date: '20 May 2026', items: 1, amount: 320,  status: 'Delivered',  address: '7, RS Puram, Coimbatore – 641 002' },
   { id: '#TF-1281', customer: 'Ravi Kumar',   date: '20 May 2026', items: 4, amount: 850,  status: 'Delivered',  address: '3, Main Rd, Tenkasi – 627 811' },
 ]
 
 const DELIVERIES = [
-  { id: '#TF-1283', customer: 'Murugan P.',   area: 'Madurai',    driver: 'Selvam R.',  eta: '2:30 PM', status: 'In Transit' },
-  { id: '#TF-1277', customer: 'Vijaya L.',     area: 'Chennai',    driver: 'Arjun M.',   eta: '3:15 PM', status: 'In Transit' },
-  { id: '#TF-1280', customer: 'Anitha S.',     area: 'Coimbatore', driver: 'Kumar S.',   eta: 'Done',    status: 'Delivered' },
-  { id: '#TF-1284', customer: 'Priya Sharma',  area: 'Trichy',     driver: 'Assigning…', eta: '4:00 PM', status: 'Pending' },
-  { id: '#TF-1278', customer: 'Ramesh B.',     area: 'Salem',      driver: 'Bala T.',    eta: 'Done',    status: 'Delivered' },
+  { id: '#TF-1283', customer: 'Murugan P.',   area: 'Madurai',    address: '45, Ganesh St, Madurai – 625 001',             driver: 'Selvam R.',  eta: '2:30 PM', status: 'In Transit' },
+  { id: '#TF-1277', customer: 'Vijaya L.',     area: 'Chennai',    address: '12, Anna Nagar, Chennai – 600 040',            driver: 'Arjun M.',   eta: '3:15 PM', status: 'In Transit' },
+  { id: '#TF-1280', customer: 'Anitha S.',     area: 'Coimbatore', address: '7, RS Puram, Coimbatore – 641 002',            driver: 'Kumar S.',   eta: 'Done',    status: 'Delivered' },
+  { id: '#TF-1284', customer: 'Priya Sharma',  area: 'Trichy',     address: '3, Srirangam Rd, Trichy – 620 006',           driver: 'Assigning…', eta: '4:00 PM', status: 'Pending' },
+  { id: '#TF-1278', customer: 'Ramesh B.',     area: 'Salem',      address: '18, Omalur Main Rd, Salem – 636 004',         driver: 'Bala T.',    eta: 'Done',    status: 'Delivered' },
 ]
 
 const FARMERS = [
@@ -95,7 +138,7 @@ function stockStatus(stock: number) {
 function orderStatusStyle(status: string) {
   const map: Record<string, string> = {
     Delivered:  'bg-emerald-100 text-emerald-700',
-    Processing: 'bg-blue-100 text-blue-700',
+    Confirmed: 'bg-blue-100 text-blue-700',
     Pending:    'bg-amber-100 text-amber-700',
     Cancelled:  'bg-red-100 text-red-700',
     Shipped:    'bg-indigo-100 text-indigo-700',
@@ -125,49 +168,107 @@ function Stars({ rating }: { rating: number }) {
 
 // ─── Map API → inventory row ──────────────────────────────────────────────────
 
-type InventoryRow = { id: string; name: string; category: string; price: number; stock: number; image: string; discount?: number }
+type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; price: number; stock: number; image: string; discount?: number; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null }
 
 function mapApiProduct(p: ProductDto): InventoryRow {
   const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
   return {
     id: p.id,
     name: p.nameEn ?? '',
+    nameTa: p.nameTa,
     category: p.category?.nameEn ?? '',
     price: p.price,
     stock: p.stockQuantity,
     image: primary?.url ?? '/images/categories/mangoes.jpg',
+    descriptionEn: p.descriptionEn,
+    aboutEn: p.aboutEn,
+    usageEn: p.usageEn,
+    benefitsEn: p.benefitsEn,
   }
 }
 
 // ─── Image Upload Field ───────────────────────────────────────────────────────
 
-function ProductImageField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+function ProductImageField({
+  value,
+  onChange,
+  onUploadingChange,
+}: {
+  value: string
+  onChange: (url: string) => void
+  onUploadingChange: (v: boolean) => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+
+    if (isApiMode()) {
+      setUploading(true)
+      onUploadingChange(true)
+      setUploadError(null)
+      try {
+        const url = await uploadProductImage(file)
+        onChange(url)
+      } catch (err) {
+        setUploadError(err instanceof Error ? err.message : 'Upload failed')
+      } finally {
+        setUploading(false)
+        onUploadingChange(false)
+      }
+    } else {
+      onChange(URL.createObjectURL(file))
+    }
+  }
+
+  function handleRemove() {
+    onChange('')
+    setUploadError(null)
+  }
+
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1.5">
         Product Image <span className="text-gray-400 font-normal">(optional)</span>
       </label>
-      <div className="flex items-center gap-3">
-        {value && (
-          <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#f5f0e8] flex-shrink-0 border border-gray-200">
+      <input ref={inputRef} type="file" accept="image/*" onChange={(e) => void handleFile(e)} className="hidden" aria-label="Upload product image" />
+      {uploading ? (
+        <div className="flex items-center gap-3 py-4 px-3 border border-gray-200 rounded-xl">
+          <div className="w-5 h-5 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+          <span className="text-sm text-gray-500">Uploading image…</span>
+        </div>
+      ) : value ? (
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#f5f0e8] flex-shrink-0 border border-gray-200">
             <img src={value} alt="Preview" className="w-full h-full object-cover" />
           </div>
-        )}
-        <label className="flex-1 cursor-pointer">
-          <div className={`w-full px-3 py-2.5 border border-dashed rounded-lg text-sm text-center transition hover:border-[#2f6a4a] hover:text-[#2f6a4a] ${value ? 'border-[#2f6a4a] text-[#2f6a4a]' : 'border-gray-300 text-gray-500'}`}>
-            {value ? 'Change image' : 'Choose from device'}
+          <div className="flex flex-col gap-1.5">
+            <button type="button" onClick={() => inputRef.current?.click()} className="px-4 py-2 border border-[#2f6a4a] text-[#2f6a4a] rounded-lg text-sm font-medium hover:bg-[#2f6a4a]/5 transition">
+              Change Image
+            </button>
+            <button type="button" onClick={handleRemove} className="px-4 py-2 border border-gray-200 text-gray-400 rounded-lg text-sm hover:border-red-300 hover:text-red-500 transition">
+              Remove
+            </button>
           </div>
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) onChange(URL.createObjectURL(file))
-            }}
-          />
-        </label>
-      </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="w-full flex flex-col items-center justify-center gap-2 py-6 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-[#2f6a4a] hover:text-[#2f6a4a] transition"
+        >
+          <TiIcon name="import" size={24} />
+          <span className="font-medium">Click to choose from device</span>
+          <span className="text-xs text-gray-300">JPG, PNG, WEBP supported</span>
+        </button>
+      )}
+      {uploadError && (
+        <p className="mt-1.5 text-xs text-red-500">{uploadError}</p>
+      )}
     </div>
   )
 }
@@ -187,7 +288,9 @@ function AddProductModal({
   const [form, setForm] = useState({
     nameEn: '', nameTa: '', categoryId: defaultCatId,
     price: '', stock: '', image: '', description: '',
+    aboutEn: '', usageEn: '', benefitsEn: '',
   })
+  const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -205,8 +308,14 @@ function AddProductModal({
         const dto = await api.post<ProductDto>('/api/admin/products', {
           nameEn: form.nameEn,
           nameTa: form.nameTa || null,
-          descriptionEn: null,
+          descriptionEn: form.description || null,
           descriptionTa: null,
+          aboutEn: form.aboutEn || null,
+          aboutTa: null,
+          usageEn: form.usageEn || null,
+          usageTa: null,
+          benefitsEn: form.benefitsEn || null,
+          benefitsTa: null,
           price: Number(form.price),
           stockQuantity: Number(form.stock),
           categoryId: form.categoryId,
@@ -281,16 +390,22 @@ function AddProductModal({
               <input type="number" value={form.stock} onChange={set('stock')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
             </div>
           </div>
-          <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} />
+          <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} onUploadingChange={setUploading} />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea
-              value={form.description}
-              onChange={set('description')}
-              placeholder="Brief description of the product…"
-              rows={3}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none"
-            />
+            <textarea value={form.description} onChange={set('description')} placeholder="Brief description of the product…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">About <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea value={form.aboutEn} onChange={set('aboutEn')} placeholder="Background, origin, farming story…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">How to Use <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea value={form.usageEn} onChange={set('usageEn')} placeholder="Storage, preparation, serving suggestions…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Benefits <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea value={form.benefitsEn} onChange={set('benefitsEn')} placeholder="Health benefits, nutritional highlights…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
           </div>
         </div>
 
@@ -301,12 +416,12 @@ function AddProductModal({
           <button
             type="button"
             onClick={() => void handleSave()}
-            disabled={!form.nameEn || !form.price || !form.stock || saving}
+            disabled={!form.nameEn || !form.price || !form.stock || saving || uploading}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
             }`}
           >
-            {saved ? '✓ Product Added!' : 'Save Product'}
+            {saved ? '✓ Product Added!' : uploading ? 'Uploading…' : 'Save Product'}
           </button>
         </div>
       </div>
@@ -330,16 +445,22 @@ function EditProductModal({
   const matchedCatId = apiCategories.find((c) => c.nameEn === product.category)?.id ?? product.category
   const [form, setForm] = useState({
     nameEn: product.name,
+    nameTa: product.nameTa ?? '',
     categoryId: matchedCatId,
     price: String(product.price),
     stock: String(product.stock),
     image: product.image,
+    description: product.descriptionEn ?? '',
+    aboutEn: product.aboutEn ?? '',
+    usageEn: product.usageEn ?? '',
+    benefitsEn: product.benefitsEn ?? '',
   })
+  const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
   function set(field: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm((p) => ({ ...p, [field]: e.target.value }))
   }
 
@@ -351,6 +472,15 @@ function EditProductModal({
       try {
         const dto = await api.put<ProductDto>(`/api/admin/products/${product.id}`, {
           nameEn: form.nameEn,
+          nameTa: form.nameTa || null,
+          descriptionEn: form.description || null,
+          descriptionTa: null,
+          aboutEn: form.aboutEn || null,
+          aboutTa: null,
+          usageEn: form.usageEn || null,
+          usageTa: null,
+          benefitsEn: form.benefitsEn || null,
+          benefitsTa: null,
           price: Number(form.price),
           stockQuantity: Number(form.stock),
           categoryId: form.categoryId,
@@ -401,6 +531,10 @@ function EditProductModal({
             <input type="text" value={form.nameEn} onChange={set('nameEn')} placeholder="e.g. Alphonso Mango" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
           </div>
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tamil Name</label>
+            <input type="text" value={form.nameTa} onChange={set('nameTa')} placeholder="e.g. ஆல்பன்சோ மாம்பழம்" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
             {apiCategories.length > 0 ? (
               <select value={form.categoryId} onChange={set('categoryId')} title="Category" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white appearance-none">
@@ -420,7 +554,23 @@ function EditProductModal({
               <input type="number" value={form.stock} onChange={set('stock')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
             </div>
           </div>
-          <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} />
+          <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} onUploadingChange={setUploading} />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea value={form.description} onChange={set('description')} placeholder="Brief description of the product…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">About <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea value={form.aboutEn} onChange={set('aboutEn')} placeholder="Background, origin, farming story…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">How to Use <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea value={form.usageEn} onChange={set('usageEn')} placeholder="Storage, preparation, serving suggestions…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Benefits <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea value={form.benefitsEn} onChange={set('benefitsEn')} placeholder="Health benefits, nutritional highlights…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+          </div>
         </div>
 
         <div className="flex gap-3 p-5 sm:p-6 border-t border-gray-100">
@@ -430,12 +580,12 @@ function EditProductModal({
           <button
             type="button"
             onClick={() => void handleSave()}
-            disabled={!form.nameEn || !form.price || !form.stock || saving}
+            disabled={!form.nameEn || !form.price || !form.stock || saving || uploading}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
             }`}
           >
-            {saved ? '✓ Saved!' : 'Save Changes'}
+            {saved ? '✓ Saved!' : uploading ? 'Uploading…' : 'Save Changes'}
           </button>
         </div>
       </div>
@@ -443,70 +593,150 @@ function EditProductModal({
   )
 }
 
+// ─── Overview stats from real orders ─────────────────────────────────────────
+
+function buildApiStats(orders: OrderDto[], period: OverviewPeriod) {
+  const now = new Date()
+  const dayMs = 864e5
+
+  function filterRange(daysBack: number, endDaysBack: number) {
+    const endMs = endDaysBack === 0 ? now.getTime() : now.getTime() - endDaysBack * dayMs
+    const startMs = now.getTime() - daysBack * dayMs
+    return orders.filter((o) => { const t = new Date(o.createdAtUtc).getTime(); return t >= startMs && t <= endMs })
+  }
+  function todaySet() { return orders.filter((o) => new Date(o.createdAtUtc).toDateString() === now.toDateString()) }
+  function yesterdaySet() {
+    const y = new Date(now); y.setDate(now.getDate() - 1)
+    return orders.filter((o) => new Date(o.createdAtUtc).toDateString() === y.toDateString())
+  }
+
+  const cur  = period === 'Today' ? todaySet()  : period === 'Last 7 days' ? filterRange(7, 0)  : filterRange(30, 0)
+  const prev = period === 'Today' ? yesterdaySet() : period === 'Last 7 days' ? filterRange(14, 7) : filterRange(60, 30)
+
+  const curRev  = cur.reduce((s, o) => s + o.total, 0)
+  const prevRev = prev.reduce((s, o) => s + o.total, 0)
+  const curOrd  = cur.length;  const prevOrd  = prev.length
+  const curSal  = cur.filter((o) => o.status === 4).length
+  const prevSal = prev.filter((o) => o.status === 4).length
+
+  function pct(a: number, b: number) {
+    if (b === 0) return { change: a > 0 ? 'new' : '–', up: true as boolean }
+    const p = ((a - b) / b) * 100
+    return { change: `${p >= 0 ? '+' : ''}${p.toFixed(1)}%`, up: p >= 0 }
+  }
+  function fmtRev(v: number): string {
+    if (v >= 100000) return `₹${(v / 100000).toFixed(2)} L`
+    if (v >= 1000)   return `₹${v.toLocaleString('en-IN')}`
+    return `₹${v}`
+  }
+
+  // Chart
+  let chartData: number[] = []; let chartLabels: string[] = []
+  if (period === 'Today') {
+    const b: Record<number, number> = {}
+    cur.forEach((o) => { const h = new Date(o.createdAtUtc).getHours(); b[h] = (b[h] ?? 0) + o.total })
+    for (let h = 8; h <= Math.max(16, now.getHours()); h++) {
+      chartLabels.push(h === 12 ? '12pm' : h < 12 ? `${h}am` : `${h - 12}pm`)
+      chartData.push(+(((b[h] ?? 0) / 1000).toFixed(1)))
+    }
+  } else {
+    const b: Record<string, number> = {}
+    cur.forEach((o) => { const k = new Date(o.createdAtUtc).toDateString(); b[k] = (b[k] ?? 0) + o.total })
+    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const count = period === 'Last 7 days' ? 7 : 30
+    for (let i = count - 1; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i)
+      chartLabels.push(period === 'Last 7 days' ? DAYS[d.getDay()] : String(d.getDate()))
+      chartData.push(+(((b[d.toDateString()] ?? 0) / 1000).toFixed(1)))
+    }
+  }
+
+  // Top sellers
+  const pm: Record<string, { name: string; revenue: number; sold: number }> = {}
+  cur.forEach((o) =>
+    (o.items ?? []).forEach((item) => {
+      if (!pm[item.productId]) pm[item.productId] = { name: item.productName ?? '–', revenue: 0, sold: 0 }
+      pm[item.productId].revenue += item.unitPrice * item.quantity
+      pm[item.productId].sold   += item.quantity
+    }),
+  )
+  const topSellers = Object.values(pm)
+    .sort((a, b) => b.revenue - a.revenue).slice(0, 4)
+    .map((v, i) => ({ rank: i + 1, name: v.name, category: '–', revenue: Math.round(v.revenue), sold: v.sold, image: '/images/categories/mangoes.jpg' }))
+
+  const sub = period === 'Today' ? 'today' : period === 'Last 7 days' ? 'vs prev week' : 'vs prev month'
+  return {
+    revenue:    { value: fmtRev(curRev), ...pct(curRev, prevRev), sub: `total · ${sub}` },
+    orders:     { value: String(curOrd), ...pct(curOrd, prevOrd), sub: `placed · ${sub}` },
+    sales:      { value: String(curSal), ...pct(curSal, prevSal), sub: `delivered · ${sub}` },
+    chartData, chartLabels,
+    topSellers: topSellers.length > 0 ? topSellers : PERIOD_DATA[period].topSellers,
+  }
+}
+
 // ─── Panel: Overview ──────────────────────────────────────────────────────────
 
 function OverviewPanel() {
-  const [timePeriod, setTimePeriod] = useState('Last 7 days')
-  const [chartView, setChartView] = useState<'Day' | 'Week' | 'Month'>('Week')
+  const [period, setPeriod] = useState<OverviewPeriod>('Last 7 days')
   const [apiOrders, setApiOrders] = useState<OrderDto[]>([])
+  const [apiLoading, setApiLoading] = useState(isApiMode())
 
   useEffect(() => {
     if (!isApiMode() || !getStoredToken()) return
-    api.get<OrderDtoPagedResult>('/api/admin/orders?pageSize=100')
+    api.get<OrderDtoPagedResult>('/api/admin/orders?pageSize=500')
       .then((r) => setApiOrders(r.items ?? []))
       .catch(() => {})
+      .finally(() => setApiLoading(false))
   }, [])
 
-  const STATIC_REVENUE = 482000
-  const STATIC_ORDERS  = 1284
-  const realRevenue    = apiOrders.reduce((s, o) => s + o.total, 0)
-  const totalRevenue   = STATIC_REVENUE + realRevenue
-  const totalOrders    = STATIC_ORDERS + apiOrders.length
-
-  function fmtRevenue(n: number) {
-    if (n >= 100000) return `₹${(n / 100000).toFixed(2)} L`
-    return `₹${n.toLocaleString('en-IN')}`
-  }
-
-  const stats = [
-    { label: 'Revenue',          value: fmtRevenue(totalRevenue), change: '+18.4%', up: true,  sub: 'vs last week' },
-    { label: 'Orders',           value: totalOrders.toLocaleString('en-IN'), change: '+9.2%', up: true, sub: `${212 + apiOrders.length} today` },
-    { label: 'Avg Basket',       value: '₹376',    change: '-2.1%',  up: false, sub: '12 items avg' },
-    { label: 'Active Customers', value: '8,940',   change: '+24.6%', up: true,  sub: '642 new' },
-  ]
-
-  const chartData = CHART_DATA.map((v, i) =>
-    i === CHART_DATA.length - 1 ? v + Math.round(realRevenue / 1000) : v,
-  )
-  const chartMax = Math.max(...chartData)
-
+  const data = isApiMode() && !apiLoading ? buildApiStats(apiOrders, period) : PERIOD_DATA[period]
+  const chartMax = data.chartData.length > 0 ? Math.max(...data.chartData) || 1 : 1
   const recentOrders = apiOrders.slice(0, 3)
 
   return (
     <div className="p-4 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
+      {/* Header + period filter */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
-          <p className="text-xs font-bold tracking-widest text-[#2f6a4a] uppercase mb-1">Wednesday, 21 May 2026</p>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Good morning, Arun</h1>
-          <p className="text-gray-500 text-sm">3 trucks loading · {84 + apiOrders.length} orders queued</p>
+          <p className="text-xs font-bold tracking-widest text-[#2f6a4a] uppercase mb-1">
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+          </p>
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Overview</h1>
+          <p className="text-gray-500 text-sm">
+            {isApiMode() ? `${apiOrders.length} orders loaded from DB` : '3 trucks loading · 84 orders queued'}
+          </p>
         </div>
-        <div className="relative">
-          <select title="Time period" value={timePeriod} onChange={(e) => setTimePeriod(e.target.value)} className="appearance-none border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 bg-white pr-8 outline-none cursor-pointer">
-            <option>Last 7 days</option>
-            <option>Last 30 days</option>
-            <option>Last 90 days</option>
-          </select>
-          <TiIcon name="angle-down" size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+        <div className="flex items-center bg-gray-100 rounded-xl p-1 gap-0.5 self-start flex-shrink-0">
+          {OVERVIEW_PERIODS.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPeriod(p)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
+                period === p ? 'bg-[#2f6a4a] text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {p}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        {stats.map((stat) => (
+      {/* 3 stat cards: Revenue · Total Orders · Total Sales */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        {([
+          { label: 'Revenue',      ...data.revenue },
+          { label: 'Total Orders', ...data.orders },
+          { label: 'Total Sales',  ...data.sales },
+        ] as const).map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-sm">
             <p className="text-xs text-gray-500 font-medium tracking-wide uppercase mb-2">{stat.label}</p>
             <p className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{stat.value}</p>
             <div className="flex items-center gap-1.5 flex-wrap">
-              {stat.up ? <TiIcon name="stats-up" size={14} className="text-emerald-500" /> : <TiIcon name="stats-down" size={14} className="text-red-500" />}
+              {stat.up
+                ? <TiIcon name="stats-up" size={14} className="text-emerald-500" />
+                : <TiIcon name="stats-down" size={14} className="text-red-500" />
+              }
               <span className={`text-sm font-semibold ${stat.up ? 'text-emerald-500' : 'text-red-500'}`}>{stat.change}</span>
               <span className="text-xs text-gray-400 hidden sm:inline">{stat.sub}</span>
             </div>
@@ -514,10 +744,11 @@ function OverviewPanel() {
         ))}
       </div>
 
+      {/* Live API orders banner */}
       {recentOrders.length > 0 && (
         <div className="mb-4 bg-[#e7f3ec] border border-[#2f6a4a]/20 rounded-xl p-4">
           <p className="text-xs font-bold text-[#2f6a4a] uppercase tracking-widest mb-2">
-            Recent Orders ({apiOrders.length})
+            Recent Orders ({apiOrders.length} total)
           </p>
           <div className="space-y-2">
             {recentOrders.map((o) => (
@@ -535,43 +766,42 @@ function OverviewPanel() {
         </div>
       )}
 
+      {/* Day-by-day sales chart + Top sellers */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2 bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold text-gray-900">Daily sales</h3>
-              <p className="text-xs text-gray-400 mt-0.5">Last 12 days · ₹ in thousands</p>
-            </div>
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-              {(['Day', 'Week', 'Month'] as const).map((v) => (
-                <button type="button" key={v} onClick={() => setChartView(v)} className={`px-2 sm:px-3 py-1 rounded-md text-xs font-medium transition-colors ${chartView === v ? 'bg-[#2f6a4a] text-white' : 'text-gray-500 hover:text-gray-700'}`}>
-                  {v}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-end gap-1 sm:gap-1.5 h-32 sm:h-36 mt-2">
-            {chartData.map((val, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div
-                  className={`w-full rounded-t-sm transition-opacity ${i === chartData.length - 1 && apiOrders.length > 0 ? 'bg-[#d4af37] opacity-90 hover:opacity-100' : 'bg-[#2f6a4a] opacity-80 hover:opacity-100'}`}
-                  style={{ height: `${(val / chartMax) * 100}%` }}
-                />
-                <span className="text-[9px] sm:text-[10px] text-gray-400">{CHART_LABELS[i]}</span>
-              </div>
-            ))}
-          </div>
-          {apiOrders.length > 0 && (
-            <p className="text-[10px] text-[#d4af37] font-semibold mt-2 text-right">
-              ★ Today's bar includes {apiOrders.length} live order{apiOrders.length > 1 ? 's' : ''}
+          <div className="mb-4">
+            <h3 className="font-semibold text-gray-900">Day-by-day sales</h3>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {period === 'Today'
+                ? 'Hourly · today · ₹ in thousands'
+                : period === 'Last 7 days'
+                  ? 'Daily · Mon – Sun · ₹ in thousands'
+                  : 'Daily · last 30 days · ₹ in thousands'}
             </p>
-          )}
+          </div>
+          <div className="flex items-end gap-0.5 sm:gap-1 h-36 sm:h-40">
+            {data.chartData.map((val, i) => {
+              const showLabel = data.chartLabels.length <= 12 || i % 5 === 0
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+                  <div
+                    className="w-full rounded-t-sm bg-[#2f6a4a] opacity-80 hover:opacity-100 transition-opacity"
+                    style={{ height: `${(val / chartMax) * 100}%` }}
+                    title={`${data.chartLabels[i]}: ₹${val}k`}
+                  />
+                  <span className={`text-[8px] sm:text-[9px] text-gray-400 ${showLabel ? '' : 'invisible'}`}>
+                    {data.chartLabels[i]}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
         </div>
 
         <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-sm">
-          <h3 className="font-semibold text-gray-900 mb-4">Top sellers</h3>
+          <h3 className="font-semibold text-gray-900 mb-4">Top selling products</h3>
           <div className="space-y-3">
-            {TOP_SELLERS.map((item) => (
+            {data.topSellers.map((item) => (
               <div key={item.rank} className="flex items-center gap-3">
                 <span className="text-xs font-bold text-gray-400 w-4 flex-shrink-0">{item.rank}</span>
                 <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#f5f0e8] flex-shrink-0">
@@ -738,7 +968,7 @@ function OrdersPanel() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [apiOrders, setApiOrders] = useState<OrderDto[]>([])
   const [loading, setLoading] = useState(isApiMode())
-  const statuses = ['All', 'Processing', 'Pending', 'Shipped', 'Delivered', 'Cancelled']
+  const statuses = ['All', 'Confirmed', 'Pending', 'Shipped', 'Delivered', 'Cancelled']
 
   useEffect(() => {
     if (!isApiMode() || !getStoredToken()) return
@@ -776,11 +1006,11 @@ function OrdersPanel() {
       }))
 
   const filtered = filter === 'All' ? allOrders : allOrders.filter((o) => o.status === filter)
-  const processingCount = allOrders.filter((o) => o.status === 'Processing').length
+  const processingCount = allOrders.filter((o) => o.status === 'Confirmed').length
 
   const statusIcon = (s: string) => {
     if (s === 'Delivered')  return <TiIcon name="check-box" size={13} className="text-emerald-500" />
-    if (s === 'Processing') return <TiIcon name="time" size={13} className="text-blue-500" />
+    if (s === 'Confirmed') return <TiIcon name="time" size={13} className="text-blue-500" />
     if (s === 'Cancelled')  return <TiIcon name="close" size={13} className="text-red-500" />
     return <TiIcon name="alert" size={13} className="text-amber-500" />
   }
@@ -829,8 +1059,8 @@ function OrdersPanel() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filtered.map((order) => (
-                <>
-                  <tr key={order.id} className={`hover:bg-gray-50/50 transition-colors ${order.isReal ? 'bg-[#f9fef9]' : ''}`}>
+                <Fragment key={order.id}>
+                  <tr className={`hover:bg-gray-50/50 transition-colors ${order.isReal ? 'bg-[#f9fef9]' : ''}`}>
                     <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">
                       <div className="flex items-center gap-1.5">
                         {order.id}
@@ -872,7 +1102,7 @@ function OrdersPanel() {
                   </tr>
 
                   {expandedId === order.id && (
-                    <tr key={`${order.id}-detail`} className="bg-[#f5f9f7]">
+                    <tr className="bg-[#f5f9f7]">
                       <td colSpan={6} className="px-4 py-4">
                         <div className="space-y-3">
                           {/* Customer address */}
@@ -906,7 +1136,7 @@ function OrdersPanel() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
@@ -950,7 +1180,7 @@ function DeliveryPanel() {
             <tr>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Order</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Area</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Address</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Driver</th>
               <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">ETA</th>
               <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
@@ -962,7 +1192,13 @@ function DeliveryPanel() {
                 <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">{d.id}</td>
                 <td className="px-4 py-3 font-medium text-gray-900 text-sm">{d.customer}</td>
                 <td className="px-4 py-3 hidden sm:table-cell">
-                  <div className="flex items-center gap-1 text-gray-500 text-xs"><TiIcon name="location-pin" size={11} />{d.area}</div>
+                  <div className="flex items-start gap-1 text-xs">
+                    <TiIcon name="location-pin" size={11} className="text-[#2f6a4a] mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-gray-700">{d.area}</p>
+                      <p className="text-gray-400">{d.address}</p>
+                    </div>
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-gray-700 text-sm hidden md:table-cell">{d.driver}</td>
                 <td className="px-4 py-3 text-center text-sm font-medium text-gray-700">{d.eta}</td>
@@ -1136,108 +1372,226 @@ function SettingsPanel() {
   )
 }
 
-// ─── Panel: Discounts ─────────────────────────────────────────────────────────
+// ─── Panel: Discounts (Coupons) ───────────────────────────────────────────────
+
+interface CouponDto {
+  id: string
+  code: string
+  discountAmount: number
+  minimumOrderAmount: number
+  startsAtUtc: string
+  endsAtUtc: string
+  isActive: boolean
+}
+
+const COUPONS_DEMO: CouponDto[] = [
+  { id: 'c1', code: 'FRESH10',  discountAmount: 10,  minimumOrderAmount: 200,  startsAtUtc: '2026-05-01T00:00:00Z', endsAtUtc: '2026-06-30T23:59:59Z', isActive: true },
+  { id: 'c2', code: 'MANGO50',  discountAmount: 50,  minimumOrderAmount: 500,  startsAtUtc: '2026-05-15T00:00:00Z', endsAtUtc: '2026-06-15T23:59:59Z', isActive: true },
+  { id: 'c3', code: 'WELCOME20', discountAmount: 20, minimumOrderAmount: 300,  startsAtUtc: '2026-01-01T00:00:00Z', endsAtUtc: '2026-12-31T23:59:59Z', isActive: false },
+]
+
+function CouponFormModal({
+  coupon,
+  onClose,
+  onSave,
+}: {
+  coupon: CouponDto | null
+  onClose: () => void
+  onSave: (c: CouponDto) => void
+}) {
+  const today = new Date().toISOString().split('T')[0]
+  const [form, setForm] = useState({
+    code: coupon?.code ?? '',
+    discountAmount: String(coupon?.discountAmount ?? ''),
+    minimumOrderAmount: String(coupon?.minimumOrderAmount ?? ''),
+    startsAtUtc: coupon ? coupon.startsAtUtc.split('T')[0] : today,
+    endsAtUtc: coupon ? coupon.endsAtUtc.split('T')[0] : '',
+  })
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  function set(field: keyof typeof form) {
+    return (e: React.ChangeEvent<HTMLInputElement>) => setForm((p) => ({ ...p, [field]: e.target.value }))
+  }
+
+  async function handleSave() {
+    if (!form.code || !form.discountAmount || !form.endsAtUtc) return
+    setSaving(true)
+    const body = {
+      code: form.code.toUpperCase(),
+      discountAmount: Number(form.discountAmount),
+      minimumOrderAmount: Number(form.minimumOrderAmount) || 0,
+      startsAtUtc: new Date(form.startsAtUtc).toISOString(),
+      endsAtUtc: new Date(form.endsAtUtc + 'T23:59:59').toISOString(),
+    }
+    try {
+      if (isApiMode() && getStoredToken()) {
+        const dto = coupon
+          ? await api.put<CouponDto>(`/api/admin/coupons/${coupon.id}`, body)
+          : await api.post<CouponDto>('/api/admin/coupons', body)
+        setSaved(true)
+        setTimeout(() => { onSave(dto); onClose() }, 800)
+      } else {
+        setSaved(true)
+        setTimeout(() => {
+          onSave({ ...body, id: coupon?.id ?? `c${Date.now()}`, isActive: coupon?.isActive ?? true })
+          onClose()
+        }, 800)
+      }
+    } catch {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <h2 className="font-serif text-xl font-bold text-gray-900">{coupon ? 'Edit Coupon' : 'Add Coupon'}</h2>
+          <button type="button" onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg" aria-label="Close"><TiIcon name="close" size={18} className="text-gray-500" /></button>
+        </div>
+        <div className="p-5 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Coupon Code <span className="text-red-500">*</span></label>
+            <input type="text" value={form.code} onChange={set('code')} placeholder="e.g. FRESH10" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition uppercase" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Discount (₹) <span className="text-red-500">*</span></label>
+              <input type="number" value={form.discountAmount} onChange={set('discountAmount')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Min. Order (₹)</label>
+              <input type="number" value={form.minimumOrderAmount} onChange={set('minimumOrderAmount')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Starts</label>
+              <input type="date" value={form.startsAtUtc} onChange={set('startsAtUtc')} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Expires <span className="text-red-500">*</span></label>
+              <input type="date" value={form.endsAtUtc} onChange={set('endsAtUtc')} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 p-5 border-t border-gray-100">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+          <button
+            type="button"
+            onClick={() => void handleSave()}
+            disabled={!form.code || !form.discountAmount || !form.endsAtUtc || saving}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'}`}
+          >
+            {saved ? '✓ Saved!' : coupon ? 'Save Changes' : 'Add Coupon'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function DiscountsPanel() {
-  const [items, setItems] = useState<InventoryRow[]>(
-    INVENTORY_INIT.map((p) => ({ ...p, discount: p.discount ?? 0 })),
-  )
-  const [saved, setSaved] = useState<string | null>(null)
+  const [coupons, setCoupons] = useState<CouponDto[]>(isApiMode() ? [] : COUPONS_DEMO)
+  const [loading, setLoading] = useState(isApiMode())
+  const [editingCoupon, setEditingCoupon] = useState<CouponDto | null>(null)
+  const [showModal, setShowModal] = useState(false)
 
-  function setDiscount(id: string, value: number) {
-    setItems((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, discount: Math.min(90, Math.max(0, value)) } : p)),
-    )
+  useEffect(() => {
+    if (!isApiMode() || !getStoredToken()) return
+    api.get<CouponDto[]>('/api/admin/coupons')
+      .then((data) => setCoupons(data))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  function handleSaveCoupon(c: CouponDto) {
+    setCoupons((prev) => {
+      const exists = prev.some((x) => x.id === c.id)
+      return exists ? prev.map((x) => (x.id === c.id ? c : x)) : [c, ...prev]
+    })
   }
 
-  function handleApply(id: string) {
-    setSaved(id)
-    setTimeout(() => setSaved(null), 1500)
+  async function handleDelete(id: string) {
+    if (isApiMode() && getStoredToken()) {
+      try { await api.delete(`/api/admin/coupons/${id}`) } catch { return }
+    }
+    setCoupons((prev) => prev.filter((c) => c.id !== id))
   }
 
-  const activeDiscounts = items.filter((p) => (p.discount ?? 0) > 0)
-  const maxDiscount = items.reduce((m, p) => Math.max(m, p.discount ?? 0), 0)
+  const activeCoupons = coupons.filter((c) => c.isActive)
 
   return (
     <div className="p-4 sm:p-6">
-      <div className="mb-6">
-        <h1 className="font-serif text-2xl font-bold text-gray-900">Discounts</h1>
-        <p className="text-gray-500 text-sm mt-0.5">
-          {activeDiscounts.length} active discounts · Set % off per product
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-gray-900">Discounts &amp; Coupons</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{activeCoupons.length} active · {coupons.length} total</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => { setEditingCoupon(null); setShowModal(true) }}
+          className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto"
+        >
+          <TiIcon name="plus" size={15} />
+          Add Coupon
+        </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Active Sales</p>
-          <p className="text-2xl font-bold text-gray-900">{activeDiscounts.length}</p>
-        </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Highest Off</p>
-          <p className="text-2xl font-bold text-[#2f6a4a]">{maxDiscount}%</p>
-        </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hidden sm:block">
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Products on Sale</p>
-          <p className="text-2xl font-bold text-amber-600">{activeDiscounts.length}/{items.length}</p>
-        </div>
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="w-8 h-8 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : coupons.length === 0 ? (
+          <p className="text-center text-gray-400 text-sm py-12">No coupons yet.</p>
+        ) : (
+          <table className="w-full text-sm min-w-[560px]">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Code</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Discount</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Min. Order</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Expires</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {coupons.map((c) => (
+                <tr key={c.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-4 py-3 font-mono font-bold text-gray-900 text-sm">{c.code}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-[#2f6a4a]">₹{c.discountAmount}</td>
+                  <td className="px-4 py-3 text-right text-gray-600 hidden sm:table-cell">₹{c.minimumOrderAmount}</td>
+                  <td className="px-4 py-3 text-center text-gray-500 text-xs hidden md:table-cell">
+                    {new Date(c.endsAtUtc).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${c.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                      {c.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <button type="button" onClick={() => { setEditingCoupon(c); setShowModal(true) }} className="p-1.5 text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec] rounded-lg transition-colors" aria-label="Edit"><TiIcon name="pencil" size={14} /></button>
+                      <button type="button" onClick={() => void handleDelete(c.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" aria-label="Delete"><TiIcon name="trash" size={14} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        {items.map((item, idx) => {
-          const disc = item.discount ?? 0
-          const discountedPrice = Math.round(item.price * (1 - disc / 100))
-          return (
-            <div
-              key={item.id}
-              className={`flex items-center gap-3 px-4 py-3.5 ${idx < items.length - 1 ? 'border-b border-gray-50' : ''}`}
-            >
-              <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#f5f0e8] flex-shrink-0">
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 truncate">{item.name}</p>
-                <p className="text-xs text-gray-400">{item.category}</p>
-              </div>
-              <div className="text-right flex-shrink-0 hidden sm:block min-w-[80px]">
-                <p className="text-sm font-bold text-gray-900">₹{item.price}</p>
-                {disc > 0 && (
-                  <p className="text-xs text-emerald-600 font-semibold">→ ₹{discountedPrice}</p>
-                )}
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={disc}
-                    onChange={(e) => setDiscount(item.id, Number(e.target.value))}
-                    min="0"
-                    max="90"
-                    className="w-16 pl-2 pr-5 py-1.5 border border-gray-200 rounded-lg text-sm text-center outline-none focus:border-[#2f6a4a] transition"
-                  />
-                  <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">%</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleApply(item.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                    saved === item.id
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f]'
-                  }`}
-                >
-                  {saved === item.id ? '✓' : 'Apply'}
-                </button>
-              </div>
-              {disc > 0 && (
-                <div className="flex-shrink-0 w-9 h-9 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center hidden sm:flex">
-                  -{disc}%
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
+      {showModal && (
+        <CouponFormModal
+          coupon={editingCoupon}
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveCoupon}
+        />
+      )}
     </div>
   )
 }
@@ -1548,8 +1902,8 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
     <>
       <div className="px-5 py-5 border-b border-white/10">
         <div className="flex items-center gap-2.5 mb-1">
-          <div className="w-9 h-9 bg-[#d4af37] rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-[#1a3d2b] font-bold text-sm font-serif leading-none">த</span>
+          <div className="bg-[#e8f5ec] rounded-xl p-1 flex-shrink-0">
+            <img src="/images/products/Logo.jpeg" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
           </div>
           <span className="font-serif text-white font-bold text-sm">Tenkasi Fresh</span>
         </div>
@@ -1623,7 +1977,7 @@ function AdminPage() {
 
           <Link
             to="/"
-            className="flex items-center gap-1 text-sm font-semibold text-[#2f6a4a] hover:bg-[#e7f3ec] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
+            className="flex items-center gap-1 text-sm font-semibold text-white bg-[#2f6a4a] hover:bg-[#1f4a2f] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
           >
             <TiIcon name="angle-left" size={16} />
             <span className="hidden xs:inline sm:inline">Back to Store</span>

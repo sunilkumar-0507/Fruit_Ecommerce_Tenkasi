@@ -89,6 +89,12 @@ export interface ProductDto {
   slug: string | null
   descriptionEn: string | null
   descriptionTa: string | null
+  aboutEn: string | null
+  aboutTa: string | null
+  usageEn: string | null
+  usageTa: string | null
+  benefitsEn: string | null
+  benefitsTa: string | null
   price: number
   stockQuantity: number
   isOutOfStock: boolean
@@ -159,9 +165,23 @@ export interface AddressDto {
   isDefault: boolean
 }
 
+export async function uploadProductImage(file: File): Promise<string> {
+  const token = getStoredToken()
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`${BASE}/api/admin/uploads/image`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: form,
+  })
+  const data = await res.json() as unknown
+  if (!res.ok) throw new Error((data as { message?: string })?.message ?? 'Upload failed')
+  return (data as { url: string }).url
+}
+
 export const ORDER_STATUS: Record<number, string> = {
   1: 'Pending',
-  2: 'Processing',
+  2: 'Confirmed',
   3: 'Shipped',
   4: 'Delivered',
   5: 'Cancelled',

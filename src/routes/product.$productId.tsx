@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { PRODUCTS } from '#/data/products'
+import { useState, useEffect } from 'react'
+import { PRODUCTS, type Product } from '#/data/products'
 import { useCart } from '#/context/CartContext'
 import { useFav } from '#/context/FavContext'
 import { useFeedback } from '#/context/FeedbackContext'
+import { isApiMode, api, type ProductDto } from '#/lib/apiClient'
 import TiIcon from '#/components/TiIcon'
 
 export const Route = createFileRoute('/product/$productId')({ component: ProductDetailPage })
@@ -63,23 +64,29 @@ function StarInput({ value, onChange }: { value: number; onChange: (n: number) =
   )
 }
 
-function FeedbackSection({ productId }: { productId: string }) {
-  const { getForProduct, addFeedback } = useFeedback()
+function FeedbackSection({ productId, slug }: { productId: string; slug: string }) {
+  const { getForProduct, loadForProduct, addFeedback, reviewError } = useFeedback()
   const reviews = getForProduct(productId)
   const [name, setName] = useState('')
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  useEffect(() => { void loadForProduct(slug, productId) }, [slug, productId, loadForProduct])
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!comment.trim()) return
-    addFeedback(productId, name, rating, comment)
-    setName('')
-    setComment('')
-    setRating(5)
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 2000)
+    try {
+      await addFeedback(productId, slug, name, rating, comment)
+      setName('')
+      setComment('')
+      setRating(5)
+      setSubmitted(true)
+      setTimeout(() => setSubmitted(false), 2000)
+    } catch {
+      // error shown via reviewError
+    }
   }
 
   const avg = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0
@@ -131,7 +138,7 @@ function FeedbackSection({ productId }: { productId: string }) {
       {/* Feedback form */}
       <div className="bg-[#f5f9f7] rounded-2xl p-5 border border-[#2f6a4a]/10">
         <h3 className="font-serif text-lg font-bold text-gray-900 mb-4">Write a Review</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Name</label>
             <input
@@ -156,6 +163,9 @@ function FeedbackSection({ productId }: { productId: string }) {
               className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white resize-none"
             />
           </div>
+          {reviewError && (
+            <p className="text-sm text-red-500">{reviewError}</p>
+          )}
           <button
             type="submit"
             disabled={!comment.trim()}
@@ -173,15 +183,63 @@ function FeedbackSection({ productId }: { productId: string }) {
   )
 }
 
+function fromApiDto(p: ProductDto): Product {
+  const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
+  const allImgs = (p.images ?? []).map((i) => i.url).filter((u): u is string => u != null)
+  return {
+    id: p.id,
+    name: p.nameEn ?? 'Product',
+    nameTamil: p.nameTa ?? '',
+    category: p.category?.nameEn ?? '',
+    categorySlug: p.category?.slug ?? '',
+    price: p.price,
+    originalPrice: p.price,
+    image: primary?.url ?? '/images/categories/mangoes.jpg',
+    images: allImgs.length > 1 ? allImgs : undefined,
+    rating: p.rating,
+    reviews: 0,
+    unit: '1 unit',
+  }
+}
+
+function pick(en: string | null | undefined, ta: string | null | undefined, isTamil: boolean): string {
+  return ((isTamil ? ta || en : en) ?? '').trim()
+}
+
 function ProductDetailPage() {
   const { productId } = Route.useParams()
-  const product = PRODUCTS.find((p) => p.id === productId)
+  const staticProduct = PRODUCTS.find((p) => p.id === productId)
+  const [apiProduct, setApiProduct] = useState<ProductDto | null>(null)
+  const [apiLoading, setApiLoading] = useState(isApiMode())
+  const [isTamil, setIsTamil] = useState(false)
   const { addToCart } = useCart()
   const { toggle, isFav } = useFav()
   const [added, setAdded] = useState(false)
+  const [qty, setQty] = useState(1)
   const navigate = useNavigate()
 
+  useEffect(() => {
+    if (!isApiMode()) return
+    setApiLoading(true)
+    void api.get<ProductDto>(`/api/Products/${productId}`)
+      .then((p) => { setApiProduct(p) })
+      .catch(() => {})
+      .finally(() => setApiLoading(false))
+  }, [productId])
+
+  const product: Product | null = staticProduct ?? (apiProduct ? fromApiDto(apiProduct) : null)
+
   if (!product) {
+    if (apiLoading) {
+      return (
+        <main className="min-h-screen bg-[#faf9f4] flex items-center justify-center">
+          <div className="text-center px-4">
+            <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-gray-500 text-sm">Loading product…</p>
+          </div>
+        </main>
+      )
+    }
     return (
       <main className="min-h-screen bg-[#faf9f4] flex items-center justify-center">
         <div className="text-center px-4">
@@ -201,7 +259,9 @@ function ProductDetailPage() {
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
 
   function handleAddToCart() {
-    addToCart({ id: product.id, name: product.name, nameTamil: product.nameTamil, category: product.category, image: product.image, price: product.price, unit: product.unit })
+    for (let i = 0; i < qty; i++) {
+      addToCart({ id: product.id, name: product.name, nameTamil: product.nameTamil, category: product.category, image: product.image, price: product.price, unit: product.unit })
+    }
     setAdded(true)
     setTimeout(() => setAdded(false), 1500)
   }
@@ -244,9 +304,26 @@ function ProductDetailPage() {
             </div>
 
             <div>
-              <p className="text-[#2f6a4a] text-xs font-bold tracking-widest uppercase mb-1">{product.category}</p>
-              <h1 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 leading-tight">{product.name}</h1>
-              <p className="text-gray-400 text-base mt-1">{product.nameTamil}</p>
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-[#2f6a4a] text-xs font-bold tracking-widest uppercase mb-1">{product.category}</p>
+                {isApiMode() && apiProduct && (
+                  <button
+                    type="button"
+                    onClick={() => setIsTamil((t) => !t)}
+                    className="flex-shrink-0 px-3 py-1 rounded-full border border-gray-200 text-xs font-semibold text-gray-500 hover:border-[#2f6a4a] hover:text-[#2f6a4a] transition-colors"
+                  >
+                    {isTamil ? 'EN' : 'தமிழ்'}
+                  </button>
+                )}
+              </div>
+              <h1 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 leading-tight">
+                {isApiMode() && apiProduct ? pick(apiProduct.nameEn, apiProduct.nameTa, isTamil) : product.name}
+              </h1>
+              <p className="text-gray-400 text-base mt-1">
+                {isApiMode() && apiProduct
+                  ? (isTamil ? (apiProduct.nameEn ?? '') : (apiProduct.nameTa ?? product.nameTamil))
+                  : product.nameTamil}
+              </p>
             </div>
 
             {/* Rating */}
@@ -263,31 +340,60 @@ function ProductDetailPage() {
             <div className="flex items-end gap-3 py-3 border-t border-b border-gray-100">
               <span className="text-3xl font-bold text-gray-900">₹{product.price}</span>
               <span className="text-lg text-gray-400 line-through mb-0.5">₹{product.originalPrice}</span>
-              <span className="text-emerald-600 font-bold text-sm mb-0.5">{discount}% off</span>
+              {discount > 0 && <span className="text-emerald-600 font-bold text-sm mb-0.5">{discount}% off</span>}
               <span className="text-gray-400 text-sm mb-0.5">/ {product.unit}</span>
             </div>
 
-            {/* Description */}
-            {product.description && (
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">About this product</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{product.description}</p>
-              </div>
-            )}
-
-            {/* Uses */}
-            {product.uses && product.uses.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2.5 text-sm uppercase tracking-wide">Uses &amp; Benefits</h3>
-                <ul className="space-y-2">
-                  {product.uses.map((use, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
-                      <TiIcon name="check" size={15} className="text-[#2f6a4a] mt-0.5 flex-shrink-0" />
-                      {use}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Bilingual content sections (API mode) or static demo content */}
+            {isApiMode() && apiProduct ? (
+              <>
+                {(apiProduct.descriptionEn || apiProduct.descriptionTa) && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">Description</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{pick(apiProduct.descriptionEn, apiProduct.descriptionTa, isTamil)}</p>
+                  </div>
+                )}
+                {(apiProduct.aboutEn || apiProduct.aboutTa) && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">About</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{pick(apiProduct.aboutEn, apiProduct.aboutTa, isTamil)}</p>
+                  </div>
+                )}
+                {(apiProduct.usageEn || apiProduct.usageTa) && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">How to Use</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{pick(apiProduct.usageEn, apiProduct.usageTa, isTamil)}</p>
+                  </div>
+                )}
+                {(apiProduct.benefitsEn || apiProduct.benefitsTa) && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">Benefits</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{pick(apiProduct.benefitsEn, apiProduct.benefitsTa, isTamil)}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {product.description && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">About this product</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{product.description}</p>
+                  </div>
+                )}
+                {product.uses && product.uses.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2.5 text-sm uppercase tracking-wide">Uses &amp; Benefits</h3>
+                    <ul className="space-y-2">
+                      {product.uses.map((use, i) => (
+                        <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
+                          <TiIcon name="check" size={15} className="text-[#2f6a4a] mt-0.5 flex-shrink-0" />
+                          {use}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Delivery info */}
@@ -297,6 +403,33 @@ function ProductDetailPage() {
                 <p className="text-sm font-semibold text-gray-900">Same-day delivery available</p>
                 <p className="text-xs text-gray-500">Order before 12 PM for delivery by evening</p>
               </div>
+            </div>
+
+            {/* Quantity selector */}
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-semibold text-gray-700">Quantity</span>
+              <div className="flex items-center bg-gray-100 rounded-xl p-1 gap-1">
+                <button
+                  type="button"
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
+                  aria-label="Decrease quantity"
+                >
+                  <TiIcon name="minus" size={13} className="text-gray-600" />
+                </button>
+                <span className="w-8 text-center font-bold text-gray-900 text-sm">{qty}</span>
+                <button
+                  type="button"
+                  onClick={() => setQty((q) => q + 1)}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
+                  aria-label="Increase quantity"
+                >
+                  <TiIcon name="plus" size={13} className="text-gray-600" />
+                </button>
+              </div>
+              {qty > 1 && (
+                <span className="text-sm font-semibold text-[#2f6a4a]">= ₹{product.price * qty}</span>
+              )}
             </div>
 
             {/* Action buttons */}
@@ -342,7 +475,7 @@ function ProductDetailPage() {
         </div>
 
         {/* Feedback section */}
-        <FeedbackSection productId={product.id} />
+        <FeedbackSection productId={product.id} slug={product.id} />
       </div>
     </main>
   )

@@ -1,11 +1,10 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { ShoppingCart, Leaf, Zap, Award, Truck, Smartphone } from 'lucide-react'
 import { useState } from 'react'
 import ProductCard from '#/components/ProductCard'
 import CategoryCard from '#/components/CategoryCard'
 import TestimonialCard from '#/components/TestimonialCard'
 import WelcomeScreen from '#/components/WelcomeScreen'
-import { useAuth } from '#/context/AuthContext'
 import { PRODUCTS, HOME_CATEGORIES } from '#/data/products'
 
 export const Route = createFileRoute('/')({ component: HomePage })
@@ -44,9 +43,6 @@ const TESTIMONIALS = [
 ]
 
 function HomePage() {
-  const { user } = useAuth()
-  const navigate = useNavigate()
-
   // Show welcome if: first visit this session (!tf_home_seen) OR coming from login (tf_show_welcome)
   const [showWelcome] = useState(() => {
     try {
@@ -65,11 +61,7 @@ function HomePage() {
       sessionStorage.setItem('tf_home_seen', '1')
       sessionStorage.removeItem('tf_show_welcome')
     } catch {}
-    if (!user) {
-      void navigate({ to: '/login' })
-    } else {
-      setHomeVisible(true)
-    }
+    setHomeVisible(true)
   }
 
   return (

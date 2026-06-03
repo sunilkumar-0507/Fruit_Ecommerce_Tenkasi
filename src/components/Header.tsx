@@ -5,7 +5,7 @@ import { useCart } from '#/context/CartContext'
 import { useFav } from '#/context/FavContext'
 import TiIcon from '#/components/TiIcon'
 
-const TICKER_ITEMS = ['🍎 Farm Fresh', '🥭 Premium Quality', '🌿 Organic Certified', '🚚 Fast Delivery', '💚 Best Prices', '🌾 240+ Farmers']
+const TICKER_ITEMS = ['Farm Fresh', 'Premium Quality', 'Organic Certified', 'Fast Delivery', 'Best Prices', '240+ Farmers']
 
 function HeaderTicker() {
   return (
@@ -17,12 +17,9 @@ function HeaderTicker() {
         }
         .header-ticker-content { animation: header-ticker 28s linear infinite; }
       `}</style>
-      <div className="header-ticker-content flex gap-6 whitespace-nowrap">
+      <div className="header-ticker-content flex gap-8 whitespace-nowrap">
         {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, idx) => (
-          <div key={idx} className="inline-flex items-center gap-6 flex-shrink-0">
-            <span className="text-white text-xs font-semibold tracking-wide">{item}</span>
-            <span className="text-white/40 text-xs">✦</span>
-          </div>
+          <span key={idx} className="text-white text-xs font-semibold tracking-wide flex-shrink-0">{item}</span>
         ))}
       </div>
     </div>
@@ -165,9 +162,11 @@ export default function Header() {
       {/* Main Header */}
       <nav className="bg-[#1a3d2b] border-b border-[#d4af37]/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-18 py-2.5">
+          <div className="flex items-center justify-between py-2">
             <Link to="/" className="flex items-center no-underline flex-shrink-0">
-              <img src="/images/logo.svg" alt="Tenkasi Fresh" className="h-[58px] w-auto object-contain" />
+              <div className="bg-white/10 border border-[#d4af37]/30 rounded-2xl p-1.5 backdrop-blur-sm">
+                <img src="/images/products/Logo.jpeg" alt="Tenkasi Fresh" className="h-[60px] w-[60px] object-contain rounded-xl" />
+              </div>
             </Link>
 
             <div className="hidden md:flex items-center gap-7">

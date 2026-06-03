@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { api, isApiMode } from '#/lib/apiClient'
 
 export interface Feedback {
   id: string
@@ -9,9 +10,20 @@ export interface Feedback {
   date: string
 }
 
+interface ReviewDto {
+  id: string
+  productId: string
+  userName: string
+  rating: number
+  comment: string
+  createdAtUtc: string
+}
+
 interface FeedbackContextValue {
   getForProduct: (productId: string) => Feedback[]
-  addFeedback: (productId: string, userName: string, rating: number, comment: string) => void
+  loadForProduct: (slug: string, productId: string) => Promise<void>
+  addFeedback: (productId: string, slug: string, userName: string, rating: number, comment: string) => Promise<void>
+  reviewError: string
 }
 
 const FeedbackContext = createContext<FeedbackContextValue | null>(null)
@@ -23,14 +35,52 @@ const SAMPLE: Feedback[] = [
   { id: 'f4', productId: '3', userName: 'Suresh P.', rating: 5, comment: 'Extremely fresh pomegranates with deep red colour. Rich in taste. Perfect for juicing every morning.', date: '2026-05-19' },
 ]
 
+function mapDto(dto: ReviewDto): Feedback {
+  return {
+    id: dto.id,
+    productId: dto.productId,
+    userName: dto.userName,
+    rating: dto.rating,
+    comment: dto.comment,
+    date: new Date(dto.createdAtUtc).toISOString().split('T')[0],
+  }
+}
+
 export function FeedbackProvider({ children }: { children: ReactNode }) {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>(SAMPLE)
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>(isApiMode() ? [] : SAMPLE)
+  const [reviewError, setReviewError] = useState('')
+
+  const loadForProduct = useCallback(async (slug: string, productId: string) => {
+    if (!isApiMode()) return
+    try {
+      const dtos = await api.get<ReviewDto[]>(`/api/Products/${slug}/reviews`)
+      setFeedbacks((prev) => [
+        ...prev.filter((f) => f.productId !== productId),
+        ...dtos.map(mapDto),
+      ])
+    } catch {
+      // silently ignore load errors
+    }
+  }, [])
 
   function getForProduct(productId: string) {
     return feedbacks.filter((f) => f.productId === productId)
   }
 
-  function addFeedback(productId: string, userName: string, rating: number, comment: string) {
+  async function addFeedback(productId: string, slug: string, userName: string, rating: number, comment: string) {
+    setReviewError('')
+    if (isApiMode()) {
+      try {
+        await api.post<ReviewDto>(`/api/Products/${slug}/reviews`, { rating, comment })
+        await loadForProduct(slug, productId)
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Failed to submit review.'
+        setReviewError(msg)
+        throw err
+      }
+      return
+    }
+
     const entry: Feedback = {
       id: `f${Date.now()}`,
       productId,
@@ -43,7 +93,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <FeedbackContext.Provider value={{ getForProduct, addFeedback }}>
+    <FeedbackContext.Provider value={{ getForProduct, loadForProduct, addFeedback, reviewError }}>
       {children}
     </FeedbackContext.Provider>
   )

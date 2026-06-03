@@ -68,9 +68,9 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
       <div className="relative z-10 text-center px-6 animate-welcome-pop" style={{ '--delay': '0.3s' } as React.CSSProperties}>
         {/* Logo ring */}
         <div className="relative w-24 h-24 mx-auto mb-6">
-          <div className="absolute inset-0 rounded-full border-2 border-[#d4af37]/40 animate-sparkle" />
-          <div className="w-24 h-24 bg-[#d4af37] rounded-full flex items-center justify-center shadow-2xl shadow-[#d4af37]/30">
-            <span className="font-serif text-4xl font-bold text-[#1a3d2b]">த</span>
+          <div className="absolute inset-0 rounded-3xl border-2 border-[#d4af37]/40 animate-sparkle" />
+          <div className="w-24 h-24 bg-[#e8f5ec] rounded-3xl flex items-center justify-center shadow-2xl shadow-[#d4af37]/30 p-2">
+            <img src="/images/products/Logo.jpeg" alt="Tenkasi Fresh" className="w-full h-full rounded-2xl object-contain" />
           </div>
         </div>
 
@@ -162,8 +162,8 @@ function LoginPage() {
           </div>
           <div className="relative">
             <Link to="/" className="flex items-center gap-3 no-underline w-fit">
-              <div className="w-11 h-11 bg-[#d4af37] rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-[#1a3d2b] font-bold text-lg leading-none font-serif">த</span>
+              <div className="bg-[#e8f5ec] rounded-xl p-1.5 flex-shrink-0">
+                <img src="/images/products/Logo.jpeg" alt="Tenkasi Fresh" className="w-10 h-10 rounded-lg object-contain" />
               </div>
               <div>
                 <p className="font-serif text-lg font-bold leading-tight">Tenkasi Fresh</p>
@@ -201,8 +201,8 @@ function LoginPage() {
         <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#faf9f4]">
           <div className="w-full max-w-sm">
             <Link to="/" className="lg:hidden flex items-center gap-2.5 no-underline mb-8">
-              <div className="w-9 h-9 bg-[#2f6a4a] rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-base leading-none font-serif">த</span>
+              <div className="bg-[#e8f5ec] rounded-xl p-1 flex-shrink-0">
+                <img src="/images/products/Logo.jpeg" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
               </div>
               <span className="font-serif font-bold text-gray-900">Tenkasi Fresh</span>
             </Link>

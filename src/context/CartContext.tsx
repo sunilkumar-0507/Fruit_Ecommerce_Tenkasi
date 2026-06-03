@@ -24,44 +24,8 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null)
 
-// Demo initial items — only used when API is not configured
-const DEMO_ITEMS: CartItem[] = isApiMode()
-  ? []
-  : [
-      {
-        id: '1',
-        name: 'Tenkasi Local Mango',
-        nameTamil: 'மாம்பழம்',
-        category: 'Mangoes',
-        image: '/images/categories/mangoes.jpg',
-        price: 280,
-        unit: '1 kg',
-        qty: 1,
-      },
-      {
-        id: '2',
-        name: 'Fresh Rambutan',
-        nameTamil: 'ராம்புட்டான்',
-        category: 'Imported Fruits',
-        image: '/images/products/wa2-rambutan.jpeg',
-        price: 220,
-        unit: '500 g',
-        qty: 1,
-      },
-      {
-        id: '3',
-        name: 'Ruby Pomegranate',
-        nameTamil: 'மாதுளம்பழம்',
-        category: 'Imported Fruits',
-        image: '/images/products/wa-pomegranate.jpeg',
-        price: 240,
-        unit: '1 kg',
-        qty: 1,
-      },
-    ]
-
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(DEMO_ITEMS)
+  const [items, setItems] = useState<CartItem[]>([])
 
   // On mount: if using real API and user is logged in, load server cart
   useEffect(() => {
@@ -151,7 +115,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const count = items.reduce((sum, i) => sum + i.qty, 0)
+  const count = items.length
 
   return (
     <CartContext.Provider value={{ items, count, addToCart, updateQty, removeItem, clearCart }}>
