@@ -21,11 +21,11 @@ export default function TestimonialCard({ name, role, testimonial, rating }: Tes
 
       {/* Author — no image */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-[#e7f3ec] flex items-center justify-center flex-shrink-0">
-          <span className="text-[#2f6a4a] font-bold text-base">{name.charAt(0)}</span>
+        <div className="w-10 h-10 rounded-full bg-[#fdf4e8] flex items-center justify-center flex-shrink-0">
+          <span className="text-[#3d7a20] font-bold text-base">{name.charAt(0)}</span>
         </div>
         <div>
-          <h4 className="font-semibold text-[#2f6a4a]">{name}</h4>
+          <h4 className="font-semibold text-[#3d7a20]">{name}</h4>
           <p className="text-sm text-gray-500">{role}</p>
         </div>
       </div>

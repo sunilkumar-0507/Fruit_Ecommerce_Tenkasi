@@ -246,7 +246,7 @@ function ProductImageField({
       <input ref={inputRef} type="file" accept="image/*" onChange={(e) => void handleFile(e)} className="hidden" aria-label="Upload product image" />
       {uploading ? (
         <div className="flex items-center gap-3 py-4 px-3 border border-gray-200 rounded-xl">
-          <div className="w-5 h-5 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+          <div className="w-5 h-5 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin flex-shrink-0" />
           <span className="text-sm text-gray-500">Uploading image…</span>
         </div>
       ) : value ? (
@@ -255,7 +255,7 @@ function ProductImageField({
             <img src={value} alt="Preview" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <button type="button" onClick={() => inputRef.current?.click()} className="px-4 py-2 border border-[#2f6a4a] text-[#2f6a4a] rounded-lg text-sm font-medium hover:bg-[#2f6a4a]/5 transition">
+            <button type="button" onClick={() => inputRef.current?.click()} className="px-4 py-2 border border-[#3d7a20] text-[#3d7a20] rounded-lg text-sm font-medium hover:bg-[#3d7a20]/5 transition">
               Change Image
             </button>
             <button type="button" onClick={handleRemove} className="px-4 py-2 border border-gray-200 text-gray-400 rounded-lg text-sm hover:border-red-300 hover:text-red-500 transition">
@@ -267,7 +267,7 @@ function ProductImageField({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="w-full flex flex-col items-center justify-center gap-2 py-6 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-[#2f6a4a] hover:text-[#2f6a4a] transition"
+          className="w-full flex flex-col items-center justify-center gap-2 py-6 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-[#3d7a20] hover:text-[#3d7a20] transition"
         >
           <TiIcon name="import" size={24} />
           <span className="font-medium">Click to choose from device</span>
@@ -381,52 +381,52 @@ function AddProductModal({
         <div className="p-5 sm:p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Product Name (English) <span className="text-red-500">*</span></label>
-            <input type="text" value={form.nameEn} onChange={set('nameEn')} placeholder="e.g. Alphonso Mango" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            <input type="text" value={form.nameEn} onChange={set('nameEn')} placeholder="e.g. Alphonso Mango" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Tamil Name</label>
-            <input type="text" value={form.nameTa} onChange={set('nameTa')} placeholder="e.g. ஆல்பன்சோ மாம்பழம்" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            <input type="text" value={form.nameTa} onChange={set('nameTa')} placeholder="e.g. ஆல்பன்சோ மாம்பழம்" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
             {apiCategories.length > 0 ? (
-              <select value={form.categoryId} onChange={set('categoryId')} title="Category" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white appearance-none">
+              <select value={form.categoryId} onChange={set('categoryId')} title="Category" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white appearance-none">
                 {apiCategories.map((c) => <option key={c.id} value={c.id}>{c.nameEn}</option>)}
               </select>
             ) : (
-              <input type="text" value={form.categoryId} onChange={set('categoryId')} placeholder="Category name" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="text" value={form.categoryId} onChange={set('categoryId')} placeholder="Category name" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             )}
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
-              <input type="number" value={form.price} onChange={set('price')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" value={form.price} onChange={set('price')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">MRP (₹) <span className="text-gray-400 font-normal">(optional)</span></label>
-              <input type="number" value={form.originalPrice} onChange={set('originalPrice')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" value={form.originalPrice} onChange={set('originalPrice')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock (units) <span className="text-red-500">*</span></label>
-              <input type="number" value={form.stock} onChange={set('stock')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" value={form.stock} onChange={set('stock')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
           </div>
           <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} onUploadingChange={setUploading} />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea value={form.description} onChange={set('description')} placeholder="Brief description of the product…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.description} onChange={set('description')} placeholder="Brief description of the product…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">About <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea value={form.aboutEn} onChange={set('aboutEn')} placeholder="Background, origin, farming story…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.aboutEn} onChange={set('aboutEn')} placeholder="Background, origin, farming story…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">How to Use <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea value={form.usageEn} onChange={set('usageEn')} placeholder="Storage, preparation, serving suggestions…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.usageEn} onChange={set('usageEn')} placeholder="Storage, preparation, serving suggestions…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Benefits <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea value={form.benefitsEn} onChange={set('benefitsEn')} placeholder="Health benefits, nutritional highlights…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.benefitsEn} onChange={set('benefitsEn')} placeholder="Health benefits, nutritional highlights…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
         </div>
 
@@ -443,7 +443,7 @@ function AddProductModal({
               onClick={() => void handleSave()}
               disabled={!form.nameEn || !form.price || !form.stock || (isApiMode() && !form.categoryId) || saving || uploading}
               className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
+                saved ? 'bg-emerald-500 text-white' : 'bg-[#3d7a20] text-white hover:bg-[#2a5a14] disabled:opacity-40 disabled:cursor-not-allowed'
               }`}
             >
               {saved ? '✓ Product Added!' : saving ? 'Saving…' : uploading ? 'Uploading…' : 'Save Product'}
@@ -564,52 +564,52 @@ function EditProductModal({
         <div className="p-5 sm:p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Product Name <span className="text-red-500">*</span></label>
-            <input type="text" value={form.nameEn} onChange={set('nameEn')} placeholder="e.g. Alphonso Mango" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            <input type="text" value={form.nameEn} onChange={set('nameEn')} placeholder="e.g. Alphonso Mango" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Tamil Name</label>
-            <input type="text" value={form.nameTa} onChange={set('nameTa')} placeholder="e.g. ஆல்பன்சோ மாம்பழம்" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            <input type="text" value={form.nameTa} onChange={set('nameTa')} placeholder="e.g. ஆல்பன்சோ மாம்பழம்" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
             {apiCategories.length > 0 ? (
-              <select value={form.categoryId} onChange={set('categoryId')} title="Category" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white appearance-none">
+              <select value={form.categoryId} onChange={set('categoryId')} title="Category" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white appearance-none">
                 {apiCategories.map((c) => <option key={c.id} value={c.id}>{c.nameEn}</option>)}
               </select>
             ) : (
-              <input type="text" value={form.categoryId} onChange={set('categoryId')} placeholder="Category name" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="text" value={form.categoryId} onChange={set('categoryId')} placeholder="Category name" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             )}
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
-              <input type="number" value={form.price} onChange={set('price')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" value={form.price} onChange={set('price')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">MRP (₹) <span className="text-gray-400 font-normal">(optional)</span></label>
-              <input type="number" value={form.originalPrice} onChange={set('originalPrice')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" value={form.originalPrice} onChange={set('originalPrice')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock (units) <span className="text-red-500">*</span></label>
-              <input type="number" value={form.stock} onChange={set('stock')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" value={form.stock} onChange={set('stock')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
           </div>
           <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} onUploadingChange={setUploading} />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea value={form.description} onChange={set('description')} placeholder="Brief description of the product…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.description} onChange={set('description')} placeholder="Brief description of the product…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">About <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea value={form.aboutEn} onChange={set('aboutEn')} placeholder="Background, origin, farming story…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.aboutEn} onChange={set('aboutEn')} placeholder="Background, origin, farming story…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">How to Use <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea value={form.usageEn} onChange={set('usageEn')} placeholder="Storage, preparation, serving suggestions…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.usageEn} onChange={set('usageEn')} placeholder="Storage, preparation, serving suggestions…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Benefits <span className="text-gray-400 font-normal">(optional)</span></label>
-            <textarea value={form.benefitsEn} onChange={set('benefitsEn')} placeholder="Health benefits, nutritional highlights…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.benefitsEn} onChange={set('benefitsEn')} placeholder="Health benefits, nutritional highlights…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
         </div>
 
@@ -626,7 +626,7 @@ function EditProductModal({
               onClick={() => void handleSave()}
               disabled={!form.nameEn || !form.price || !form.stock || saving || uploading}
               className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
+                saved ? 'bg-emerald-500 text-white' : 'bg-[#3d7a20] text-white hover:bg-[#2a5a14] disabled:opacity-40 disabled:cursor-not-allowed'
               }`}
             >
               {saved ? '✓ Saved!' : saving ? 'Saving…' : uploading ? 'Uploading…' : 'Save Changes'}
@@ -754,7 +754,7 @@ function OverviewPanel() {
       {/* Header + period filter */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
-          <p className="text-xs font-bold tracking-widest text-[#2f6a4a] uppercase mb-1">
+          <p className="text-xs font-bold tracking-widest text-[#3d7a20] uppercase mb-1">
             {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Overview</h1>
@@ -769,7 +769,7 @@ function OverviewPanel() {
               type="button"
               onClick={() => setPeriod(p)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-                period === p ? 'bg-[#2f6a4a] text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                period === p ? 'bg-[#3d7a20] text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               {p}
@@ -802,8 +802,8 @@ function OverviewPanel() {
 
       {/* Live API orders banner */}
       {recentOrders.length > 0 && (
-        <div className="mb-4 bg-[#e7f3ec] border border-[#2f6a4a]/20 rounded-xl p-4">
-          <p className="text-xs font-bold text-[#2f6a4a] uppercase tracking-widest mb-2">
+        <div className="mb-4 bg-[#fdf4e8] border border-[#3d7a20]/20 rounded-xl p-4">
+          <p className="text-xs font-bold text-[#3d7a20] uppercase tracking-widest mb-2">
             Recent Orders ({apiOrders.length} total)
           </p>
           <div className="space-y-2">
@@ -841,7 +841,7 @@ function OverviewPanel() {
               return (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
                   <div
-                    className="w-full rounded-t-sm bg-[#2f6a4a] opacity-80 hover:opacity-100 transition-opacity"
+                    className="w-full rounded-t-sm bg-[#3d7a20] opacity-80 hover:opacity-100 transition-opacity"
                     style={{ height: `${(val / chartMax) * 100}%` }}
                     title={`${data.chartLabels[i]}: ₹${val}k`}
                   />
@@ -865,7 +865,7 @@ function OverviewPanel() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900 truncate">{item.name}</p>
-                  <p className="text-xs text-[#2f6a4a]">{item.category}</p>
+                  <p className="text-xs text-[#3d7a20]">{item.category}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-sm font-bold text-gray-900">₹{item.revenue.toLocaleString('en-IN')}</p>
@@ -937,7 +937,7 @@ function InventoryPanel() {
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto"
+          className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#2a5a14] transition-colors self-start sm:self-auto"
         >
           <TiIcon name="plus" size={15} />
           Add Product
@@ -958,7 +958,7 @@ function InventoryPanel() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <table className="w-full text-sm min-w-[560px]">
@@ -996,7 +996,7 @@ function InventoryPanel() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
-                        <button type="button" onClick={() => setEditingProduct(item)} className="p-1.5 text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec] rounded-lg transition-colors" aria-label="Edit"><TiIcon name="pencil" size={14} /></button>
+                        <button type="button" onClick={() => setEditingProduct(item)} className="p-1.5 text-gray-400 hover:text-[#3d7a20] hover:bg-[#fdf4e8] rounded-lg transition-colors" aria-label="Edit"><TiIcon name="pencil" size={14} /></button>
                         <button type="button" onClick={() => handleDelete(item.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" aria-label="Delete"><TiIcon name="trash" size={14} /></button>
                       </div>
                     </td>
@@ -1105,7 +1105,7 @@ function OrdersPanel() {
       </div>
       <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
         {statuses.map((s) => (
-          <button type="button" key={s} onClick={() => setFilter(s)} className={`whitespace-nowrap px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors flex-shrink-0 ${filter === s ? 'bg-[#2f6a4a] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+          <button type="button" key={s} onClick={() => setFilter(s)} className={`whitespace-nowrap px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors flex-shrink-0 ${filter === s ? 'bg-[#3d7a20] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
             {s}
           </button>
         ))}
@@ -1118,7 +1118,7 @@ function OrdersPanel() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <table className="w-full text-sm min-w-[520px]">
@@ -1139,7 +1139,7 @@ function OrdersPanel() {
                     <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">
                       <div className="flex items-center gap-1.5">
                         {order.id}
-                        {order.isReal && <span className="w-1.5 h-1.5 rounded-full bg-[#2f6a4a] flex-shrink-0" />}
+                        {order.isReal && <span className="w-1.5 h-1.5 rounded-full bg-[#3d7a20] flex-shrink-0" />}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell">{order.date}</td>
@@ -1168,7 +1168,7 @@ function OrdersPanel() {
                       <button
                         type="button"
                         onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
-                        className={`p-1.5 rounded-lg transition-colors ${expandedId === order.id ? 'text-[#2f6a4a] bg-[#e7f3ec]' : 'text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec]'}`}
+                        className={`p-1.5 rounded-lg transition-colors ${expandedId === order.id ? 'text-[#3d7a20] bg-[#fdf4e8]' : 'text-gray-400 hover:text-[#3d7a20] hover:bg-[#fdf4e8]'}`}
                         aria-label="View order details"
                       >
                         <TiIcon name="eye" size={14} />
@@ -1183,7 +1183,7 @@ function OrdersPanel() {
                           {/* Customer address */}
                           {order.address && (
                             <div className="flex items-start gap-2">
-                              <TiIcon name="location-pin" size={13} className="text-[#2f6a4a] flex-shrink-0 mt-0.5" />
+                              <TiIcon name="location-pin" size={13} className="text-[#3d7a20] flex-shrink-0 mt-0.5" />
                               <div>
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Delivery Address</p>
                                 <p className="text-sm text-gray-700">{order.address}</p>
@@ -1268,7 +1268,7 @@ function DeliveryPanel() {
                 <td className="px-4 py-3 font-medium text-gray-900 text-sm">{d.customer}</td>
                 <td className="px-4 py-3 hidden sm:table-cell">
                   <div className="flex items-start gap-1 text-xs">
-                    <TiIcon name="location-pin" size={11} className="text-[#2f6a4a] mt-0.5 flex-shrink-0" />
+                    <TiIcon name="location-pin" size={11} className="text-[#3d7a20] mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="font-medium text-gray-700">{d.area}</p>
                       <p className="text-gray-400">{d.address}</p>
@@ -1299,14 +1299,14 @@ function FarmersPanel() {
           <h1 className="font-serif text-2xl font-bold text-gray-900">Farmers</h1>
           <p className="text-gray-500 text-sm mt-0.5">{FARMERS.length} partner farmers · {FARMERS.filter(f => f.active).length} active this month</p>
         </div>
-        <button type="button" className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto">
+        <button type="button" className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#2a5a14] transition-colors self-start sm:self-auto">
           <TiIcon name="plus" size={15} />
           Add Farmer
         </button>
       </div>
       <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
         {[
-          { label: 'Total Partners',    value: '240+',  icon: <TiIcon name="shine" size={18} className="text-[#2f6a4a]" /> },
+          { label: 'Total Partners',    value: '240+',  icon: <TiIcon name="shine" size={18} className="text-[#3d7a20]" /> },
           { label: 'Active This Month', value: '186',   icon: <TiIcon name="stats-up" size={18} className="text-emerald-500" /> },
           { label: 'Avg Rating',        value: '4.7 ★', icon: <TiIcon name="crown" size={18} className="text-amber-500" /> },
         ].map((s) => (
@@ -1337,7 +1337,7 @@ function FarmersPanel() {
               <tr key={f.id} className="hover:bg-gray-50/50 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[#e7f3ec] rounded-full flex items-center justify-center flex-shrink-0"><TiIcon name="shine" size={14} className="text-[#2f6a4a]" /></div>
+                    <div className="w-8 h-8 bg-[#fdf4e8] rounded-full flex items-center justify-center flex-shrink-0"><TiIcon name="shine" size={14} className="text-[#3d7a20]" /></div>
                     <span className="font-medium text-gray-900 text-sm">{f.name}</span>
                   </div>
                 </td>
@@ -1393,7 +1393,7 @@ function SettingsPanel() {
       <h1 className="font-serif text-2xl font-bold text-gray-900 mb-6">Settings</h1>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sm:p-6 mb-5">
-        <div className="flex items-center gap-2 mb-5"><TiIcon name="home" size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Business Information</h2></div>
+        <div className="flex items-center gap-2 mb-5"><TiIcon name="home" size={18} className="text-[#3d7a20]" /><h2 className="font-semibold text-gray-900">Business Information</h2></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
             { label: 'Shop Name',       value: 'Tenkasi Fresh Fruits' },
@@ -1404,18 +1404,18 @@ function SettingsPanel() {
           ].map((f) => (
             <div key={f.label}>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{f.label}</label>
-              <input type="text" title={f.label} defaultValue={f.value} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="text" title={f.label} defaultValue={f.value} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
           ))}
           <div className="sm:col-span-2">
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Address</label>
-            <input type="text" title="Address" defaultValue="12, Market Road, Tenkasi, Tamil Nadu 627811" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            <input type="text" title="Address" defaultValue="12, Market Road, Tenkasi, Tamil Nadu 627811" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sm:p-6 mb-5">
-        <div className="flex items-center gap-2 mb-5"><TiIcon name="truck" size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Delivery Settings</h2></div>
+        <div className="flex items-center gap-2 mb-5"><TiIcon name="truck" size={18} className="text-[#3d7a20]" /><h2 className="font-semibold text-gray-900">Delivery Settings</h2></div>
         <div className="grid grid-cols-2 gap-4">
           {[
             { label: 'Minimum Order (₹)',          value: '200' },
@@ -1425,7 +1425,7 @@ function SettingsPanel() {
           ].map((f) => (
             <div key={f.label}>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{f.label}</label>
-              <input type="number" title={f.label} defaultValue={f.value} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" title={f.label} defaultValue={f.value} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
           ))}
         </div>
@@ -1434,7 +1434,7 @@ function SettingsPanel() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sm:p-6 mb-5">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <TiIcon name="bell" size={18} className="text-[#2f6a4a]" />
+            <TiIcon name="bell" size={18} className="text-[#3d7a20]" />
             <h2 className="font-semibold text-gray-900">Notification Preferences</h2>
           </div>
           <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${emailjsReady ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
@@ -1452,7 +1452,7 @@ function SettingsPanel() {
             title="Admin notification email"
             value={notifs.adminEmail}
             onChange={(e) => setNotifs((p) => ({ ...p, adminEmail: e.target.value }))}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
+            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition"
             placeholder="admin@example.com"
           />
           <p className="text-[11px] text-gray-400 mt-1">All notification emails will be sent to this address.</p>
@@ -1473,7 +1473,7 @@ function SettingsPanel() {
               <button
                 type="button"
                 onClick={() => setNotifs((prev) => ({ ...prev, [n.key]: !prev[n.key] }))}
-                className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${notifs[n.key] ? 'bg-[#2f6a4a]' : 'bg-gray-200'}`}
+                className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${notifs[n.key] ? 'bg-[#3d7a20]' : 'bg-gray-200'}`}
                 aria-label={n.label}
               >
                 <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${notifs[n.key] ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -1507,17 +1507,17 @@ VITE_EMAILJS_TEMPLATE_REPORT=template_xxxxxxx`}</pre>
             type="button"
             onClick={() => void handleTestEmail()}
             disabled={!emailjsReady}
-            className="flex items-center gap-2 border border-[#2f6a4a] text-[#2f6a4a] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#2f6a4a]/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 border border-[#3d7a20] text-[#3d7a20] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#3d7a20]/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <TiIcon name="email" size={14} />
             {testSent ? 'Test Email Sent!' : 'Send Test Email'}
           </button>
           {testError && <p className="text-xs text-red-600">{testError}</p>}
-          {testSent && <p className="text-xs text-[#2f6a4a]">Check {notifs.adminEmail}</p>}
+          {testSent && <p className="text-xs text-[#3d7a20]">Check {notifs.adminEmail}</p>}
         </div>
       </div>
 
-      <button type="button" onClick={handleSave} className="flex items-center gap-2 bg-[#2f6a4a] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors">
+      <button type="button" onClick={handleSave} className="flex items-center gap-2 bg-[#3d7a20] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors">
         <TiIcon name="save" size={15} />
         {saved ? 'Preferences Saved!' : 'Save Changes'}
       </button>
@@ -1606,26 +1606,26 @@ function CouponFormModal({
         <div className="p-5 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Coupon Code <span className="text-red-500">*</span></label>
-            <input type="text" value={form.code} onChange={set('code')} placeholder="e.g. FRESH10" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition uppercase" />
+            <input type="text" value={form.code} onChange={set('code')} placeholder="e.g. FRESH10" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition uppercase" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Discount (₹) <span className="text-red-500">*</span></label>
-              <input type="number" value={form.discountAmount} onChange={set('discountAmount')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" value={form.discountAmount} onChange={set('discountAmount')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Min. Order (₹)</label>
-              <input type="number" value={form.minimumOrderAmount} onChange={set('minimumOrderAmount')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="number" value={form.minimumOrderAmount} onChange={set('minimumOrderAmount')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Starts</label>
-              <input type="date" value={form.startsAtUtc} onChange={set('startsAtUtc')} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="date" value={form.startsAtUtc} onChange={set('startsAtUtc')} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Expires <span className="text-red-500">*</span></label>
-              <input type="date" value={form.endsAtUtc} onChange={set('endsAtUtc')} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+              <input type="date" value={form.endsAtUtc} onChange={set('endsAtUtc')} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
           </div>
         </div>
@@ -1635,7 +1635,7 @@ function CouponFormModal({
             type="button"
             onClick={() => void handleSave()}
             disabled={!form.code || !form.discountAmount || !form.endsAtUtc || saving}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'}`}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${saved ? 'bg-emerald-500 text-white' : 'bg-[#3d7a20] text-white hover:bg-[#2a5a14] disabled:opacity-40 disabled:cursor-not-allowed'}`}
           >
             {saved ? '✓ Saved!' : coupon ? 'Save Changes' : 'Add Coupon'}
           </button>
@@ -1685,7 +1685,7 @@ function DiscountsPanel() {
         <button
           type="button"
           onClick={() => { setEditingCoupon(null); setShowModal(true) }}
-          className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto"
+          className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#2a5a14] transition-colors self-start sm:self-auto"
         >
           <TiIcon name="plus" size={15} />
           Add Coupon
@@ -1695,7 +1695,7 @@ function DiscountsPanel() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : coupons.length === 0 ? (
           <p className="text-center text-gray-400 text-sm py-12">No coupons yet.</p>
@@ -1715,7 +1715,7 @@ function DiscountsPanel() {
               {coupons.map((c) => (
                 <tr key={c.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-4 py-3 font-mono font-bold text-gray-900 text-sm">{c.code}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-[#2f6a4a]">₹{c.discountAmount}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-[#3d7a20]">₹{c.discountAmount}</td>
                   <td className="px-4 py-3 text-right text-gray-600 hidden sm:table-cell">₹{c.minimumOrderAmount}</td>
                   <td className="px-4 py-3 text-center text-gray-500 text-xs hidden md:table-cell">
                     {new Date(c.endsAtUtc).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -1727,7 +1727,7 @@ function DiscountsPanel() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-2">
-                      <button type="button" onClick={() => { setEditingCoupon(c); setShowModal(true) }} className="p-1.5 text-gray-400 hover:text-[#2f6a4a] hover:bg-[#e7f3ec] rounded-lg transition-colors" aria-label="Edit"><TiIcon name="pencil" size={14} /></button>
+                      <button type="button" onClick={() => { setEditingCoupon(c); setShowModal(true) }} className="p-1.5 text-gray-400 hover:text-[#3d7a20] hover:bg-[#fdf4e8] rounded-lg transition-colors" aria-label="Edit"><TiIcon name="pencil" size={14} /></button>
                       <button type="button" onClick={() => void handleDelete(c.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" aria-label="Delete"><TiIcon name="trash" size={14} /></button>
                     </div>
                   </td>
@@ -1794,19 +1794,19 @@ function AddBasketModal({ onClose, onSave }: { onClose: () => void; onSave: (b: 
         <div className="p-5 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Basket Name <span className="text-red-500">*</span></label>
-            <input type="text" value={form.name} onChange={setField('name')} placeholder="e.g. Pongal Special Hamper" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            <input type="text" value={form.name} onChange={setField('name')} placeholder="e.g. Pongal Special Hamper" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
-            <input type="number" value={form.price} onChange={setField('price')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            <input type="number" value={form.price} onChange={setField('price')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Items Included</label>
-            <input type="text" value={form.items} onChange={setField('items')} placeholder="e.g. Mango × 4, Banana × 6" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            <input type="text" value={form.items} onChange={setField('items')} placeholder="e.g. Mango × 4, Banana × 6" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
-            <textarea value={form.description} onChange={setField('description')} placeholder="Describe the basket…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition resize-none" />
+            <textarea value={form.description} onChange={setField('description')} placeholder="Describe the basket…" rows={2} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition resize-none" />
           </div>
           {/* Multi-image upload */}
           <div>
@@ -1814,7 +1814,7 @@ function AddBasketModal({ onClose, onSave }: { onClose: () => void; onSave: (b: 
               Images <span className="text-gray-400 font-normal">(up to 6 — will be shown as collage)</span>
             </label>
             <label className="block cursor-pointer">
-              <div className="w-full px-3 py-2.5 border border-dashed border-gray-300 rounded-lg text-sm text-center text-gray-500 hover:border-[#2f6a4a] hover:text-[#2f6a4a] transition">
+              <div className="w-full px-3 py-2.5 border border-dashed border-gray-300 rounded-lg text-sm text-center text-gray-500 hover:border-[#3d7a20] hover:text-[#3d7a20] transition">
                 + Add images from device
               </div>
               <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileAdd} />
@@ -1843,7 +1843,7 @@ function AddBasketModal({ onClose, onSave }: { onClose: () => void; onSave: (b: 
         </div>
         <div className="flex gap-3 p-5 border-t border-gray-100">
           <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">Cancel</button>
-          <button type="button" onClick={handleSave} disabled={!form.name || !form.price} className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'}`}>
+          <button type="button" onClick={handleSave} disabled={!form.name || !form.price} className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${saved ? 'bg-emerald-500 text-white' : 'bg-[#3d7a20] text-white hover:bg-[#2a5a14] disabled:opacity-40 disabled:cursor-not-allowed'}`}>
             {saved ? '✓ Basket Added!' : 'Save Basket'}
           </button>
         </div>
@@ -1863,7 +1863,7 @@ function BasketsPanel() {
           <h1 className="font-serif text-2xl font-bold text-gray-900">Baskets &amp; Combos</h1>
           <p className="text-gray-500 text-sm mt-0.5">{baskets.length} active baskets · Multiple images collaged automatically</p>
         </div>
-        <button type="button" onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto">
+        <button type="button" onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#2a5a14] transition-colors self-start sm:self-auto">
           <TiIcon name="plus" size={15} />
           Add Basket
         </button>
@@ -1876,7 +1876,7 @@ function BasketsPanel() {
             <div className="p-4">
               <div className="flex items-start justify-between gap-2 mb-1">
                 <h3 className="font-serif font-bold text-gray-900 text-sm leading-snug">{b.name}</h3>
-                <span className="text-[#2f6a4a] font-bold text-sm flex-shrink-0">₹{b.price}</span>
+                <span className="text-[#3d7a20] font-bold text-sm flex-shrink-0">₹{b.price}</span>
               </div>
               {b.description && <p className="text-gray-500 text-xs leading-relaxed mb-2 line-clamp-2">{b.description}</p>}
               {b.items && (
@@ -1886,7 +1886,7 @@ function BasketsPanel() {
               )}
               <div className="flex items-center gap-2">
                 {b.images.length > 1 && (
-                  <span className="text-[10px] font-bold text-[#2f6a4a] bg-[#e7f3ec] px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold text-[#3d7a20] bg-[#fdf4e8] px-2 py-0.5 rounded-full">
                     <TiIcon name="layers" size={9} className="inline mr-0.5" />{b.images.length} images
                   </span>
                 )}
@@ -1968,7 +1968,7 @@ function SeasonalPanel() {
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-[#2f6a4a] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1f4a2f] transition-colors self-start sm:self-auto"
+          className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#2a5a14] transition-colors self-start sm:self-auto"
         >
           <TiIcon name="plus" size={15} />
           Add Seasonal Product
@@ -1977,27 +1977,27 @@ function SeasonalPanel() {
 
       {loading && (
         <div className="flex items-center justify-center py-16">
-          <div className="w-8 h-8 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
       {!loading && <>
       {/* Currently seasonal */}
       <div className="mb-7">
-        <p className="text-[10px] font-bold text-[#2f6a4a] uppercase tracking-widest mb-3">
+        <p className="text-[10px] font-bold text-[#3d7a20] uppercase tracking-widest mb-3">
           Currently in Season ({seasonal.length})
         </p>
         {seasonal.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {seasonal.map((p) => (
-              <div key={p.id} className="bg-white rounded-xl border border-[#2f6a4a]/20 p-3 flex items-center gap-3 shadow-sm">
+              <div key={p.id} className="bg-white rounded-xl border border-[#3d7a20]/20 p-3 flex items-center gap-3 shadow-sm">
                 <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f5f0e8] flex-shrink-0">
                   <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
                   <p className="text-xs text-gray-400 mb-1">{p.nameTamil}</p>
-                  <span className="inline-block text-[10px] font-bold text-[#2f6a4a] bg-[#e7f3ec] px-2 py-0.5 rounded-full">
+                  <span className="inline-block text-[10px] font-bold text-[#3d7a20] bg-[#fdf4e8] px-2 py-0.5 rounded-full">
                     Seasonal · ₹{p.price}/{p.unit}
                   </span>
                 </div>
@@ -2037,7 +2037,7 @@ function SeasonalPanel() {
               <button
                 type="button"
                 onClick={() => toggle(p.id)}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-[#2f6a4a] border border-[#2f6a4a]/30 hover:bg-[#e7f3ec] rounded-lg text-xs font-semibold transition flex-shrink-0"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-[#3d7a20] border border-[#3d7a20]/30 hover:bg-[#fdf4e8] rounded-lg text-xs font-semibold transition flex-shrink-0"
               >
                 <TiIcon name="plus" size={12} />
                 Season
@@ -2125,7 +2125,7 @@ function AdminPage() {
   if (!user) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-[#f5f5f0]">
-        <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -2141,7 +2141,7 @@ function AdminPage() {
       )}
 
       <aside className={[
-        'bg-[#1a3d2b] flex flex-col overflow-y-auto transition-transform duration-300',
+        'bg-[#0c1d2b] flex flex-col overflow-y-auto transition-transform duration-300',
         'fixed inset-y-0 left-0 z-50 w-64 md:relative md:w-56 md:translate-x-0',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full',
       ].join(' ')}>
@@ -2161,7 +2161,7 @@ function AdminPage() {
 
           <Link
             to="/"
-            className="flex items-center gap-1 text-sm font-semibold !text-white hover:!text-white bg-[#2f6a4a] hover:bg-[#1f4a2f] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
+            className="flex items-center gap-1 text-sm font-semibold !text-white hover:!text-white bg-[#3d7a20] hover:bg-[#2a5a14] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
           >
             <TiIcon name="angle-left" size={16} />
             <span className="hidden xs:inline sm:inline">Back to Store</span>
@@ -2178,7 +2178,7 @@ function AdminPage() {
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-[#2f6a4a] rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-[#3d7a20] rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-sm">{user.name.charAt(0)}</span>
               </div>
               <div className="hidden sm:block">

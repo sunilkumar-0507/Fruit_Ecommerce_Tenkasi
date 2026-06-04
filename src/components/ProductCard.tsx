@@ -60,7 +60,7 @@ export default function ProductCard({
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
-        <p className="text-[#2f6a4a] text-xs font-bold tracking-widest uppercase mb-1">{category}</p>
+        <p className="text-[#3d7a20] text-xs font-bold tracking-widest uppercase mb-1">{category}</p>
         <h3 className="font-serif text-base font-semibold text-gray-900 leading-snug mb-0.5">{name}</h3>
         <p className="text-gray-400 text-xs mb-2">{nameTamil}</p>
         <div className="flex items-center gap-2 mb-3">
@@ -69,7 +69,7 @@ export default function ProductCard({
             <span className="text-gray-700 text-xs font-semibold">{rating}</span>
             <span className="text-gray-400 text-xs">({reviews})</span>
           </div>
-          <span className="text-[#2f6a4a] text-xs font-medium bg-[#e7f3ec] px-2 py-0.5 rounded-full">
+          <span className="text-[#3d7a20] text-xs font-medium bg-[#fdf4e8] px-2 py-0.5 rounded-full">
             Chemical Free
           </span>
         </div>
@@ -87,7 +87,7 @@ export default function ProductCard({
             className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
               added
                 ? 'bg-emerald-500 scale-110'
-                : 'bg-[#2f6a4a] hover:bg-[#1f4a2f] hover:scale-110 active:scale-95'
+                : 'bg-[#3d7a20] hover:bg-[#2a5a14] hover:scale-110 active:scale-95'
             }`}
             aria-label={`Add ${name} to cart`}
           >

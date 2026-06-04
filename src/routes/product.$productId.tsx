@@ -32,7 +32,7 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
               key={i}
               type="button"
               onClick={() => setActive(i)}
-              className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${i === active ? 'border-[#2f6a4a] shadow-md' : 'border-transparent opacity-60 hover:opacity-100'}`}
+              className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${i === active ? 'border-[#3d7a20] shadow-md' : 'border-transparent opacity-60 hover:opacity-100'}`}
             >
               <img src={img} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
             </button>
@@ -115,8 +115,8 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
             <div key={r.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#e7f3ec] flex items-center justify-center flex-shrink-0">
-                    <span className="text-[#2f6a4a] font-bold text-sm">{r.userName.charAt(0).toUpperCase()}</span>
+                  <div className="w-8 h-8 rounded-full bg-[#fdf4e8] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#3d7a20] font-bold text-sm">{r.userName.charAt(0).toUpperCase()}</span>
                   </div>
                   <span className="font-semibold text-gray-900 text-sm">{r.userName}</span>
                 </div>
@@ -136,7 +136,7 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
       )}
 
       {/* Feedback form */}
-      <div className="bg-[#f5f9f7] rounded-2xl p-5 border border-[#2f6a4a]/10">
+      <div className="bg-[#f5f9f7] rounded-2xl p-5 border border-[#3d7a20]/10">
         <h3 className="font-serif text-lg font-bold text-gray-900 mb-4">Write a Review</h3>
         <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
           <div>
@@ -146,7 +146,7 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Priya Sharma"
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white"
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white"
             />
           </div>
           <div>
@@ -160,7 +160,7 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
               onChange={(e) => setComment(e.target.value)}
               placeholder="Tell us what you think about this product…"
               rows={3}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white resize-none"
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white resize-none"
             />
           </div>
           {reviewError && (
@@ -172,7 +172,7 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
             className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               submitted
                 ? 'bg-emerald-500 text-white'
-                : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
+                : 'bg-[#3d7a20] text-white hover:bg-[#2a5a14] disabled:opacity-40 disabled:cursor-not-allowed'
             }`}
           >
             {submitted ? '✓ Review Submitted!' : 'Submit Review'}
@@ -194,7 +194,7 @@ function fromApiDto(p: ProductDto): Product {
     categorySlug: p.category?.slug ?? '',
     price: p.price,
     originalPrice: p.originalPrice ?? p.price,
-    image: primary?.url ?? '/images/categories/mangoes.jpg',
+    image: primary?.url ?? '/images/products/mangoes.jpeg',
     images: allImgs.length > 1 ? allImgs : undefined,
     rating: p.rating ?? 4.5,
     reviews: 0,
@@ -236,7 +236,7 @@ function ProductDetailPage() {
       return (
         <main className="min-h-screen bg-[#faf9f4] flex items-center justify-center">
           <div className="text-center px-4">
-            <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             <p className="text-gray-500 text-sm">Loading product…</p>
           </div>
         </main>
@@ -248,7 +248,7 @@ function ProductDetailPage() {
           <p className="text-6xl mb-4">🍃</p>
           <h2 className="font-serif text-2xl font-bold text-gray-900 mb-2">Product not found</h2>
           <p className="text-gray-500 mb-6">This product may have been removed or the link is incorrect.</p>
-          <Link to="/shop" className="bg-[#2f6a4a] text-white px-6 py-3 rounded-full font-semibold no-underline hover:bg-[#1f4a2f] transition-colors">
+          <Link to="/shop" className="bg-[#3d7a20] text-white px-6 py-3 rounded-full font-semibold no-underline hover:bg-[#2a5a14] transition-colors">
             Back to Shop
           </Link>
         </div>
@@ -274,9 +274,9 @@ function ProductDetailPage() {
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2 text-sm text-gray-400 overflow-x-auto">
-          <button type="button" onClick={() => void navigate({ to: '/' })} className="hover:text-[#2f6a4a] transition-colors whitespace-nowrap">Home</button>
+          <button type="button" onClick={() => void navigate({ to: '/' })} className="hover:text-[#3d7a20] transition-colors whitespace-nowrap">Home</button>
           <TiIcon name="angle-right" size={12} />
-          <Link to="/shop" className="hover:text-[#2f6a4a] transition-colors no-underline text-gray-400 whitespace-nowrap">Shop</Link>
+          <Link to="/shop" className="hover:text-[#3d7a20] transition-colors no-underline text-gray-400 whitespace-nowrap">Shop</Link>
           <TiIcon name="angle-right" size={12} />
           <span className="text-gray-600 font-medium truncate max-w-[160px] sm:max-w-none">{product.name}</span>
         </div>
@@ -295,7 +295,7 @@ function ProductDetailPage() {
             {/* Badges */}
             <div className="flex flex-wrap gap-2">
               {product.typeBadge && (
-                <span className="bg-[#e7f3ec] text-[#2f6a4a] text-xs font-bold px-3 py-1 rounded-full tracking-widest uppercase">
+                <span className="bg-[#fdf4e8] text-[#3d7a20] text-xs font-bold px-3 py-1 rounded-full tracking-widest uppercase">
                   {product.typeBadge}
                 </span>
               )}
@@ -308,12 +308,12 @@ function ProductDetailPage() {
 
             <div>
               <div className="flex items-start justify-between gap-2">
-                <p className="text-[#2f6a4a] text-xs font-bold tracking-widest uppercase mb-1">{product.category}</p>
+                <p className="text-[#3d7a20] text-xs font-bold tracking-widest uppercase mb-1">{product.category}</p>
                 {isApiMode() && apiProduct && (
                   <button
                     type="button"
                     onClick={() => setIsTamil((t) => !t)}
-                    className="flex-shrink-0 px-3 py-1 rounded-full border border-gray-200 text-xs font-semibold text-gray-500 hover:border-[#2f6a4a] hover:text-[#2f6a4a] transition-colors"
+                    className="flex-shrink-0 px-3 py-1 rounded-full border border-gray-200 text-xs font-semibold text-gray-500 hover:border-[#3d7a20] hover:text-[#3d7a20] transition-colors"
                   >
                     {isTamil ? 'EN' : 'தமிழ்'}
                   </button>
@@ -331,12 +331,12 @@ function ProductDetailPage() {
 
             {/* Rating */}
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 bg-[#2f6a4a] text-white px-2.5 py-1 rounded-lg">
+              <div className="flex items-center gap-1 bg-[#3d7a20] text-white px-2.5 py-1 rounded-lg">
                 <span className="text-sm font-bold">{product.rating}</span>
                 <span className="text-amber-300 text-sm">★</span>
               </div>
               <span className="text-gray-500 text-sm">{product.reviews.toLocaleString('en-IN')} ratings</span>
-              <span className="text-[#2f6a4a] text-xs font-semibold bg-[#e7f3ec] px-2.5 py-1 rounded-full">Chemical Free</span>
+              <span className="text-[#3d7a20] text-xs font-semibold bg-[#fdf4e8] px-2.5 py-1 rounded-full">Chemical Free</span>
             </div>
 
             {/* Price */}
@@ -389,7 +389,7 @@ function ProductDetailPage() {
                     <ul className="space-y-2">
                       {product.uses.map((use, i) => (
                         <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
-                          <TiIcon name="check" size={15} className="text-[#2f6a4a] mt-0.5 flex-shrink-0" />
+                          <TiIcon name="check" size={15} className="text-[#3d7a20] mt-0.5 flex-shrink-0" />
                           {use}
                         </li>
                       ))}
@@ -401,7 +401,7 @@ function ProductDetailPage() {
 
             {/* Delivery info */}
             <div className="flex items-center gap-3 bg-[#f5f9f7] rounded-xl px-4 py-3">
-              <TiIcon name="truck" size={18} className="text-[#2f6a4a] flex-shrink-0" />
+              <TiIcon name="truck" size={18} className="text-[#3d7a20] flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-gray-900">Same-day delivery available</p>
                 <p className="text-xs text-gray-500">Order before 12 PM for delivery by evening</p>
@@ -431,7 +431,7 @@ function ProductDetailPage() {
                 </button>
               </div>
               {qty > 1 && (
-                <span className="text-sm font-semibold text-[#2f6a4a]">= ₹{product.price * qty}</span>
+                <span className="text-sm font-semibold text-[#3d7a20]">= ₹{product.price * qty}</span>
               )}
             </div>
 
@@ -446,7 +446,7 @@ function ProductDetailPage() {
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : added
                       ? 'bg-emerald-500 text-white'
-                      : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f]'
+                      : 'bg-[#3d7a20] text-white hover:bg-[#2a5a14]'
                 }`}
               >
                 <TiIcon name={added ? 'check' : 'shopping-cart'} size={18} className={outOfStock ? 'text-gray-400' : 'text-white'} />
@@ -472,7 +472,7 @@ function ProductDetailPage() {
                 { icon: 'check-box', label: 'Quality Assured' },
               ].map((item) => (
                 <div key={item.label} className="text-center bg-white rounded-xl py-3 px-2 border border-gray-100 shadow-sm">
-                  <TiIcon name={item.icon} size={20} className="text-[#2f6a4a] mb-1" />
+                  <TiIcon name={item.icon} size={20} className="text-[#3d7a20] mb-1" />
                   <p className="text-[10px] font-semibold text-gray-700 leading-tight">{item.label}</p>
                 </div>
               ))}

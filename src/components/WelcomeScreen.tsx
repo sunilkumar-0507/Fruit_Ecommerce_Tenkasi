@@ -28,7 +28,7 @@ export default function WelcomeScreen({ onDone }: Props) {
     <div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
       style={{
-        background: 'linear-gradient(145deg, #071510 0%, #1a3d2b 52%, #0a1f14 100%)',
+        background: 'linear-gradient(145deg, #071510 0%, #0c1d2b 52%, #0a1f14 100%)',
         opacity: exiting ? 0 : 1,
         transition: exiting ? 'opacity 0.7s ease' : 'none',
         pointerEvents: exiting ? 'none' : 'auto',
@@ -61,7 +61,7 @@ export default function WelcomeScreen({ onDone }: Props) {
             <h1 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-wide leading-tight">
               Tenkasi Fresh
             </h1>
-            <p className="text-[#d4af37] text-sm font-medium mt-1 tracking-wider">
+            <p className="text-[#f5821f] text-sm font-medium mt-1 tracking-wider">
               நம்ம ஊர் பழங்கள்
             </p>
           </div>
@@ -69,9 +69,9 @@ export default function WelcomeScreen({ onDone }: Props) {
 
         {/* Divider */}
         <div className="flex items-center gap-3 w-full" style={{ opacity: 0.32 }}>
-          <div className="flex-1 h-px bg-[#d4af37]/60" />
-          <span className="text-[#d4af37] text-[10px] font-bold tracking-widest uppercase">Season's Best</span>
-          <div className="flex-1 h-px bg-[#d4af37]/60" />
+          <div className="flex-1 h-px bg-[#f5821f]/60" />
+          <span className="text-[#f5821f] text-[10px] font-bold tracking-widest uppercase">Season's Best</span>
+          <div className="flex-1 h-px bg-[#f5821f]/60" />
         </div>
 
         {/* Seasonal product card */}
@@ -88,7 +88,7 @@ export default function WelcomeScreen({ onDone }: Props) {
           <div className="relative h-40 sm:h-48 overflow-hidden">
             <img src={featured.image} alt={featured.name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            <span className="absolute top-2.5 left-2.5 text-[10px] font-bold text-[#d4af37] bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full uppercase tracking-widest">
+            <span className="absolute top-2.5 left-2.5 text-[10px] font-bold text-[#f5821f] bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full uppercase tracking-widest">
               🌿 Now in Season
             </span>
           </div>
@@ -98,7 +98,7 @@ export default function WelcomeScreen({ onDone }: Props) {
               <p className="text-white/50 text-[11px] mt-0.5">{featured.nameTamil}</p>
             </div>
             <div className="text-right">
-              <p className="text-[#d4af37] font-bold text-base">₹{featured.price}</p>
+              <p className="text-[#f5821f] font-bold text-base">₹{featured.price}</p>
               <p className="text-white/40 text-[10px]">/ {featured.unit}</p>
             </div>
           </div>

@@ -115,24 +115,24 @@ function HomePage() {
                 Sun-ripened,<br />
                 bounty from the<br />
                 foothills of{' '}
-                <span className="text-[#2f6a4a]">Tenkasi</span>.
+                <span className="text-[#3d7a20]">Tenkasi</span>.
               </h1>
               <p className="text-base sm:text-lg text-gray-600 max-w-lg leading-relaxed">
                 Harvested at dawn. Wrapped in banana leaves. Delivered by dusk across{' '}
-                <span className="text-[#2f6a4a] font-semibold">Tamil Nadu</span> — directly
+                <span className="text-[#3d7a20] font-semibold">Tamil Nadu</span> — directly
                 from our 240+ farmer families.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Link
                   to="/shop"
-                  className="bg-[#2f6a4a] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1f4a2f] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 no-underline"
+                  className="bg-[#3d7a20] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#2a5a14] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 no-underline"
                 >
                   <ShoppingCart size={20} />
                   Shop Now
                 </Link>
                 <Link
                   to="/seasonal"
-                  className="border-2 border-[#2f6a4a] text-[#2f6a4a] px-8 py-3 rounded-full font-semibold hover:bg-[#2f6a4a] hover:text-white transition-all duration-300 flex items-center justify-center no-underline"
+                  className="border-2 border-[#3d7a20] text-[#3d7a20] px-8 py-3 rounded-full font-semibold hover:bg-[#3d7a20] hover:text-white transition-all duration-300 flex items-center justify-center no-underline"
                 >
                   Explore Seasonal
                 </Link>
@@ -148,12 +148,12 @@ function HomePage() {
                   loading="lazy"
                 />
               </div>
-              <div className="absolute top-6 right-6 bg-[#2f6a4a] text-white rounded-2xl px-4 py-3 shadow-lg">
+              <div className="absolute top-6 right-6 bg-[#3d7a20] text-white rounded-2xl px-4 py-3 shadow-lg">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-lg">🌿</span>
                   <span className="font-bold text-sm">100% Chemical free</span>
                 </div>
-                <p className="text-[10px] font-bold tracking-widest text-[#d4af37]">
+                <p className="text-[10px] font-bold tracking-widest text-[#f5821f]">
                   NO CARBIDE RIPENING
                 </p>
               </div>
@@ -166,7 +166,7 @@ function HomePage() {
       <section className="py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#2f6a4a] mb-3">
+            <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#3d7a20] mb-3">
               Shop by Category
             </h2>
             <p className="text-gray-500 text-lg max-w-xl mx-auto">
@@ -198,14 +198,14 @@ function HomePage() {
             </div>
             <Link
               to="/shop"
-              className="hidden sm:block text-[#2f6a4a] font-semibold text-sm hover:underline no-underline"
+              className="hidden sm:block text-[#3d7a20] font-semibold text-sm hover:underline no-underline"
             >
               View all →
             </Link>
           </div>
           {featuredLoading ? (
             <div className="flex justify-center py-16">
-              <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -221,7 +221,7 @@ function HomePage() {
       <section className="py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#2f6a4a] mb-3">
+            <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#3d7a20] mb-3">
               Why Choose Tenkasi Fresh?
             </h2>
             <p className="text-gray-500 text-lg">We deliver excellence in every bite</p>
@@ -237,7 +237,7 @@ function HomePage() {
                 key={item.title}
                 className="bg-white rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 border border-gray-100"
               >
-                <div className="flex justify-center mb-4 text-[#2f6a4a]">{item.icon}</div>
+                <div className="flex justify-center mb-4 text-[#3d7a20]">{item.icon}</div>
                 <h3 className="font-serif text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
               </div>
@@ -249,10 +249,10 @@ function HomePage() {
       {/* FESTIVAL BANNER */}
       <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-[#2f6a4a] to-[#1a3d2b] rounded-3xl overflow-hidden p-10 sm:p-16 text-white relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#d4af37]/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="bg-gradient-to-r from-[#3d7a20] to-[#0c1d2b] rounded-3xl overflow-hidden p-10 sm:p-16 text-white relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#f5821f]/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="relative z-10 max-w-xl">
-              <p className="text-[#d4af37] text-xs font-bold tracking-widest uppercase mb-3">
+              <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-3">
                 Limited Time
               </p>
               <h2 className="font-serif text-3xl sm:text-5xl font-bold mb-4">
@@ -263,7 +263,7 @@ function HomePage() {
               </p>
               <Link
                 to="/baskets"
-                className="inline-block bg-[#d4af37] text-[#1a3d2b] px-8 py-3 rounded-full font-bold hover:bg-[#e6c447] transition-colors no-underline"
+                className="inline-block bg-[#f5821f] text-[#0c1d2b] px-8 py-3 rounded-full font-bold hover:bg-[#f59a2e] transition-colors no-underline"
               >
                 Shop Festival Deals
               </Link>
@@ -290,7 +290,7 @@ function HomePage() {
             <button
               type="button"
               onClick={() => setCurrentTestimonial((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
-              className="w-11 h-11 rounded-full border-2 border-[#2f6a4a] text-[#2f6a4a] font-bold hover:bg-[#2f6a4a] hover:text-white transition-all"
+              className="w-11 h-11 rounded-full border-2 border-[#3d7a20] text-[#3d7a20] font-bold hover:bg-[#3d7a20] hover:text-white transition-all"
               aria-label="Previous"
             >
               ←
@@ -303,7 +303,7 @@ function HomePage() {
                   onClick={() => setCurrentTestimonial(idx)}
                   aria-label={`Testimonial ${idx + 1}`}
                   className={`h-2.5 rounded-full transition-all ${
-                    idx === currentTestimonial ? 'bg-[#2f6a4a] w-7' : 'bg-gray-300 w-2.5'
+                    idx === currentTestimonial ? 'bg-[#3d7a20] w-7' : 'bg-gray-300 w-2.5'
                   }`}
                 />
               ))}
@@ -311,7 +311,7 @@ function HomePage() {
             <button
               type="button"
               onClick={() => setCurrentTestimonial((prev) => (prev + 1) % TESTIMONIALS.length)}
-              className="w-11 h-11 rounded-full border-2 border-[#2f6a4a] text-[#2f6a4a] font-bold hover:bg-[#2f6a4a] hover:text-white transition-all"
+              className="w-11 h-11 rounded-full border-2 border-[#3d7a20] text-[#3d7a20] font-bold hover:bg-[#3d7a20] hover:text-white transition-all"
               aria-label="Next"
             >
               →
@@ -323,10 +323,10 @@ function HomePage() {
       {/* ABOUT */}
       <section className="py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-br from-[#1a3d2b] to-[#2f6a4a] rounded-3xl overflow-hidden p-10 sm:p-16">
+          <div className="bg-gradient-to-br from-[#0c1d2b] to-[#3d7a20] rounded-3xl overflow-hidden p-10 sm:p-16">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="text-white space-y-5">
-                <p className="text-[#d4af37] text-xs font-bold tracking-widest uppercase">About Us</p>
+                <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase">About Us</p>
                 <h2 className="font-serif text-4xl sm:text-5xl font-bold leading-tight">
                   Rooted in Tenkasi,<br />trusted across Tamil Nadu
                 </h2>
@@ -335,7 +335,7 @@ function HomePage() {
                 </p>
                 <Link
                   to="/about"
-                  className="inline-block bg-[#d4af37] text-[#1a3d2b] px-8 py-3 rounded-full font-bold hover:bg-[#e6c447] transition-colors no-underline mt-2"
+                  className="inline-block bg-[#f5821f] text-[#0c1d2b] px-8 py-3 rounded-full font-bold hover:bg-[#f59a2e] transition-colors no-underline mt-2"
                 >
                   Read More →
                 </Link>
@@ -357,7 +357,7 @@ function HomePage() {
       {/* APP PROMO */}
       <section className="py-16 sm:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-[#2f6a4a]/90 to-[#4fb8b2]/90 rounded-3xl overflow-hidden p-10 sm:p-16">
+          <div className="bg-gradient-to-r from-[#3d7a20]/90 to-[#4fb8b2]/90 rounded-3xl overflow-hidden p-10 sm:p-16">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div className="text-white space-y-5">
                 <h2 className="font-serif text-4xl sm:text-5xl font-bold">Download Our App</h2>
@@ -367,13 +367,13 @@ function HomePage() {
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <button
                     type="button"
-                    className="bg-white text-[#2f6a4a] px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform inline-flex items-center justify-center gap-2"
+                    className="bg-white text-[#3d7a20] px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform inline-flex items-center justify-center gap-2"
                   >
                     📱 App Store
                   </button>
                   <button
                     type="button"
-                    className="bg-white text-[#2f6a4a] px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform inline-flex items-center justify-center gap-2"
+                    className="bg-white text-[#3d7a20] px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform inline-flex items-center justify-center gap-2"
                   >
                     🤖 Play Store
                   </button>

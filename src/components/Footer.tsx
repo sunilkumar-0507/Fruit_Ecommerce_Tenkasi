@@ -38,7 +38,7 @@ function WhatsappIcon() {
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1a3d2b] text-white">
+    <footer className="bg-[#0c1d2b] text-white">
       {/* Main Footer */}
       <div className="py-14 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -75,7 +75,7 @@ export default function Footer() {
               </a>
               <a
                 href="mailto:01919cmstenkasi@gmail.com"
-                className="text-[#d4af37]/80 hover:text-[#d4af37] transition-colors no-underline block"
+                className="text-[#f5821f]/80 hover:text-[#f5821f] transition-colors no-underline block"
               >
                 01919cmstenkasi@gmail.com
               </a>

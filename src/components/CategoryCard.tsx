@@ -9,7 +9,7 @@ interface CategoryCardProps {
 export default function CategoryCard({ name, image, productCount }: CategoryCardProps) {
   return (
     <Link to="/shop" className="group cursor-pointer no-underline">
-      <div className="relative h-44 rounded-2xl overflow-hidden bg-[#e7f3ec] mb-3 hover:shadow-lg transition-all duration-300">
+      <div className="relative h-44 rounded-2xl overflow-hidden bg-[#fdf4e8] mb-3 hover:shadow-lg transition-all duration-300">
         <img
           src={image}
           alt={name}
@@ -18,7 +18,7 @@ export default function CategoryCard({ name, image, productCount }: CategoryCard
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
       </div>
-      <h3 className="font-serif text-sm font-semibold text-[#2f6a4a] text-center mb-0.5">
+      <h3 className="font-serif text-sm font-semibold text-[#3d7a20] text-center mb-0.5">
         {name}
       </h3>
       <p className="text-xs text-gray-400 text-center">{productCount} products</p>

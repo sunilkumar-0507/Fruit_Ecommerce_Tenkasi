@@ -21,17 +21,17 @@ const OCCASIONS = [
 
 const FEATURES = [
   {
-    icon: <TiIcon name="gift" size={24} className="text-[#2f6a4a]" />,
+    icon: <TiIcon name="gift" size={24} className="text-[#3d7a20]" />,
     title: 'Hand-arranged',
     desc: 'Each basket is hand-assembled by our team with care and attention to detail.',
   },
   {
-    icon: <TiIcon name="star" size={24} className="text-[#2f6a4a]" />,
+    icon: <TiIcon name="star" size={24} className="text-[#3d7a20]" />,
     title: 'Premium selection',
     desc: 'Only the finest, ripest fruits hand-picked from trusted farmers make it in.',
   },
   {
-    icon: <TiIcon name="truck" size={24} className="text-[#2f6a4a]" />,
+    icon: <TiIcon name="truck" size={24} className="text-[#3d7a20]" />,
     title: 'Same-day delivery',
     desc: 'Order by noon for same-day delivery wrapped in traditional banana leaves.',
   },
@@ -93,20 +93,20 @@ function CustomBasketModal({ onClose }: { onClose: () => void }) {
                 return (
                   <div
                     key={p.id}
-                    className={`rounded-xl border p-3 transition-all ${qty > 0 ? 'border-[#2f6a4a] bg-[#f0f9f4]' : 'border-gray-100 bg-white'}`}
+                    className={`rounded-xl border p-3 transition-all ${qty > 0 ? 'border-[#3d7a20] bg-[#f0f9f4]' : 'border-gray-100 bg-white'}`}
                   >
                     <div className="aspect-square rounded-lg overflow-hidden mb-2">
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                     </div>
                     <h4 className="text-xs font-semibold text-gray-900 leading-tight mb-0.5 truncate">{p.name}</h4>
-                    <p className="text-[#2f6a4a] text-xs font-bold mb-2">
+                    <p className="text-[#3d7a20] text-xs font-bold mb-2">
                       ₹{p.price}<span className="text-gray-400 font-normal"> /{p.unit}</span>
                     </p>
                     {qty === 0 ? (
                       <button
                         type="button"
                         onClick={() => increment(p)}
-                        className="w-full py-1.5 rounded-lg bg-[#2f6a4a] text-white text-xs font-bold hover:bg-[#1f4a2f] transition"
+                        className="w-full py-1.5 rounded-lg bg-[#3d7a20] text-white text-xs font-bold hover:bg-[#2a5a14] transition"
                       >
                         Add
                       </button>
@@ -120,11 +120,11 @@ function CustomBasketModal({ onClose }: { onClose: () => void }) {
                         >
                           <TiIcon name="minus" size={11} className="text-gray-700" />
                         </button>
-                        <span className="text-sm font-bold text-[#2f6a4a] min-w-[1.5rem] text-center">{qty}</span>
+                        <span className="text-sm font-bold text-[#3d7a20] min-w-[1.5rem] text-center">{qty}</span>
                         <button
                           type="button"
                           onClick={() => increment(p)}
-                          className="w-7 h-7 rounded-lg bg-[#2f6a4a] hover:bg-[#1f4a2f] flex items-center justify-center transition"
+                          className="w-7 h-7 rounded-lg bg-[#3d7a20] hover:bg-[#2a5a14] flex items-center justify-center transition"
                           aria-label="Increase"
                         >
                           <TiIcon name="plus" size={11} className="text-white" />
@@ -143,7 +143,7 @@ function CustomBasketModal({ onClose }: { onClose: () => void }) {
               <div className="px-4 py-3 border-b border-gray-100 flex-shrink-0">
                 <h3 className="font-semibold text-gray-900 text-sm">
                   Your basket
-                  <span className="ml-1.5 bg-[#e7f3ec] text-[#2f6a4a] text-xs font-bold px-2 py-0.5 rounded-full">{selectedItems.length}</span>
+                  <span className="ml-1.5 bg-[#fdf4e8] text-[#3d7a20] text-xs font-bold px-2 py-0.5 rounded-full">{selectedItems.length}</span>
                 </h3>
               </div>
               <ul className="flex-1 overflow-y-auto divide-y divide-gray-50">
@@ -154,7 +154,7 @@ function CustomBasketModal({ onClose }: { onClose: () => void }) {
                       <p className="text-xs font-medium text-gray-900 truncate">{p.name}</p>
                       <p className="text-[11px] text-gray-400">× {selected[p.id]}</p>
                     </div>
-                    <p className="text-xs font-bold text-[#2f6a4a] flex-shrink-0">₹{p.price * selected[p.id]}</p>
+                    <p className="text-xs font-bold text-[#3d7a20] flex-shrink-0">₹{p.price * selected[p.id]}</p>
                   </li>
                 ))}
               </ul>
@@ -166,7 +166,7 @@ function CustomBasketModal({ onClose }: { onClose: () => void }) {
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="w-full bg-[#2f6a4a] text-white py-2.5 rounded-xl text-sm font-bold hover:bg-[#1f4a2f] transition"
+                  className="w-full bg-[#3d7a20] text-white py-2.5 rounded-xl text-sm font-bold hover:bg-[#2a5a14] transition"
                 >
                   Add to Cart
                 </button>
@@ -179,12 +179,12 @@ function CustomBasketModal({ onClose }: { onClose: () => void }) {
         <div className={`sm:hidden border-t border-gray-100 p-4 flex-shrink-0 ${selectedItems.length === 0 ? 'hidden' : 'flex'} items-center gap-3`}>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900">{selectedItems.length} item{selectedItems.length > 1 ? 's' : ''} selected</p>
-            <p className="text-xs text-gray-400">Total: <span className="font-bold text-[#2f6a4a]">₹{total}</span></p>
+            <p className="text-xs text-gray-400">Total: <span className="font-bold text-[#3d7a20]">₹{total}</span></p>
           </div>
           <button
             type="button"
             onClick={handleAddToCart}
-            className="bg-[#2f6a4a] text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-[#1f4a2f] transition flex-shrink-0"
+            className="bg-[#3d7a20] text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-[#2a5a14] transition flex-shrink-0"
           >
             Add to Cart
           </button>
@@ -204,7 +204,7 @@ function BasketsPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -215,7 +215,7 @@ function BasketsPage() {
       <section className="bg-[#f5f0e8] px-4 py-16 border-b border-gray-200">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div>
-            <p className="text-[#2f6a4a] text-xs font-bold tracking-widest uppercase mb-3">
+            <p className="text-[#3d7a20] text-xs font-bold tracking-widest uppercase mb-3">
               Festival &amp; Gift Baskets
             </p>
             <h1 className="font-serif text-5xl sm:text-6xl font-bold text-gray-900 mb-4">
@@ -228,7 +228,7 @@ function BasketsPage() {
               {OCCASIONS.map((o) => (
                 <span
                   key={o.label}
-                  className="inline-flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-full text-sm text-gray-700 hover:border-[#2f6a4a] hover:text-[#2f6a4a] transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-full text-sm text-gray-700 hover:border-[#3d7a20] hover:text-[#3d7a20] transition-colors cursor-pointer"
                 >
                   <span>{o.emoji}</span>
                   {o.label}
@@ -244,8 +244,8 @@ function BasketsPage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-4 -left-4 bg-[#2f6a4a] text-white px-4 py-3 rounded-2xl shadow-lg">
-              <p className="text-xs font-bold text-[#d4af37] tracking-wide">FREE DELIVERY</p>
+            <div className="absolute -bottom-4 -left-4 bg-[#3d7a20] text-white px-4 py-3 rounded-2xl shadow-lg">
+              <p className="text-xs font-bold text-[#f5821f] tracking-wide">FREE DELIVERY</p>
               <p className="text-sm font-semibold">On orders above ₹999</p>
             </div>
           </div>
@@ -257,7 +257,7 @@ function BasketsPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           {FEATURES.map((f) => (
             <div key={f.title} className="flex items-start gap-4">
-              <div className="w-11 h-11 bg-[#e7f3ec] rounded-xl flex items-center justify-center flex-shrink-0">
+              <div className="w-11 h-11 bg-[#fdf4e8] rounded-xl flex items-center justify-center flex-shrink-0">
                 {f.icon}
               </div>
               <div>
@@ -289,7 +289,7 @@ function BasketsPage() {
           )}
 
           {/* Custom Basket CTA */}
-          <div className="bg-gradient-to-r from-[#2f6a4a] to-[#4fb8b2] rounded-3xl p-10 text-white text-center mb-14">
+          <div className="bg-gradient-to-r from-[#3d7a20] to-[#4fb8b2] rounded-3xl p-10 text-white text-center mb-14">
             <h2 className="font-serif text-3xl font-bold mb-3">Build Your Own Basket</h2>
             <p className="text-white/80 max-w-md mx-auto mb-6 text-sm leading-relaxed">
               Pick fruits you love, set the quantities, and we'll pack it fresh. Your custom basket, your way.
@@ -297,7 +297,7 @@ function BasketsPage() {
             <button
               type="button"
               onClick={() => setShowCustomModal(true)}
-              className="bg-white text-[#2f6a4a] px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform"
+              className="bg-white text-[#3d7a20] px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform"
             >
               Customise Basket
             </button>
@@ -314,7 +314,7 @@ function BasketsPage() {
           </p>
           <Link
             to="/shop"
-            className="inline-block border-2 border-[#2f6a4a] text-[#2f6a4a] px-8 py-3 rounded-full font-semibold hover:bg-[#2f6a4a] hover:text-white transition-colors no-underline"
+            className="inline-block border-2 border-[#3d7a20] text-[#3d7a20] px-8 py-3 rounded-full font-semibold hover:bg-[#3d7a20] hover:text-white transition-colors no-underline"
           >
             Contact Us
           </Link>

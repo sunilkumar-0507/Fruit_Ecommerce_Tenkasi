@@ -58,7 +58,7 @@ function ShopPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -75,7 +75,7 @@ function ShopPage() {
       {/* Page Header */}
       <section className="bg-[#f5f0e8] px-4 py-12 border-b border-gray-200">
         <div className="max-w-7xl mx-auto">
-          <p className="text-[#2f6a4a] text-xs font-bold tracking-widest uppercase mb-2">
+          <p className="text-[#3d7a20] text-xs font-bold tracking-widest uppercase mb-2">
             The Orchard
           </p>
           <h1 className="font-serif text-5xl sm:text-6xl font-bold text-gray-900 mb-4">
@@ -100,12 +100,12 @@ function ShopPage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors flex-shrink-0 flex items-center gap-1.5 ${
                   activeCategory === cat
-                    ? 'bg-[#2f6a4a] text-white'
+                    ? 'bg-[#3d7a20] text-white'
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 {cat === 'Combos & Baskets' && (
-                  <TiIcon name="gift" size={13} className={activeCategory === cat ? 'text-white' : 'text-[#d4af37]'} />
+                  <TiIcon name="gift" size={13} className={activeCategory === cat ? 'text-white' : 'text-[#f5821f]'} />
                 )}
                 {cat}
               </button>
@@ -125,7 +125,7 @@ function ShopPage() {
       <div className="max-w-7xl mx-auto px-4 py-10">
         {loading ? (
           <div className="flex items-center justify-center py-24">
-            <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+            <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : error ? (
           <div className="text-center py-24 text-red-500">

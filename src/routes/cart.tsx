@@ -33,10 +33,10 @@ function RadioDot({ selected }: { selected: boolean }) {
   return (
     <div
       className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
-        selected ? 'border-[#2f6a4a]' : 'border-gray-300'
+        selected ? 'border-[#3d7a20]' : 'border-gray-300'
       }`}
     >
-      {selected && <div className="w-2 h-2 rounded-full bg-[#2f6a4a]" />}
+      {selected && <div className="w-2 h-2 rounded-full bg-[#3d7a20]" />}
     </div>
   )
 }
@@ -51,7 +51,7 @@ function AddressCard({ address, selected, onSelect }: {
       type="button"
       onClick={onSelect}
       className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-        selected ? 'border-[#2f6a4a] bg-[#f0f8f4]' : 'border-gray-200 hover:border-gray-300 bg-white'
+        selected ? 'border-[#3d7a20] bg-[#fef8f0]' : 'border-gray-200 hover:border-gray-300 bg-white'
       }`}
     >
       <div className="flex items-start gap-3">
@@ -62,7 +62,7 @@ function AddressCard({ address, selected, onSelect }: {
               <p className="font-semibold text-gray-900 text-sm">{address.name}</p>
             )}
             {address.isDefault && (
-              <span className="text-[10px] font-bold bg-[#2f6a4a] text-white px-2 py-0.5 rounded-full tracking-wide">
+              <span className="text-[10px] font-bold bg-[#3d7a20] text-white px-2 py-0.5 rounded-full tracking-wide">
                 DEFAULT
               </span>
             )}
@@ -219,7 +219,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
               <button
                 type="button"
                 onClick={() => { setForm(emptyForm); setStep('add-address') }}
-                className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-[#2f6a4a]/40 text-[#2f6a4a] hover:border-[#2f6a4a] hover:bg-[#f0f8f4] transition-colors"
+                className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-[#3d7a20]/40 text-[#3d7a20] hover:border-[#3d7a20] hover:bg-[#fef8f0] transition-colors"
               >
                 <Plus size={18} />
                 <span className="text-sm font-semibold">Add a new address</span>
@@ -230,7 +230,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                   type="button"
                   onClick={() => selectedAddr && setStep('confirm')}
                   disabled={!selectedAddr}
-                  className="w-full bg-[#2f6a4a] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full bg-[#3d7a20] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Deliver here
                 </button>
@@ -250,7 +250,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                     value={form.name}
                     onChange={setF('name')}
                     placeholder="Ravi Kumar"
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition"
                   />
                 </div>
                 <div>
@@ -261,7 +261,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                     value={form.phone}
                     onChange={setF('phone')}
                     placeholder="+91 70944 02579"
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition"
                   />
                 </div>
               </div>
@@ -274,7 +274,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                   value={form.line1}
                   onChange={setF('line1')}
                   placeholder="12, Banana Street, West Block"
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition"
                 />
               </div>
 
@@ -286,7 +286,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                   value={form.line2}
                   onChange={setF('line2')}
                   placeholder="Near Market Road, Tenkasi"
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition"
                 />
               </div>
 
@@ -299,7 +299,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                     value={form.city}
                     onChange={setF('city')}
                     placeholder="Tenkasi"
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition"
                   />
                 </div>
                 <div>
@@ -311,7 +311,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                     onChange={setF('pincode')}
                     placeholder="627811"
                     maxLength={6}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition"
                   />
                 </div>
               </div>
@@ -324,7 +324,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                   value={form.state}
                   onChange={setF('state')}
                   title="State"
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white"
                 >
                   {STATES.map((s) => <option key={s}>{s}</option>)}
                 </select>
@@ -337,7 +337,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
               >
                 <div
                   className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                    form.isDefault ? 'bg-[#2f6a4a] border-[#2f6a4a]' : 'border-gray-300'
+                    form.isDefault ? 'bg-[#3d7a20] border-[#3d7a20]' : 'border-gray-300'
                   }`}
                 >
                   {form.isDefault && <Check size={10} strokeWidth={3} className="text-white" />}
@@ -349,7 +349,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                 type="button"
                 onClick={() => void handleSaveAddress()}
                 disabled={!formValid}
-                className="w-full bg-[#2f6a4a] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full bg-[#3d7a20] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Save and deliver here
               </button>
@@ -367,13 +367,13 @@ function CheckoutModal({ onClose, cartCoupon }: {
                   <button
                     type="button"
                     onClick={() => setStep('address')}
-                    className="text-xs font-semibold text-[#2f6a4a] hover:underline"
+                    className="text-xs font-semibold text-[#3d7a20] hover:underline"
                   >
                     Change
                   </button>
                 </div>
                 <div className="bg-[#f5f9f7] rounded-xl p-4 flex items-start gap-3">
-                  <MapPin size={16} className="text-[#2f6a4a] mt-0.5 flex-shrink-0" />
+                  <MapPin size={16} className="text-[#3d7a20] mt-0.5 flex-shrink-0" />
                   <div>
                     {selectedAddr.name && (
                       <p className="font-semibold text-gray-900 text-sm">
@@ -426,7 +426,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                   placeholder="e.g. FRESH10"
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition uppercase"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition uppercase"
                 />
               </div>
 
@@ -438,20 +438,20 @@ function CheckoutModal({ onClose, cartCoupon }: {
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Delivery</span>
                   {freeDelivery ? (
-                    <span className="font-semibold text-[#2f6a4a]">Free</span>
+                    <span className="font-semibold text-[#3d7a20]">Free</span>
                   ) : (
                     <span className="font-semibold text-gray-900">₹{deliveryFee}</span>
                   )}
                 </div>
                 {couponDiscount > 0 && (
-                  <div className="flex justify-between text-sm text-[#2f6a4a]">
+                  <div className="flex justify-between text-sm text-[#3d7a20]">
                     <span>Coupon ({couponCode})</span>
                     <span className="font-semibold">−₹{couponDiscount}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Banana leaf wrap</span>
-                  <span className="text-[#2f6a4a] font-medium">Complimentary</span>
+                  <span className="text-[#3d7a20] font-medium">Complimentary</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2.5 flex justify-between items-baseline">
                   <span className="font-bold text-gray-900">Total</span>
@@ -467,7 +467,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                 type="button"
                 onClick={() => void handlePlaceOrder()}
                 disabled={placing}
-                className="w-full bg-[#2f6a4a] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                className="w-full bg-[#3d7a20] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {placing ? (
                   <>
@@ -487,22 +487,22 @@ function CheckoutModal({ onClose, cartCoupon }: {
           {/* ── Step: Success ── */}
           {step === 'success' && (
             <div className="p-8 text-center">
-              <div className="w-20 h-20 bg-[#e7f3ec] rounded-full flex items-center justify-center mx-auto mb-5 ring-4 ring-[#2f6a4a]/10">
-                <Check size={36} className="text-[#2f6a4a]" strokeWidth={2.5} />
+              <div className="w-20 h-20 bg-[#fdf4e8] rounded-full flex items-center justify-center mx-auto mb-5 ring-4 ring-[#3d7a20]/10">
+                <Check size={36} className="text-[#3d7a20]" strokeWidth={2.5} />
               </div>
               <h2 className="font-serif text-2xl font-bold text-gray-900 mb-1">Order Placed!</h2>
               <p className="text-gray-500 text-sm mb-3">Your fresh fruits are on their way 🎉</p>
               {couponDiscount > 0 && (
                 <p className="text-emerald-600 text-sm font-semibold mb-2">Coupon applied · ₹{couponDiscount} off</p>
               )}
-              <p className="text-[#2f6a4a] font-mono font-bold text-lg mb-1">{orderId}</p>
+              <p className="text-[#3d7a20] font-mono font-bold text-lg mb-1">{orderId}</p>
               <p className="text-gray-400 text-xs mb-4">You'll receive a confirmation shortly</p>
               {wasRepeatCustomer && (
-                <div className="bg-[#f0f8f4] border border-[#2f6a4a]/20 rounded-xl p-3 mb-4 text-center">
-                  <p className="text-xs font-bold text-[#2f6a4a] mb-1">Loyalty Reward Unlocked!</p>
+                <div className="bg-[#fef8f0] border border-[#3d7a20]/20 rounded-xl p-3 mb-4 text-center">
+                  <p className="text-xs font-bold text-[#3d7a20] mb-1">Loyalty Reward Unlocked!</p>
                   <p className="text-[10px] text-gray-500 mb-2">Use this on your next order</p>
-                  <div className="inline-block bg-white border-2 border-dashed border-[#2f6a4a]/50 rounded-lg py-1.5 px-4">
-                    <span className="font-mono font-bold text-[#2f6a4a] text-base tracking-widest">LOYAL10</span>
+                  <div className="inline-block bg-white border-2 border-dashed border-[#3d7a20]/50 rounded-lg py-1.5 px-4">
+                    <span className="font-mono font-bold text-[#3d7a20] text-base tracking-widest">LOYAL10</span>
                   </div>
                   <p className="text-[10px] text-gray-400 mt-1.5">10% off on your next purchase</p>
                 </div>
@@ -515,14 +515,14 @@ function CheckoutModal({ onClose, cartCoupon }: {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 border border-[#2f6a4a] text-[#2f6a4a] py-3 rounded-xl font-semibold text-sm hover:bg-[#f0f8f4] transition-colors"
+                  className="flex-1 border border-[#3d7a20] text-[#3d7a20] py-3 rounded-xl font-semibold text-sm hover:bg-[#fef8f0] transition-colors"
                 >
                   Close
                 </button>
                 <Link
                   to="/shop"
                   onClick={onClose}
-                  className="flex-1 bg-[#2f6a4a] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors text-center no-underline flex items-center justify-center gap-1.5"
+                  className="flex-1 bg-[#3d7a20] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors text-center no-underline flex items-center justify-center gap-1.5"
                 >
                   <ShoppingBag size={15} />
                   Shop More
@@ -550,7 +550,7 @@ function CartPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -590,7 +590,7 @@ function CartPage() {
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-1">
             Your basket
           </h1>
-          <p className="text-[#2f6a4a] text-sm font-medium">
+          <p className="text-[#3d7a20] text-sm font-medium">
             {items.length} item{items.length !== 1 ? 's' : ''} · wrapped in banana leaf
           </p>
         </div>
@@ -601,7 +601,7 @@ function CartPage() {
             <p className="text-gray-400 text-lg mb-6">Your basket is empty.</p>
             <Link
               to="/shop"
-              className="inline-block bg-[#2f6a4a] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1f4a2f] transition-colors no-underline"
+              className="inline-block bg-[#3d7a20] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#2a5a14] transition-colors no-underline"
             >
               Continue Shopping
             </Link>
@@ -619,7 +619,7 @@ function CartPage() {
                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[#2f6a4a] text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-0.5">
+                    <p className="text-[#3d7a20] text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-0.5">
                       {item.category}
                     </p>
                     <h3 className="font-serif text-sm sm:text-base font-semibold text-gray-900 truncate">
@@ -670,22 +670,22 @@ function CartPage() {
 
                 {/* Free delivery progress */}
                 {!freeDelivery ? (
-                  <div className="mb-4 bg-[#f0f8f4] rounded-xl p-3">
+                  <div className="mb-4 bg-[#fef8f0] rounded-xl p-3">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-semibold text-[#2f6a4a]">Free delivery above ₹499</span>
-                      <span className="text-xs font-bold text-[#2f6a4a]">₹{499 - subtotal} away</span>
+                      <span className="text-xs font-semibold text-[#3d7a20]">Free delivery above ₹499</span>
+                      <span className="text-xs font-bold text-[#3d7a20]">₹{499 - subtotal} away</span>
                     </div>
                     <div className="w-full bg-[#c8e6d4] rounded-full h-1.5">
                       <div
-                        className="bg-[#2f6a4a] h-1.5 rounded-full transition-all"
+                        className="bg-[#3d7a20] h-1.5 rounded-full transition-all"
                         style={{ width: `${Math.min((subtotal / 499) * 100, 100)}%` }}
                       />
                     </div>
                   </div>
                 ) : (
-                  <div className="mb-4 bg-[#e7f3ec] rounded-xl p-3 flex items-center gap-2">
+                  <div className="mb-4 bg-[#fdf4e8] rounded-xl p-3 flex items-center gap-2">
                     <span className="text-base">🎉</span>
-                    <span className="text-xs font-semibold text-[#2f6a4a]">You've unlocked free delivery!</span>
+                    <span className="text-xs font-semibold text-[#3d7a20]">You've unlocked free delivery!</span>
                   </div>
                 )}
 
@@ -707,15 +707,15 @@ function CartPage() {
                 {isRepeatCustomer && !appliedCoupon && (
                   <button
                     type="button"
-                    className="mb-3 w-full flex items-center gap-2 bg-[#f0f8f4] border border-[#2f6a4a]/20 rounded-xl px-3 py-2 hover:bg-[#e7f3ec] transition-colors text-left"
+                    className="mb-3 w-full flex items-center gap-2 bg-[#fef8f0] border border-[#3d7a20]/20 rounded-xl px-3 py-2 hover:bg-[#fdf4e8] transition-colors text-left"
                     onClick={() => setCouponInput('LOYAL10')}
                   >
                     <span className="text-sm flex-shrink-0">💚</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-[#2f6a4a]">Welcome back!</p>
-                      <p className="text-[10px] text-[#2f6a4a]/80">Apply <span className="font-mono font-bold">LOYAL10</span> for 10% off</p>
+                      <p className="text-xs font-bold text-[#3d7a20]">Welcome back!</p>
+                      <p className="text-[10px] text-[#3d7a20]/80">Apply <span className="font-mono font-bold">LOYAL10</span> for 10% off</p>
                     </div>
-                    <span className="text-[10px] font-semibold text-[#2f6a4a]/70 flex-shrink-0">Tap to fill</span>
+                    <span className="text-[10px] font-semibold text-[#3d7a20]/70 flex-shrink-0">Tap to fill</span>
                   </button>
                 )}
 
@@ -729,22 +729,22 @@ function CartPage() {
                         onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError('') }}
                         onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                         placeholder="Enter coupon code"
-                        className="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition font-mono uppercase"
+                        className="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition font-mono uppercase"
                       />
                       <button
                         type="button"
                         onClick={handleApplyCoupon}
-                        className="px-4 py-2.5 bg-[#2f6a4a] text-white rounded-xl text-sm font-semibold hover:bg-[#1f4a2f] transition-colors flex-shrink-0"
+                        className="px-4 py-2.5 bg-[#3d7a20] text-white rounded-xl text-sm font-semibold hover:bg-[#2a5a14] transition-colors flex-shrink-0"
                       >
                         Apply
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between bg-[#e7f3ec] rounded-xl px-3 py-2.5">
+                    <div className="flex items-center justify-between bg-[#fdf4e8] rounded-xl px-3 py-2.5">
                       <div className="flex items-center gap-2">
-                        <span className="text-[#2f6a4a] font-bold text-sm">✓</span>
-                        <span className="font-mono font-bold text-[#2f6a4a] text-sm">{appliedCoupon.code}</span>
-                        <span className="text-xs text-[#2f6a4a]/70">applied</span>
+                        <span className="text-[#3d7a20] font-bold text-sm">✓</span>
+                        <span className="font-mono font-bold text-[#3d7a20] text-sm">{appliedCoupon.code}</span>
+                        <span className="text-xs text-[#3d7a20]/70">applied</span>
                       </div>
                       <button type="button" onClick={handleRemoveCoupon} className="text-[10px] text-gray-400 hover:text-red-500 transition-colors font-medium">
                         Remove
@@ -763,20 +763,20 @@ function CartPage() {
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Delivery</span>
                     {freeDelivery ? (
-                      <span className="font-semibold text-[#2f6a4a]">Free</span>
+                      <span className="font-semibold text-[#3d7a20]">Free</span>
                     ) : (
                       <span className="font-semibold text-gray-900">₹{deliveryFee}</span>
                     )}
                   </div>
                   {appliedCoupon && (
-                    <div className="flex justify-between text-sm text-[#2f6a4a]">
+                    <div className="flex justify-between text-sm text-[#3d7a20]">
                       <span>Coupon ({appliedCoupon.code})</span>
                       <span className="font-semibold">−₹{appliedCoupon.discount}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Banana leaf wrap</span>
-                    <span className="text-[#2f6a4a] font-medium">Complimentary</span>
+                    <span className="text-[#3d7a20] font-medium">Complimentary</span>
                   </div>
                 </div>
                 <div className="border-t border-gray-100 pt-4 mb-6">
@@ -788,13 +788,13 @@ function CartPage() {
                 <button
                   type="button"
                   onClick={() => setShowCheckout(true)}
-                  className="w-full bg-[#2f6a4a] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors"
+                  className="w-full bg-[#3d7a20] text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors"
                 >
                   Proceed to Checkout
                 </button>
                 <Link
                   to="/shop"
-                  className="block text-center mt-4 text-sm text-[#2f6a4a] font-medium hover:underline no-underline"
+                  className="block text-center mt-4 text-sm text-[#3d7a20] font-medium hover:underline no-underline"
                 >
                   Continue shopping
                 </Link>

@@ -6,32 +6,32 @@ export const Route = createFileRoute('/mobile-app')({ component: MobileAppPage }
 
 const FEATURES = [
   {
-    icon: <Bell size={22} className="text-[#2f6a4a]" />,
+    icon: <Bell size={22} className="text-[#3d7a20]" />,
     title: 'Harvest alerts',
     desc: 'Get notified the moment your favourite seasonal fruit arrives.',
   },
   {
-    icon: <MapPin size={22} className="text-[#2f6a4a]" />,
+    icon: <MapPin size={22} className="text-[#3d7a20]" />,
     title: 'Live tracking',
     desc: 'Track your order from our orchard to your doorstep in real time.',
   },
   {
-    icon: <Zap size={22} className="text-[#2f6a4a]" />,
+    icon: <Zap size={22} className="text-[#3d7a20]" />,
     title: '1-tap reorder',
     desc: 'Reorder your favourites with a single tap. Smart basket suggestions.',
   },
   {
-    icon: <Star size={22} className="text-[#2f6a4a]" />,
+    icon: <Star size={22} className="text-[#3d7a20]" />,
     title: 'App-only deals',
     desc: 'Exclusive discounts and early access to festival hampers.',
   },
   {
-    icon: <Shield size={22} className="text-[#2f6a4a]" />,
+    icon: <Shield size={22} className="text-[#3d7a20]" />,
     title: 'Verified freshness',
     desc: 'Every product backed by a freshness guarantee with farmer traceability.',
   },
   {
-    icon: <Smartphone size={22} className="text-[#2f6a4a]" />,
+    icon: <Smartphone size={22} className="text-[#3d7a20]" />,
     title: 'Offline mode',
     desc: 'Browse catalogue and manage your wishlist even without internet.',
   },
@@ -49,7 +49,7 @@ function MobileAppPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -57,14 +57,14 @@ function MobileAppPage() {
   return (
     <main className="min-h-screen bg-[#faf9f4]">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#1a3d2b] via-[#2f6a4a] to-[#4fb8b2] text-white px-4 py-20 overflow-hidden relative">
+      <section className="bg-gradient-to-br from-[#0c1d2b] via-[#3d7a20] to-[#4fb8b2] text-white px-4 py-20 overflow-hidden relative">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-[#d4af37] blur-3xl" />
+          <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-[#f5821f] blur-3xl" />
           <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-white blur-3xl" />
         </div>
         <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-[#d4af37] text-xs font-bold tracking-widest uppercase mb-4">
+            <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-4">
               Tenkasi Fresh App
             </p>
             <h1 className="font-serif text-5xl sm:text-6xl font-bold mb-5 leading-tight">
@@ -76,7 +76,7 @@ function MobileAppPage() {
             <div className="flex flex-col sm:flex-row gap-3 mb-10">
               <button
                 type="button"
-                className="flex items-center gap-3 bg-white text-[#1a3d2b] px-6 py-3.5 rounded-xl font-semibold hover:scale-105 transition-transform"
+                className="flex items-center gap-3 bg-white text-[#0c1d2b] px-6 py-3.5 rounded-xl font-semibold hover:scale-105 transition-transform"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
@@ -88,7 +88,7 @@ function MobileAppPage() {
               </button>
               <button
                 type="button"
-                className="flex items-center gap-3 bg-white text-[#1a3d2b] px-6 py-3.5 rounded-xl font-semibold hover:scale-105 transition-transform"
+                className="flex items-center gap-3 bg-white text-[#0c1d2b] px-6 py-3.5 rounded-xl font-semibold hover:scale-105 transition-transform"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M3 20.5v-17c0-.83.94-1.3 1.6-.8l14 8.5c.6.36.6 1.24 0 1.6l-14 8.5c-.66.5-1.6.03-1.6-.8z" />
@@ -123,7 +123,7 @@ function MobileAppPage() {
               {/* App screen */}
               <div className="mt-10 mx-3 flex-1 bg-[#faf9f4] rounded-[1.5rem] overflow-hidden p-4">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-[#2f6a4a] rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-[#3d7a20] rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-serif font-bold">த</span>
                   </div>
                   <div>
@@ -131,7 +131,7 @@ function MobileAppPage() {
                     <p className="text-[9px] text-gray-400">Farm to Home</p>
                   </div>
                 </div>
-                <div className="bg-[#2f6a4a] rounded-xl p-3 mb-3">
+                <div className="bg-[#3d7a20] rounded-xl p-3 mb-3">
                   <p className="text-white text-[10px] font-bold">Mango Season 🥭</p>
                   <p className="text-white/70 text-[9px]">25% off this week</p>
                 </div>
@@ -142,7 +142,7 @@ function MobileAppPage() {
                       <div className="h-2 bg-gray-200 rounded w-3/4 mb-1" />
                       <div className="h-1.5 bg-gray-100 rounded w-1/2" />
                     </div>
-                    <div className="w-6 h-6 bg-[#2f6a4a] rounded-full" />
+                    <div className="w-6 h-6 bg-[#3d7a20] rounded-full" />
                   </div>
                 ))}
               </div>
@@ -165,7 +165,7 @@ function MobileAppPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f) => (
               <div key={f.title} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-11 h-11 bg-[#e7f3ec] rounded-xl flex items-center justify-center mb-4">
+                <div className="w-11 h-11 bg-[#fdf4e8] rounded-xl flex items-center justify-center mb-4">
                   {f.icon}
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{f.title}</h3>
@@ -210,13 +210,13 @@ function MobileAppPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               type="button"
-              className="flex items-center justify-center gap-2 bg-[#1a3d2b] text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-[#2f6a4a] transition-colors"
+              className="flex items-center justify-center gap-2 bg-[#0c1d2b] text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-[#3d7a20] transition-colors"
             >
               App Store
             </button>
             <button
               type="button"
-              className="flex items-center justify-center gap-2 bg-[#1a3d2b] text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-[#2f6a4a] transition-colors"
+              className="flex items-center justify-center gap-2 bg-[#0c1d2b] text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-[#3d7a20] transition-colors"
             >
               Google Play
             </button>

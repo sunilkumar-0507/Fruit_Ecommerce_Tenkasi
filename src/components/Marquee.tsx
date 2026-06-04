@@ -5,7 +5,7 @@ interface MarqueeProps {
 
 export default function Marquee({ items }: MarqueeProps) {
   return (
-    <div className="overflow-hidden bg-gradient-to-r from-[#2f6a4a] via-[#4fb8b2] to-[#2f6a4a] py-4">
+    <div className="overflow-hidden bg-gradient-to-r from-[#3d7a20] via-[#4fb8b2] to-[#3d7a20] py-4">
       <style>{`
         @keyframes marquee {
           0% {

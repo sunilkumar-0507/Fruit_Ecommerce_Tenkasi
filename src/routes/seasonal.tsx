@@ -38,7 +38,7 @@ function SeasonalPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -46,13 +46,13 @@ function SeasonalPage() {
   return (
     <main className="min-h-screen bg-[#faf9f4]">
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-[#1a3d2b] to-[#2f6a4a] text-white px-4 py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-[#0c1d2b] to-[#3d7a20] text-white px-4 py-20 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-[#d4af37] blur-3xl" />
+          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-[#f5821f] blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-[#4fb8b2] blur-3xl" />
         </div>
         <div className="relative max-w-7xl mx-auto text-center">
-          <p className="text-[#d4af37] text-xs font-bold tracking-widest uppercase mb-3">
+          <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-3">
             The Harvest Calendar
           </p>
           <h1 className="font-serif text-5xl sm:text-6xl font-bold mb-4">
@@ -83,9 +83,9 @@ function SeasonalPage() {
           </div>
 
           {/* Current Season Banner */}
-          <div className="bg-[#2f6a4a] rounded-3xl p-8 sm:p-12 text-white mb-14 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="bg-[#3d7a20] rounded-3xl p-8 sm:p-12 text-white mb-14 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
-              <p className="text-[#d4af37] text-xs font-bold tracking-widest uppercase mb-2">
+              <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-2">
                 Now in Season
               </p>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold mb-2">Summer Harvest 2026</h2>
@@ -95,7 +95,7 @@ function SeasonalPage() {
             </div>
             <Link
               to="/shop"
-              className="flex-shrink-0 bg-[#d4af37] text-[#1a3d2b] px-8 py-3 rounded-full font-bold hover:bg-[#e6c447] transition-colors no-underline whitespace-nowrap"
+              className="flex-shrink-0 bg-[#f5821f] text-[#0c1d2b] px-8 py-3 rounded-full font-bold hover:bg-[#f59a2e] transition-colors no-underline whitespace-nowrap"
             >
               Shop Now
             </Link>
@@ -134,11 +134,11 @@ function SeasonalPage() {
             <input
               type="email"
               placeholder="your@email.com"
-              className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] transition-colors"
+              className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] transition-colors"
             />
             <button
               type="button"
-              className="px-5 py-3 bg-[#2f6a4a] text-white rounded-xl text-sm font-semibold hover:bg-[#1f4a2f] transition-colors"
+              className="px-5 py-3 bg-[#3d7a20] text-white rounded-xl text-sm font-semibold hover:bg-[#2a5a14] transition-colors"
             >
               Alert me
             </button>

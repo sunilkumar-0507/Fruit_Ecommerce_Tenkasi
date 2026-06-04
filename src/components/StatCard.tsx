@@ -10,7 +10,7 @@ export default function StatCard({ value, label, icon }: StatCardProps) {
       <div className="flex justify-center mb-3 text-[#4fb8b2] text-3xl">
         {icon}
       </div>
-      <div className="font-fraunces text-3xl font-bold text-[#2f6a4a] mb-1">
+      <div className="font-fraunces text-3xl font-bold text-[#3d7a20] mb-1">
         {value}
       </div>
       <p className="text-sm text-gray-600">{label}</p>

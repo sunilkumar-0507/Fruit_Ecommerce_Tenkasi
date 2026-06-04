@@ -9,7 +9,7 @@ const TICKER_ITEMS = ['Farm Fresh', 'Premium Quality', 'Organic Certified', 'Fas
 
 function HeaderTicker() {
   return (
-    <div className="overflow-hidden bg-[#d4af37] py-1.5">
+    <div className="overflow-hidden bg-[#f5821f] py-1.5">
       <style>{`
         @keyframes header-ticker {
           0% { transform: translateX(0); }
@@ -19,7 +19,7 @@ function HeaderTicker() {
       `}</style>
       <div className="header-ticker-content">
         {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, idx) => (
-          <span key={idx} className="text-[#1a3d2b] text-xs font-bold tracking-wide flex-shrink-0 px-5">
+          <span key={idx} className="text-[#0c1d2b] text-xs font-bold tracking-wide flex-shrink-0 px-5">
             {item}&nbsp;&nbsp;·
           </span>
         ))}
@@ -61,7 +61,7 @@ function FavPopup({ onClose }: { onClose: () => void }) {
           <TiIcon name="heart" size={36} className="text-gray-200 mb-3" />
           <p className="text-gray-600 text-sm font-semibold">Your wishlist is empty</p>
           <p className="text-gray-400 text-xs mt-1 leading-relaxed">Tap the ♥ on any product to save it here</p>
-          <Link to="/shop" onClick={onClose} className="inline-block mt-4 bg-[#2f6a4a] text-white text-xs font-bold px-5 py-2 rounded-full no-underline hover:bg-[#1f4a2f] transition-colors">
+          <Link to="/shop" onClick={onClose} className="inline-block mt-4 bg-[#3d7a20] text-white text-xs font-bold px-5 py-2 rounded-full no-underline hover:bg-[#2a5a14] transition-colors">
             Browse Products
           </Link>
         </div>
@@ -80,7 +80,7 @@ function FavPopup({ onClose }: { onClose: () => void }) {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-900 truncate leading-tight">{item.name}</p>
                     <p className="text-[11px] text-gray-400 truncate">{item.nameTamil}</p>
-                    <p className="text-sm font-bold text-[#2f6a4a] mt-0.5">
+                    <p className="text-sm font-bold text-[#3d7a20] mt-0.5">
                       ₹{item.price}<span className="text-[10px] font-normal text-gray-400 ml-0.5">/{item.unit}</span>
                     </p>
                   </div>
@@ -92,7 +92,7 @@ function FavPopup({ onClose }: { onClose: () => void }) {
             ))}
           </ul>
           <div className="px-4 py-3 bg-[#faf9f4] border-t border-gray-100">
-            <Link to="/shop" onClick={onClose} className="block w-full text-center text-sm font-bold text-white bg-[#2f6a4a] py-2.5 rounded-xl no-underline hover:bg-[#1f4a2f] transition-colors">
+            <Link to="/shop" onClick={onClose} className="block w-full text-center text-sm font-bold text-white bg-[#3d7a20] py-2.5 rounded-xl no-underline hover:bg-[#2a5a14] transition-colors">
               Shop Now
             </Link>
           </div>
@@ -132,17 +132,17 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40">
       {/* Top Banner */}
-      <div className="bg-[#1a3d2b] border-b border-[#d4af37]/20 px-4 py-1.5">
+      <div className="bg-[#0c1d2b] border-b border-[#f5821f]/20 px-4 py-1.5">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] inline-block" />
-            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-[#d4af37]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#f5821f] inline-block" />
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-[#f5821f]">
               Fresh Fruits Delivered Across Tamil Nadu
             </span>
           </div>
           <div className="flex items-center gap-4 sm:gap-6">
-            <a href="tel:+917094402579" className="flex items-center gap-1.5 text-white/70 hover:text-[#d4af37] transition-colors text-[10px] sm:text-[11px] font-medium no-underline">
-              <TiIcon name="headphone" size={12} className="text-[#d4af37]" />
+            <a href="tel:+917094402579" className="flex items-center gap-1.5 text-white/70 hover:text-[#f5821f] transition-colors text-[10px] sm:text-[11px] font-medium no-underline">
+              <TiIcon name="headphone" size={12} className="text-[#f5821f]" />
               <span className="hidden xs:inline">+91 7094402579</span>
               <span className="xs:hidden">Call Us</span>
             </a>
@@ -158,7 +158,7 @@ export default function Header() {
       <HeaderTicker />
 
       {/* Main Header */}
-      <nav className="bg-[#1a3d2b] border-b border-[#d4af37]/20 shadow-lg">
+      <nav className="bg-[#0c1d2b] border-b border-[#f5821f]/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-2">
             <Link to="/" className="flex items-center no-underline flex-shrink-0">
@@ -185,8 +185,8 @@ export default function Header() {
               {user ? (
                 <div className="relative" ref={userRef}>
                   <button type="button" onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 rounded-full transition" aria-label="Account menu">
-                    <div className="w-8 h-8 bg-[#d4af37] rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-[#1a3d2b] font-bold text-sm leading-none">{user.name.charAt(0).toUpperCase()}</span>
+                    <div className="w-8 h-8 bg-[#f5821f] rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#0c1d2b] font-bold text-sm leading-none">{user.name.charAt(0).toUpperCase()}</span>
                     </div>
                     <span className="hidden sm:block text-sm font-medium text-white/85 max-w-[80px] truncate">{user.name.split(' ')[0]}</span>
                   </button>
@@ -195,7 +195,7 @@ export default function Header() {
                       <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
                         <p className="text-xs text-gray-400 truncate">{user.email}</p>
-                        {isAdmin && <span className="inline-block mt-1 text-[10px] font-bold text-[#2f6a4a] bg-[#e7f3ec] px-2 py-0.5 rounded-full tracking-wide uppercase">Admin</span>}
+                        {isAdmin && <span className="inline-block mt-1 text-[10px] font-bold text-[#3d7a20] bg-[#fdf4e8] px-2 py-0.5 rounded-full tracking-wide uppercase">Admin</span>}
                       </div>
                       <button type="button" onClick={handleLogout} className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors text-left">
                         <TiIcon name="power-off" size={15} className="text-red-600" />
@@ -205,8 +205,8 @@ export default function Header() {
                   )}
                 </div>
               ) : (
-                <Link to="/login" className="flex items-center gap-1.5 px-4 py-2 bg-[#d4af37] text-[#1a3d2b] text-sm font-bold rounded-full hover:bg-[#f5d060] transition-colors no-underline">
-                  <TiIcon name="user" size={15} className="text-[#1a3d2b]" />
+                <Link to="/login" className="flex items-center gap-1.5 px-4 py-2 bg-[#f5821f] text-[#0c1d2b] text-sm font-bold rounded-full hover:bg-[#ffab4a] transition-colors no-underline">
+                  <TiIcon name="user" size={15} className="text-[#0c1d2b]" />
                   Sign In
                 </Link>
               )}
@@ -228,7 +228,7 @@ export default function Header() {
               <Link to="/cart" className="relative p-2 hover:bg-white/10 rounded-full transition" aria-label="Cart">
                 <TiIcon name="shopping-cart" size={20} className="text-white/75" />
                 {cartCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 w-5 h-5 bg-[#d4af37] text-[#1a3d2b] text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-0.5 right-0.5 w-5 h-5 bg-[#f5821f] text-[#0c1d2b] text-[10px] font-bold rounded-full flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -246,14 +246,14 @@ export default function Header() {
               {BASE_NAV.map((link) => (
                 <Link key={link.to} to={link.to} onClick={() => setIsMenuOpen(false)}
                   className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white rounded-lg no-underline transition-colors"
-                  activeProps={{ className: 'block px-4 py-2.5 text-[#f5d060] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#d4af37]' }}>
+                  activeProps={{ className: 'block px-4 py-2.5 text-[#ffab4a] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#f5821f]' }}>
                   {link.label}
                 </Link>
               ))}
               {isAdmin && (
                 <Link to="/admin" onClick={() => setIsMenuOpen(false)}
                   className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white rounded-lg no-underline transition-colors"
-                  activeProps={{ className: 'block px-4 py-2.5 text-[#f5d060] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#d4af37]' }}>
+                  activeProps={{ className: 'block px-4 py-2.5 text-[#ffab4a] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#f5821f]' }}>
                   Admin
                 </Link>
               )}
@@ -263,7 +263,7 @@ export default function Header() {
                 {favItems.length > 0 && <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-auto">{favItems.length}</span>}
               </button>
               {!user && (
-                <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2.5 text-[#1a3d2b] font-bold text-sm bg-[#d4af37] rounded-lg no-underline">
+                <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2.5 text-[#0c1d2b] font-bold text-sm bg-[#f5821f] rounded-lg no-underline">
                   Sign In / Register
                 </Link>
               )}

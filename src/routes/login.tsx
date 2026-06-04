@@ -30,7 +30,7 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
   return (
     <div
       className={`fixed inset-0 z-[200] overflow-hidden flex items-center justify-center ${fading ? 'animate-overlay-out' : 'animate-overlay-in'}`}
-      style={{ background: 'linear-gradient(145deg, #0f2418 0%, #1a3d2b 40%, #2f6a4a 100%)' }}
+      style={{ background: 'linear-gradient(145deg, #081521 0%, #0c1d2b 40%, #3d7a20 100%)' }}
     >
       {/* Grid texture */}
       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
@@ -39,7 +39,7 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
       {[0, 1, 2, 3].map((i) => (
         <div
           key={i}
-          className="absolute rounded-full border border-[#d4af37]/25 animate-ripple"
+          className="absolute rounded-full border border-[#f5821f]/25 animate-ripple"
           style={{
             width: `${180 + i * 120}px`,
             height: `${180 + i * 120}px`,
@@ -68,20 +68,20 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
       <div className="relative z-10 text-center px-6 animate-welcome-pop" style={{ '--delay': '0.3s' } as React.CSSProperties}>
         {/* Logo ring */}
         <div className="relative w-24 h-24 mx-auto mb-6">
-          <div className="absolute inset-0 rounded-3xl border-2 border-[#d4af37]/40 animate-sparkle" />
-          <div className="w-24 h-24 rounded-3xl flex items-center justify-center shadow-2xl shadow-[#d4af37]/30 p-2">
+          <div className="absolute inset-0 rounded-3xl border-2 border-[#f5821f]/40 animate-sparkle" />
+          <div className="w-24 h-24 rounded-3xl flex items-center justify-center shadow-2xl shadow-[#f5821f]/30 p-2">
             <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-full h-full rounded-2xl object-contain" />
           </div>
         </div>
 
         {/* Welcome text */}
-        <p className="text-[#d4af37] text-xs font-bold tracking-[0.25em] uppercase mb-3">
+        <p className="text-[#f5821f] text-xs font-bold tracking-[0.25em] uppercase mb-3">
           Login Successful
         </p>
         <h1 className="font-serif text-4xl sm:text-5xl font-bold text-white mb-2 leading-tight">
           Welcome To Tenkasi Fresh,
         </h1>
-        <p className="font-serif text-3xl sm:text-4xl font-bold text-[#d4af37] mb-4">
+        <p className="font-serif text-3xl sm:text-4xl font-bold text-[#f5821f] mb-4">
           {name.split(' ')[0]}!
         </p>
         <p className="text-white/60 text-sm">Your fresh fruits are waiting ✨</p>
@@ -89,7 +89,7 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
         {/* Progress bar */}
         <div className="mt-6 w-32 h-1 bg-white/10 rounded-full mx-auto overflow-hidden">
           <div
-            className="h-full bg-[#d4af37] rounded-full"
+            className="h-full bg-[#f5821f] rounded-full"
             style={{ animation: 'grow-bar 2.4s ease-in-out forwards' }}
           />
         </div>
@@ -102,7 +102,7 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
             <img src={featured.image} alt={featured.name} className="w-full h-full object-cover" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-bold text-[#d4af37] uppercase tracking-widest mb-0.5">
+            <p className="text-[10px] font-bold text-[#f5821f] uppercase tracking-widest mb-0.5">
               🌿 Now in Season
             </p>
             <p className="text-white font-semibold text-sm leading-tight truncate">{featured.name}</p>
@@ -155,9 +155,9 @@ function LoginPage() {
 
       <div className="min-h-screen flex">
         {/* Left panel — branding */}
-        <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-[#0f2418] via-[#1a3d2b] to-[#2f6a4a] text-white flex-col justify-between p-14 relative overflow-hidden">
+        <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-[#081521] via-[#0c1d2b] to-[#3d7a20] text-white flex-col justify-between p-14 relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-[#d4af37]/10 blur-3xl" />
+            <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-[#f5821f]/10 blur-3xl" />
             <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#4fb8b2]/10 blur-3xl" />
           </div>
           <div className="relative">
@@ -173,7 +173,7 @@ function LoginPage() {
           </div>
           <div className="relative space-y-8">
             <div>
-              <p className="text-[#d4af37] text-xs font-bold tracking-widest uppercase mb-4">Our Promise</p>
+              <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-4">Our Promise</p>
               <h2 className="font-serif text-4xl font-bold leading-snug mb-3">
                 From our soil<br />to your soul.
               </h2>
@@ -188,7 +188,7 @@ function LoginPage() {
                 { icon: 'user', label: '240+ Farmer Families' },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 text-sm text-white/75">
-                  <TiIcon name={item.icon} size={16} className="text-[#d4af37]" />
+                  <TiIcon name={item.icon} size={16} className="text-[#f5821f]" />
                   {item.label}
                 </div>
               ))}
@@ -241,7 +241,7 @@ function LoginPage() {
               <RegisterForm onSuccess={handleLoginSuccess} />
             )}
 
-            <Link to="/" className="mt-6 flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-[#2f6a4a] transition-colors no-underline">
+            <Link to="/" className="mt-6 flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-[#3d7a20] transition-colors no-underline">
               ← Back to Home
             </Link>
           </div>
@@ -277,18 +277,18 @@ function SignInForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').Us
       {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="signin-email">Email address</label>
-        <input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white" />
+        <input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="signin-pw">Password</label>
         <div className="relative">
-          <input id="signin-pw" type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white" />
+          <input id="signin-pw" type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
           <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label={showPw ? 'Hide password' : 'Show password'}>
             <TiIcon name="eye" size={17} className="text-gray-400" />
           </button>
         </div>
       </div>
-      <button type="submit" disabled={loading} className="w-full bg-[#2f6a4a] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+      <button type="submit" disabled={loading} className="w-full bg-[#3d7a20] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
         {loading ? 'Signing in…' : 'Sign In'}
       </button>
     </form>
@@ -329,19 +329,19 @@ function RegisterForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').
       ].map(({ id, label, field, type, placeholder }) => (
         <div key={id}>
           <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor={id}>{label}</label>
-          <input id={id} type={type} value={form[field]} onChange={set(field)} placeholder={placeholder} required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white" />
+          <input id={id} type={type} value={form[field]} onChange={set(field)} placeholder={placeholder} required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
         </div>
       ))}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="reg-pw">Password</label>
         <div className="relative">
-          <input id="reg-pw" type={showPw ? 'text' : 'password'} value={form.password} onChange={set('password')} placeholder="Min 8 characters" required minLength={8} className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition bg-white" />
+          <input id="reg-pw" type={showPw ? 'text' : 'password'} value={form.password} onChange={set('password')} placeholder="Min 8 characters" required minLength={8} className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
           <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label={showPw ? 'Hide password' : 'Show password'}>
             <TiIcon name="eye" size={17} className="text-gray-400" />
           </button>
         </div>
       </div>
-      <button type="submit" disabled={loading} className="w-full bg-[#2f6a4a] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+      <button type="submit" disabled={loading} className="w-full bg-[#3d7a20] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
         {loading ? 'Creating account…' : 'Create Account'}
       </button>
       <p className="text-center text-xs text-gray-400 leading-relaxed">
