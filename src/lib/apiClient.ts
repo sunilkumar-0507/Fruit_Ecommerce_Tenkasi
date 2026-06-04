@@ -96,6 +96,7 @@ export interface ProductDto {
   benefitsEn: string | null
   benefitsTa: string | null
   price: number
+  originalPrice?: number | null
   stockQuantity: number
   isOutOfStock: boolean
   category: CategoryDto

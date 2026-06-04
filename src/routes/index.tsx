@@ -20,7 +20,7 @@ function mapProduct(p: ProductDto): Product {
     category: p.category?.nameEn ?? '',
     categorySlug: p.category?.slug ?? '',
     price: p.price,
-    originalPrice: p.price,
+    originalPrice: p.originalPrice ?? p.price,
     image: primary?.url ?? '/images/products/p-mango.jpg',
     rating: p.rating ?? 4.5,
     reviews: 0,

@@ -265,7 +265,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: '17',
-    name: 'Aiyani Fruit',
+    name: 'Wild Jackfruit',
     nameTamil: 'அயனி பழம்',
     category: 'Seasonal Fruits',
     categorySlug: 'seasonal-fruits',
@@ -278,7 +278,7 @@ export const PRODUCTS: Product[] = [
     unit: '500 g',
     seasonal: true,
     featured: true,
-    description: 'A rare seasonal fruit from the Tenkasi region, the Aiyani is prized for its unique sweet-tart flavour and delicate texture. Available only for a few weeks each year, it is handpicked at peak ripeness and delivered fresh to your door.',
+    description: 'A rare seasonal fruit from the Tenkasi region, the Wild Jackfruit is prized for its unique sweet-tart flavour and delicate texture. Available only for a few weeks each year, it is handpicked at peak ripeness and delivered fresh to your door.',
     uses: ['Eat fresh as a healthy snack', 'Make juice or smoothie', 'Add to fruit salads', 'Use as a natural sweetener in desserts'],
   },
   {

@@ -106,7 +106,7 @@ const INVENTORY_INIT: InventoryRow[] = [
   { id: '6',  name: 'Passion Fruit',           category: 'Imported Fruits', price: 260,  stock: 12,  image: '/images/products/wa2-passion-fruit.jpeg',   discount: 0  },
   { id: '7',  name: 'Pongal Festival Basket',  category: 'Fruit Baskets',   price: 1450, stock: 22,  image: '/images/categories/fruit-baskets.jpg',      discount: 5  },
   { id: '8',  name: 'Premium Durian',          category: 'Imported Fruits', price: 1800, stock: 38,  image: '/images/products/wa2-durian.jpeg',          discount: 0  },
-  { id: '17', name: 'Aiyani Fruit',            category: 'Seasonal Fruits', price: 160,  stock: 45,  image: '/images/products/wa2-Iyany.jpeg',           discount: 0  },
+  { id: '17', name: 'Wild Jackfruit',            category: 'Seasonal Fruits', price: 160,  stock: 45,  image: '/images/products/wa2-Iyany.jpeg',           discount: 0  },
   { id: '18', name: 'Nendran Banana',          category: 'Organic Fruits',  price: 60,   stock: 200, image: '/images/categories/banana.jpg',             discount: 5  },
 ]
 
@@ -175,7 +175,7 @@ function Stars({ rating }: { rating: number }) {
 
 // ─── Map API → inventory row ──────────────────────────────────────────────────
 
-type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; price: number; stock: number; image: string; discount?: number; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null }
+type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; price: number; originalPrice?: number; stock: number; image: string; discount?: number; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null }
 
 function mapApiProduct(p: ProductDto): InventoryRow {
   const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
@@ -185,6 +185,7 @@ function mapApiProduct(p: ProductDto): InventoryRow {
     nameTa: p.nameTa,
     category: p.category?.nameEn ?? '',
     price: p.price,
+    originalPrice: p.originalPrice ?? undefined,
     stock: p.stockQuantity,
     image: primary?.url ?? '/images/categories/mangoes.jpg',
     descriptionEn: p.descriptionEn,
@@ -294,7 +295,7 @@ function AddProductModal({
   const defaultCatId = apiCategories[0]?.id ?? ''
   const [form, setForm] = useState({
     nameEn: '', nameTa: '', categoryId: defaultCatId,
-    price: '', stock: '', image: '', description: '',
+    price: '', originalPrice: '', stock: '', image: '', description: '',
     aboutEn: '', usageEn: '', benefitsEn: '',
   })
   const [uploading, setUploading] = useState(false)
@@ -329,6 +330,7 @@ function AddProductModal({
           benefitsEn: form.benefitsEn || null,
           benefitsTa: null,
           price: Number(form.price),
+          originalPrice: form.originalPrice ? Number(form.originalPrice) : null,
           stockQuantity: stockNum,
           categoryId: form.categoryId,
           images: form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [],
@@ -395,10 +397,14 @@ function AddProductModal({
               <input type="text" value={form.categoryId} onChange={set('categoryId')} placeholder="Category name" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
             )}
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
               <input type="number" value={form.price} onChange={set('price')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">MRP (₹) <span className="text-gray-400 font-normal">(optional)</span></label>
+              <input type="number" value={form.originalPrice} onChange={set('originalPrice')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock (units) <span className="text-red-500">*</span></label>
@@ -468,6 +474,7 @@ function EditProductModal({
     nameTa: product.nameTa ?? '',
     categoryId: matchedCatId,
     price: String(product.price),
+    originalPrice: product.originalPrice ? String(product.originalPrice) : '',
     stock: String(product.stock),
     image: product.image,
     description: product.descriptionEn ?? '',
@@ -507,6 +514,7 @@ function EditProductModal({
           benefitsEn: form.benefitsEn || null,
           benefitsTa: null,
           price: Number(form.price),
+          originalPrice: form.originalPrice ? Number(form.originalPrice) : null,
           stockQuantity: stockNum,
           categoryId: form.categoryId,
           images: form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [],
@@ -572,10 +580,14 @@ function EditProductModal({
               <input type="text" value={form.categoryId} onChange={set('categoryId')} placeholder="Category name" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
             )}
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
               <input type="number" value={form.price} onChange={set('price')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">MRP (₹) <span className="text-gray-400 font-normal">(optional)</span></label>
+              <input type="number" value={form.originalPrice} onChange={set('originalPrice')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock (units) <span className="text-red-500">*</span></label>

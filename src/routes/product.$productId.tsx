@@ -193,7 +193,7 @@ function fromApiDto(p: ProductDto): Product {
     category: p.category?.nameEn ?? '',
     categorySlug: p.category?.slug ?? '',
     price: p.price,
-    originalPrice: p.price,
+    originalPrice: p.originalPrice ?? p.price,
     image: primary?.url ?? '/images/categories/mangoes.jpg',
     images: allImgs.length > 1 ? allImgs : undefined,
     rating: p.rating ?? 4.5,
