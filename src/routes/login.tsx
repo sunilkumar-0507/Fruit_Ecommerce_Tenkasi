@@ -69,8 +69,8 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
         {/* Logo ring */}
         <div className="relative w-24 h-24 mx-auto mb-6">
           <div className="absolute inset-0 rounded-3xl border-2 border-[#d4af37]/40 animate-sparkle" />
-          <div className="w-24 h-24 bg-[#e8f5ec] rounded-3xl flex items-center justify-center shadow-2xl shadow-[#d4af37]/30 p-2">
-            <img src="/images/products/logo.png" alt="Tenkasi Fresh" className="w-full h-full rounded-2xl object-contain" />
+          <div className="w-24 h-24 rounded-3xl flex items-center justify-center shadow-2xl shadow-[#d4af37]/30 p-2">
+            <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-full h-full rounded-2xl object-contain" />
           </div>
         </div>
 
@@ -162,8 +162,8 @@ function LoginPage() {
           </div>
           <div className="relative">
             <Link to="/" className="flex items-center gap-3 no-underline w-fit">
-              <div className="bg-[#e8f5ec] rounded-xl p-1.5 flex-shrink-0">
-                <img src="/images/products/logo.png" alt="Tenkasi Fresh" className="w-10 h-10 rounded-lg object-contain" />
+              <div className="rounded-xl p-1.5 flex-shrink-0">
+                <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-10 h-10 rounded-lg object-contain" />
               </div>
               <div>
                 <p className="font-serif text-lg font-bold leading-tight">Tenkasi Fresh</p>
@@ -201,8 +201,8 @@ function LoginPage() {
         <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#faf9f4]">
           <div className="w-full max-w-sm">
             <Link to="/" className="lg:hidden flex items-center gap-2.5 no-underline mb-8">
-              <div className="bg-[#e8f5ec] rounded-xl p-1 flex-shrink-0">
-                <img src="/images/products/logo.png" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
+              <div className="rounded-xl p-1 flex-shrink-0">
+                <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
               </div>
               <span className="font-serif font-bold text-gray-900">Tenkasi Fresh</span>
             </Link>
