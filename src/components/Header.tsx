@@ -162,8 +162,8 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-2">
             <Link to="/" className="flex items-center no-underline flex-shrink-0">
-              <div className="bg-white/10 border border-[#d4af37]/30 rounded-2xl p-1.5 backdrop-blur-sm">
-                <img src="/images/products/Logo.jpeg" alt="Tenkasi Fresh" className="h-[60px] w-[60px] object-contain rounded-xl" />
+              <div className="bg-white rounded-2xl p-1.5 shadow-sm">
+                <img src="/images/products/logo.png" alt="Tenkasi Fresh" className="h-[80px] w-[80px] object-contain rounded-xl" />
               </div>
             </Link>
 

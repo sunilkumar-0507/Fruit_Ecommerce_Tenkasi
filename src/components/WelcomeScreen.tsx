@@ -52,7 +52,7 @@ export default function WelcomeScreen({ onDone }: Props) {
         >
           <div className="bg-[#e8f5ec] rounded-3xl p-3 sm:p-4" style={{ boxShadow: '0 0 40px rgba(212,175,55,0.35)' }}>
             <img
-              src="/images/products/Logo.jpeg"
+              src="/images/products/logo.png"
               alt="Tenkasi Fresh"
               className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-contain"
             />

@@ -34,7 +34,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     links: [
       { rel: 'stylesheet', href: appCss },
       { rel: 'stylesheet', href: themifyUrl },
-      { rel: 'icon', type: 'image/png', href: '/images/products/Logo.jpeg' },
+      { rel: 'icon', type: 'image/png', href: '/images/products/logo.png' },
     ],
   }),
   shellComponent: RootDocument,

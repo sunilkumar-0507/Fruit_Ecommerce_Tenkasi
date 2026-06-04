@@ -62,7 +62,7 @@ const PERIOD_DATA: Record<OverviewPeriod, {
     chartData:   [3, 5, 8, 12, 7, 9, 11, 8],
     chartLabels: ['9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm'],
     topSellers: [
-      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 560, sold: 2, image: '/images/categories/mangoes.jpg' },
+      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 560, sold: 2, image: '/images/products/mangoes.jpeg' },
       { rank: 2, name: 'Fresh Rambutan',      category: 'Imported Fruits', revenue: 440, sold: 2, image: '/images/products/wa2-rambutan.jpeg' },
       { rank: 3, name: 'Ruby Pomegranate',    category: 'Imported Fruits', revenue: 480, sold: 2, image: '/images/categories/p-pomegranate.jpg' },
       { rank: 4, name: 'Dragon Fruit',        category: 'Imported Fruits', revenue: 380, sold: 1, image: '/images/products/wa2-dragon-fruit.jpeg' },
@@ -75,7 +75,7 @@ const PERIOD_DATA: Record<OverviewPeriod, {
     chartData:   [10, 14, 9, 18, 12, 22, 16],
     chartLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     topSellers: [
-      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 3267, sold: 12, image: '/images/categories/mangoes.jpg' },
+      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 3267, sold: 12, image: '/images/products/mangoes.jpeg' },
       { rank: 2, name: 'Fresh Rambutan',      category: 'Imported Fruits', revenue: 2053, sold: 9,  image: '/images/products/wa2-rambutan.jpeg' },
       { rank: 3, name: 'Ruby Pomegranate',    category: 'Imported Fruits', revenue: 1904, sold: 8,  image: '/images/categories/p-pomegranate.jpg' },
       { rank: 4, name: 'Dragon Fruit',        category: 'Imported Fruits', revenue: 1773, sold: 5,  image: '/images/products/wa2-dragon-fruit.jpeg' },
@@ -88,7 +88,7 @@ const PERIOD_DATA: Record<OverviewPeriod, {
     chartData:   [8,12,10,15,11,18,14,20,16,22,19,25,21,17,23,28,24,26,22,29,18,24,27,30,25,28,26,31,29,33],
     chartLabels: ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'],
     topSellers: [
-      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 14000, sold: 50, image: '/images/categories/mangoes.jpg' },
+      { rank: 1, name: 'Tenkasi Local Mango', category: 'Mangoes',         revenue: 14000, sold: 50, image: '/images/products/mangoes.jpeg' },
       { rank: 2, name: 'Fresh Rambutan',      category: 'Imported Fruits', revenue: 8800,  sold: 40, image: '/images/products/wa2-rambutan.jpeg' },
       { rank: 3, name: 'Ruby Pomegranate',    category: 'Imported Fruits', revenue: 8160,  sold: 34, image: '/images/categories/p-pomegranate.jpg' },
       { rank: 4, name: 'Dragon Fruit',        category: 'Imported Fruits', revenue: 7600,  sold: 20, image: '/images/products/wa2-dragon-fruit.jpeg' },
@@ -98,7 +98,7 @@ const PERIOD_DATA: Record<OverviewPeriod, {
 
 // Static fallback inventory for demo mode
 const INVENTORY_INIT: InventoryRow[] = [
-  { id: '1',  name: 'Tenkasi Local Mango',     category: 'Mangoes',         price: 280,  stock: 142, image: '/images/categories/mangoes.jpg',          discount: 10 },
+  { id: '1',  name: 'Tenkasi Local Mango',     category: 'Mangoes',         price: 280,  stock: 142, image: '/images/products/mangoes.jpeg',          discount: 10 },
   { id: '2',  name: 'Fresh Rambutan',          category: 'Imported Fruits', price: 220,  stock: 8,   image: '/images/products/wa2-rambutan.jpeg',        discount: 0  },
   { id: '3',  name: 'Ruby Pomegranate',        category: 'Imported Fruits', price: 240,  stock: 0,   image: '/images/categories/p-pomegranate.jpg',      discount: 15 },
   { id: '4',  name: 'Green Rose Apple',        category: 'Organic Fruits',  price: 120,  stock: 65,  image: '/images/products/wa2-green-jambu.jpeg',     discount: 0  },
@@ -187,7 +187,7 @@ function mapApiProduct(p: ProductDto): InventoryRow {
     price: p.price,
     originalPrice: p.originalPrice ?? undefined,
     stock: p.stockQuantity,
-    image: primary?.url ?? '/images/categories/mangoes.jpg',
+    image: primary?.url ?? '/images/products/mangoes.jpeg',
     descriptionEn: p.descriptionEn,
     aboutEn: p.aboutEn,
     usageEn: p.usageEn,
@@ -707,7 +707,7 @@ function buildApiStats(orders: OrderDto[], period: OverviewPeriod) {
   )
   const topSellers = Object.values(pm)
     .sort((a, b) => b.revenue - a.revenue).slice(0, 4)
-    .map((v, i) => ({ rank: i + 1, name: v.name, category: '–', revenue: Math.round(v.revenue), sold: v.sold, image: '/images/categories/mangoes.jpg' }))
+    .map((v, i) => ({ rank: i + 1, name: v.name, category: '–', revenue: Math.round(v.revenue), sold: v.sold, image: '/images/products/mangoes.jpeg' }))
 
   const sub = period === 'Today' ? 'today' : period === 'Last 7 days' ? 'vs prev week' : 'vs prev month'
   return {
@@ -1942,7 +1942,7 @@ function SeasonalPanel() {
             category: p.category?.nameEn ?? '',
             price: p.price,
             unit: 'per unit',
-            image: primary?.url ?? '/images/categories/mangoes.jpg',
+            image: primary?.url ?? '/images/products/mangoes.jpeg',
             isSeasonal: false,
           }
         }))
@@ -2087,7 +2087,7 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
       <div className="px-5 py-5 border-b border-white/10">
         <div className="flex items-center gap-2.5 mb-1">
           <div className="bg-[#e8f5ec] rounded-xl p-1 flex-shrink-0">
-            <img src="/images/products/Logo.jpeg" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
+            <img src="/images/products/logo.png" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
           </div>
           <span className="font-serif text-white font-bold text-sm">Tenkasi Fresh</span>
         </div>
