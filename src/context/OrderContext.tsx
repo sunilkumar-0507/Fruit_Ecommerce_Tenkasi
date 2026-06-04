@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { api, isApiMode, getStoredToken, type AddressDto, type OrderDto } from '#/lib/apiClient'
+import { notifyNewOrder } from '#/services/notificationService'
 
 export interface Address {
   id: string

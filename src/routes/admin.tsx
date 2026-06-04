@@ -11,6 +11,11 @@ import {
   type CategoryDto, type OrderDto, type OrderDtoPagedResult,
   ORDER_STATUS,
 } from '#/lib/apiClient'
+import {
+  loadPrefs, savePrefs, isEmailJsConfigured, sendTestEmail,
+  notifyLowStock, maybeSendDailyReport,
+  type NotifPrefs,
+} from '#/services/notificationService'
 
 export const Route = createFileRoute('/admin')({ component: AdminPage })
 
@@ -101,6 +106,8 @@ const INVENTORY_INIT: InventoryRow[] = [
   { id: '6',  name: 'Passion Fruit',           category: 'Imported Fruits', price: 260,  stock: 12,  image: '/images/products/wa2-passion-fruit.jpeg',   discount: 0  },
   { id: '7',  name: 'Pongal Festival Basket',  category: 'Fruit Baskets',   price: 1450, stock: 22,  image: '/images/categories/fruit-baskets.jpg',      discount: 5  },
   { id: '8',  name: 'Premium Durian',          category: 'Imported Fruits', price: 1800, stock: 38,  image: '/images/products/wa2-durian.jpeg',          discount: 0  },
+  { id: '17', name: 'Aiyani Fruit',            category: 'Seasonal Fruits', price: 160,  stock: 45,  image: '/images/products/wa2-Iyany.jpeg',           discount: 0  },
+  { id: '18', name: 'Nendran Banana',          category: 'Organic Fruits',  price: 60,   stock: 200, image: '/images/categories/banana.jpg',             discount: 5  },
 ]
 
 const ORDERS_STATIC = [
@@ -293,6 +300,7 @@ function AddProductModal({
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   function set(field: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -302,6 +310,10 @@ function AddProductModal({
   async function handleSave() {
     if (!form.nameEn || !form.price || !form.stock) return
     setSaving(true)
+    setSaveError('')
+
+    const stockNum = Number(form.stock)
+    const cat = apiCategories.find((c) => c.id === form.categoryId)
 
     if (isApiMode() && getStoredToken()) {
       try {
@@ -317,28 +329,31 @@ function AddProductModal({
           benefitsEn: form.benefitsEn || null,
           benefitsTa: null,
           price: Number(form.price),
-          stockQuantity: Number(form.stock),
+          stockQuantity: stockNum,
           categoryId: form.categoryId,
           images: form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [],
         })
+        if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
         setSaved(true)
         setTimeout(() => { onSave(mapApiProduct(dto)); onClose() }, 900)
-      } catch {
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Failed to save product'
+        setSaveError(msg)
         setSaving(false)
       }
       return
     }
 
     // Demo fallback
+    if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
     setSaved(true)
     setTimeout(() => {
-      const cat = apiCategories.find((c) => c.id === form.categoryId)
       onSave({
         id: String(Date.now()),
         name: form.nameEn,
         category: cat?.nameEn ?? form.categoryId,
         price: Number(form.price),
-        stock: Number(form.stock),
+        stock: stockNum,
         image: form.image || '/images/products/p-mango.jpg',
       })
       onClose()
@@ -409,20 +424,25 @@ function AddProductModal({
           </div>
         </div>
 
-        <div className="flex gap-3 p-5 sm:p-6 border-t border-gray-100">
-          <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleSave()}
-            disabled={!form.nameEn || !form.price || !form.stock || saving || uploading}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
-            }`}
-          >
-            {saved ? '✓ Product Added!' : uploading ? 'Uploading…' : 'Save Product'}
-          </button>
+        <div className="p-5 sm:p-6 border-t border-gray-100 space-y-3">
+          {saveError && (
+            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{saveError}</p>
+          )}
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleSave()}
+              disabled={!form.nameEn || !form.price || !form.stock || (isApiMode() && !form.categoryId) || saving || uploading}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
+              }`}
+            >
+              {saved ? '✓ Product Added!' : saving ? 'Saving…' : uploading ? 'Uploading…' : 'Save Product'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -458,6 +478,7 @@ function EditProductModal({
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   function set(field: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -467,6 +488,10 @@ function EditProductModal({
   async function handleSave() {
     if (!form.nameEn || !form.price || !form.stock) return
     setSaving(true)
+    setSaveError('')
+
+    const stockNum = Number(form.stock)
+    const cat = apiCategories.find((c) => c.id === form.categoryId)
 
     if (isApiMode() && getStoredToken()) {
       try {
@@ -482,27 +507,30 @@ function EditProductModal({
           benefitsEn: form.benefitsEn || null,
           benefitsTa: null,
           price: Number(form.price),
-          stockQuantity: Number(form.stock),
+          stockQuantity: stockNum,
           categoryId: form.categoryId,
           images: form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [],
         })
+        if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
         setSaved(true)
         setTimeout(() => { onSave(mapApiProduct(dto)); onClose() }, 900)
-      } catch {
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Failed to save product'
+        setSaveError(msg)
         setSaving(false)
       }
       return
     }
 
+    if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
     setSaved(true)
     setTimeout(() => {
-      const cat = apiCategories.find((c) => c.id === form.categoryId)
       onSave({
         ...product,
         name: form.nameEn,
         category: cat?.nameEn ?? form.categoryId,
         price: Number(form.price),
-        stock: Number(form.stock),
+        stock: stockNum,
         image: form.image,
       })
       onClose()
@@ -573,20 +601,25 @@ function EditProductModal({
           </div>
         </div>
 
-        <div className="flex gap-3 p-5 sm:p-6 border-t border-gray-100">
-          <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleSave()}
-            disabled={!form.nameEn || !form.price || !form.stock || saving || uploading}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
-            }`}
-          >
-            {saved ? '✓ Saved!' : uploading ? 'Uploading…' : 'Save Changes'}
-          </button>
+        <div className="p-5 sm:p-6 border-t border-gray-100 space-y-3">
+          {saveError && (
+            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{saveError}</p>
+          )}
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleSave()}
+              disabled={!form.nameEn || !form.price || !form.stock || saving || uploading}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                saved ? 'bg-emerald-500 text-white' : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f] disabled:opacity-40 disabled:cursor-not-allowed'
+              }`}
+            >
+              {saved ? '✓ Saved!' : saving ? 'Saving…' : uploading ? 'Uploading…' : 'Save Changes'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -687,6 +720,17 @@ function OverviewPanel() {
       .then((r) => setApiOrders(r.items ?? []))
       .catch(() => {})
       .finally(() => setApiLoading(false))
+  }, [])
+
+  // Auto-send daily report on first admin visit after 8 AM
+  useEffect(() => {
+    const today = PERIOD_DATA['Today']
+    void maybeSendDailyReport({
+      revenue:    today.revenue.value,
+      orders:     today.orders.value,
+      delivered:  today.sales.value,
+      topProduct: today.topSellers[0]?.name ?? 'N/A',
+    })
   }, [])
 
   const data = isApiMode() && !apiLoading ? buildApiStats(apiOrders, period) : PERIOD_DATA[period]
@@ -833,6 +877,7 @@ function InventoryPanel() {
   const [inventory, setInventory] = useState<InventoryRow[]>(isApiMode() ? [] : INVENTORY_INIT)
   const [apiCategories, setApiCategories] = useState<CategoryDto[]>([])
   const [loading, setLoading] = useState(isApiMode())
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     if (!isApiMode() || !getStoredToken()) return
@@ -844,7 +889,10 @@ function InventoryPanel() {
         setInventory((products.items ?? []).map(mapApiProduct))
         setApiCategories(cats)
       })
-      .catch(() => {})
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : 'Failed to load inventory'
+        setLoadError(msg)
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -888,6 +936,12 @@ function InventoryPanel() {
         <TiIcon name="search" size={15} className="text-gray-400 flex-shrink-0" />
         <input type="text" placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-transparent text-sm text-gray-600 placeholder-gray-400 outline-none w-full" />
       </div>
+
+      {loadError && (
+        <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          Failed to load inventory: {loadError}
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
         {loading ? (
@@ -968,13 +1022,17 @@ function OrdersPanel() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [apiOrders, setApiOrders] = useState<OrderDto[]>([])
   const [loading, setLoading] = useState(isApiMode())
+  const [loadError, setLoadError] = useState('')
   const statuses = ['All', 'Confirmed', 'Pending', 'Shipped', 'Delivered', 'Cancelled']
 
   useEffect(() => {
     if (!isApiMode() || !getStoredToken()) return
     api.get<OrderDtoPagedResult>('/api/admin/orders?pageSize=100')
       .then((r) => setApiOrders(r.items ?? []))
-      .catch(() => {})
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : 'Failed to load orders'
+        setLoadError(msg)
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -1040,6 +1098,11 @@ function OrdersPanel() {
           </button>
         ))}
       </div>
+      {loadError && (
+        <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          Failed to load orders: {loadError}
+        </div>
+      )}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-16">
@@ -1287,11 +1350,30 @@ function FarmersPanel() {
 
 function SettingsPanel() {
   const [saved, setSaved] = useState(false)
-  const [notifs, setNotifs] = useState({ newOrder: true, lowStock: true, newCustomer: false, dailyReport: true })
+  const [testSent, setTestSent] = useState(false)
+  const [testError, setTestError] = useState('')
+  const [notifs, setNotifs] = useState<NotifPrefs>(() => loadPrefs())
+  const emailjsReady = isEmailJsConfigured()
 
   function handleSave() {
+    savePrefs(notifs)
     setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    setTimeout(() => setSaved(false), 2500)
+  }
+
+  async function handleTestEmail() {
+    setTestError('')
+    if (!emailjsReady) {
+      setTestError('EmailJS credentials not configured — see VITE_EMAILJS_* in .env.local')
+      return
+    }
+    try {
+      await sendTestEmail()
+      setTestSent(true)
+      setTimeout(() => setTestSent(false), 3000)
+    } catch {
+      setTestError('Failed to send test email. Check your EmailJS credentials.')
+    }
   }
 
   return (
@@ -1304,7 +1386,7 @@ function SettingsPanel() {
           {[
             { label: 'Shop Name',       value: 'Tenkasi Fresh Fruits' },
             { label: 'Business Email',  value: 'admin@tenakasifresh.com' },
-            { label: 'Phone Number',    value: '+91 98400 12345' },
+            { label: 'Phone Number',    value: '+91 7094402579' },
             { label: 'GST Number',      value: '33ABCDE1234F1Z5' },
             { label: 'FSSAI License',   value: '22824105000124' },
           ].map((f) => (
@@ -1337,14 +1419,39 @@ function SettingsPanel() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sm:p-6 mb-6">
-        <div className="flex items-center gap-2 mb-5"><TiIcon name="bell" size={18} className="text-[#2f6a4a]" /><h2 className="font-semibold text-gray-900">Notification Preferences</h2></div>
-        <div className="space-y-4">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sm:p-6 mb-5">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <TiIcon name="bell" size={18} className="text-[#2f6a4a]" />
+            <h2 className="font-semibold text-gray-900">Notification Preferences</h2>
+          </div>
+          <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${emailjsReady ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+            {emailjsReady ? 'Email Ready' : 'Email Not Configured'}
+          </span>
+        </div>
+
+        {/* Admin notification email */}
+        <div className="mb-4">
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+            Admin Notification Email
+          </label>
+          <input
+            type="email"
+            title="Admin notification email"
+            value={notifs.adminEmail}
+            onChange={(e) => setNotifs((p) => ({ ...p, adminEmail: e.target.value }))}
+            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
+            placeholder="admin@example.com"
+          />
+          <p className="text-[11px] text-gray-400 mt-1">All notification emails will be sent to this address.</p>
+        </div>
+
+        <div className="space-y-4 border-t border-gray-100 pt-4">
           {[
-            { key: 'newOrder' as const,    label: 'New Order Alert',             desc: 'Notify when a new order is placed' },
-            { key: 'lowStock' as const,    label: 'Low Stock Alert',             desc: 'Warn when a product falls below 20 units' },
-            { key: 'newCustomer' as const, label: 'New Customer Registration',   desc: 'Notify when a new customer signs up' },
-            { key: 'dailyReport' as const, label: 'Daily Sales Report (Email)',  desc: 'Receive a summary each morning at 8 AM' },
+            { key: 'newOrder' as const,    label: 'New Order Alert',             desc: 'Email when a customer places a new order' },
+            { key: 'lowStock' as const,    label: 'Low Stock Alert',             desc: 'Email when a product stock falls below 20 units' },
+            { key: 'newCustomer' as const, label: 'New Customer Registration',   desc: 'Email when a new customer signs up' },
+            { key: 'dailyReport' as const, label: 'Daily Sales Report (Email)',  desc: 'Morning summary emailed when you open the admin panel after 8 AM' },
           ].map((n) => (
             <div key={n.key} className="flex items-center justify-between py-1">
               <div>
@@ -1362,11 +1469,45 @@ function SettingsPanel() {
             </div>
           ))}
         </div>
+
+        {/* EmailJS status banner */}
+        {!emailjsReady && (
+          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <p className="text-xs font-semibold text-amber-800 mb-1">EmailJS not configured</p>
+            <p className="text-[11px] text-amber-700 leading-relaxed">
+              Add these to your <span className="font-mono bg-amber-100 px-1 rounded">.env.local</span> file and restart the dev server:
+            </p>
+            <pre className="text-[10px] text-amber-900 mt-2 font-mono bg-amber-100 rounded p-2 overflow-x-auto leading-relaxed">{`VITE_EMAILJS_SERVICE_ID=service_xxxxxxx
+VITE_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxxxxxxx
+VITE_EMAILJS_TEMPLATE_ORDER=template_xxxxxxx
+VITE_EMAILJS_TEMPLATE_STOCK=template_xxxxxxx
+VITE_EMAILJS_TEMPLATE_CUSTOMER=template_xxxxxxx
+VITE_EMAILJS_TEMPLATE_REPORT=template_xxxxxxx`}</pre>
+            <p className="text-[10px] text-amber-600 mt-2">
+              Get your credentials free at <span className="font-semibold">emailjs.com</span> → Email Services → Create Service
+            </p>
+          </div>
+        )}
+
+        {/* Test email button */}
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => void handleTestEmail()}
+            disabled={!emailjsReady}
+            className="flex items-center gap-2 border border-[#2f6a4a] text-[#2f6a4a] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#2f6a4a]/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <TiIcon name="email" size={14} />
+            {testSent ? 'Test Email Sent!' : 'Send Test Email'}
+          </button>
+          {testError && <p className="text-xs text-red-600">{testError}</p>}
+          {testSent && <p className="text-xs text-[#2f6a4a]">Check {notifs.adminEmail}</p>}
+        </div>
       </div>
 
       <button type="button" onClick={handleSave} className="flex items-center gap-2 bg-[#2f6a4a] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#1f4a2f] transition-colors">
         <TiIcon name="save" size={15} />
-        {saved ? 'Saved!' : 'Save Changes'}
+        {saved ? 'Preferences Saved!' : 'Save Changes'}
       </button>
     </div>
   )
@@ -1762,7 +1903,7 @@ function SeasonalPanel() {
   type SeasonalEntry = { id: string; name: string; nameTamil: string; category: string; price: number; unit: string; image: string; isSeasonal: boolean }
 
   const [products, setProducts] = useState<SeasonalEntry[]>(
-    PRODUCTS.map((p) => ({
+    isApiMode() ? [] : PRODUCTS.map((p) => ({
       id: p.id,
       name: p.name,
       nameTamil: p.nameTamil,
@@ -1773,7 +1914,30 @@ function SeasonalPanel() {
       isSeasonal: p.seasonal === true || p.categorySlug === 'seasonal-fruits',
     })),
   )
+  const [loading, setLoading] = useState(isApiMode())
   const [showAddModal, setShowAddModal] = useState(false)
+
+  useEffect(() => {
+    if (!isApiMode() || !getStoredToken()) return
+    api.get<ProductDtoPagedResult>('/api/admin/products?PageSize=100')
+      .then((result) => {
+        setProducts((result.items ?? []).map((p) => {
+          const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
+          return {
+            id: p.id,
+            name: p.nameEn ?? '',
+            nameTamil: p.nameTa ?? '',
+            category: p.category?.nameEn ?? '',
+            price: p.price,
+            unit: 'per unit',
+            image: primary?.url ?? '/images/categories/mangoes.jpg',
+            isSeasonal: false,
+          }
+        }))
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
 
   function toggle(id: string) {
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, isSeasonal: !p.isSeasonal } : p)))
@@ -1787,7 +1951,7 @@ function SeasonalPanel() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="font-serif text-2xl font-bold text-gray-900">Seasonal Fruits</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{seasonal.length} products currently in season</p>
+          <p className="text-gray-500 text-sm mt-0.5">{loading ? 'Loading…' : `${seasonal.length} products currently in season`}</p>
         </div>
         <button
           type="button"
@@ -1799,6 +1963,13 @@ function SeasonalPanel() {
         </button>
       </div>
 
+      {loading && (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-8 h-8 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
+      {!loading && <>
       {/* Currently seasonal */}
       <div className="mb-7">
         <p className="text-[10px] font-bold text-[#2f6a4a] uppercase tracking-widest mb-3">
@@ -1863,6 +2034,7 @@ function SeasonalPanel() {
           ))}
         </div>
       </div>
+      </>}
 
       {showAddModal && (
         <AddProductModal

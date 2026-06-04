@@ -1,15 +1,35 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ShoppingCart, Leaf, Zap, Award, Truck, Smartphone } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ProductCard from '#/components/ProductCard'
 import CategoryCard from '#/components/CategoryCard'
 import TestimonialCard from '#/components/TestimonialCard'
 import WelcomeScreen from '#/components/WelcomeScreen'
 import { PRODUCTS, HOME_CATEGORIES } from '#/data/products'
+import type { Product } from '#/data/products'
+import { api, isApiMode, type ProductDto, type ProductDtoPagedResult } from '#/lib/apiClient'
 
 export const Route = createFileRoute('/')({ component: HomePage })
 
-const FEATURED = PRODUCTS.filter((p) => p.featured)
+function mapProduct(p: ProductDto): Product {
+  const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
+  return {
+    id: p.id,
+    name: p.nameEn ?? '',
+    nameTamil: p.nameTa ?? '',
+    category: p.category?.nameEn ?? '',
+    categorySlug: p.category?.slug ?? '',
+    price: p.price,
+    originalPrice: p.price,
+    image: primary?.url ?? '/images/products/p-mango.jpg',
+    rating: p.rating ?? 4.5,
+    reviews: 0,
+    unit: 'per unit',
+    featured: true,
+  }
+}
+
+const DEMO_FEATURED = PRODUCTS.filter((p) => p.featured)
 
 const TESTIMONIALS = [
   {
@@ -55,6 +75,16 @@ function HomePage() {
     } catch { return false }
   })
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [featured, setFeatured] = useState<Product[]>(isApiMode() ? [] : DEMO_FEATURED)
+  const [featuredLoading, setFeaturedLoading] = useState(isApiMode())
+
+  useEffect(() => {
+    if (!isApiMode()) return
+    api.get<ProductDtoPagedResult>('/api/Products?PageSize=8')
+      .then((result) => setFeatured((result.items ?? []).map(mapProduct)))
+      .catch(() => setFeatured(DEMO_FEATURED))
+      .finally(() => setFeaturedLoading(false))
+  }, [])
 
   function handleWelcomeDone() {
     try {
@@ -118,7 +148,7 @@ function HomePage() {
             <div className="relative h-96 sm:h-[500px] lg:h-[540px]">
               <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src="/images/categories/hero-fruits.jpg"
+                  src="/images/categories/hero-fruits.jpeg"
                   alt="Fresh Fruits"
                   className="w-full h-full object-cover"
                   loading="lazy"
@@ -179,11 +209,17 @@ function HomePage() {
               View all →
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURED.slice(0, 8).map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
+          {featuredLoading ? (
+            <div className="flex justify-center py-16">
+              <div className="w-10 h-10 border-2 border-[#2f6a4a] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featured.slice(0, 8).map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

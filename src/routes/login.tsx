@@ -79,7 +79,7 @@ function LoginSuccessOverlay({ name, onDone }: { name: string; onDone: () => voi
           Login Successful
         </p>
         <h1 className="font-serif text-4xl sm:text-5xl font-bold text-white mb-2 leading-tight">
-          Welcome back,
+          Welcome To Tenkasi Fresh,
         </h1>
         <p className="font-serif text-3xl sm:text-4xl font-bold text-[#d4af37] mb-4">
           {name.split(' ')[0]}!
@@ -325,7 +325,7 @@ function RegisterForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').
       {[
         { id: 'reg-name', label: 'Full name', field: 'name' as const, type: 'text', placeholder: 'Ravi Kumar' },
         { id: 'reg-email', label: 'Email address', field: 'email' as const, type: 'email', placeholder: 'you@example.com' },
-        { id: 'reg-phone', label: 'Phone number', field: 'phone' as const, type: 'tel', placeholder: '+91 98400 12345' },
+        { id: 'reg-phone', label: 'Phone number', field: 'phone' as const, type: 'tel', placeholder: '+91 70944 02579' },
       ].map(({ id, label, field, type, placeholder }) => (
         <div key={id}>
           <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor={id}>{label}</label>

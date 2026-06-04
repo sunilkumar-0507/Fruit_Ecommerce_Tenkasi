@@ -1,3 +1,5 @@
+import { notifyNewCustomer } from '#/services/notificationService'
+
 export interface User {
   id: string
   name: string
@@ -42,7 +44,7 @@ const DEMO_USERS: User[] = [
     id: 'admin-001',
     name: 'Arun Kumar',
     email: 'admin@tenakasifresh.com',
-    phone: '+91 98400 12345',
+    phone: '+91 70944 02579',
     role: 'admin',
     token: 'demo-admin-token',
   },
@@ -50,7 +52,7 @@ const DEMO_USERS: User[] = [
     id: 'cust-001',
     name: 'Priya Sharma',
     email: 'priya@example.com',
-    phone: '+91 94400 55555',
+    phone: '+91 70944 02579',
     role: 'customer',
     token: 'demo-customer-token',
   },
@@ -112,18 +114,18 @@ export function loginUser(payload: LoginPayload): Promise<User> {
 export function registerUser(payload: RegisterPayload): Promise<User> {
   if (!BASE) {
     return new Promise((resolve) =>
-      setTimeout(
-        () =>
-          resolve({
-            id: `cust-${Date.now()}`,
-            name: payload.name,
-            email: payload.email,
-            phone: payload.phone,
-            role: 'customer',
-            token: `demo-token-${Date.now()}`,
-          }),
-        800,
-      ),
+      setTimeout(() => {
+        const user: User = {
+          id: `cust-${Date.now()}`,
+          name: payload.name,
+          email: payload.email,
+          phone: payload.phone,
+          role: 'customer',
+          token: `demo-token-${Date.now()}`,
+        }
+        void notifyNewCustomer({ name: user.name, email: user.email, phone: user.phone })
+        resolve(user)
+      }, 800),
     )
   }
   return request<ApiAuthResponse>('/api/Auth/register', {
@@ -136,7 +138,9 @@ export function registerUser(payload: RegisterPayload): Promise<User> {
     }),
   }).then((r) => {
     if (r.refreshToken) localStorage.setItem('tf_refresh', r.refreshToken)
-    return mapAuthResponse(r)
+    const user = mapAuthResponse(r)
+    void notifyNewCustomer({ name: user.name, email: user.email, phone: user.phone })
+    return user
   })
 }
 

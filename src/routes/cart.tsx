@@ -8,10 +8,17 @@ import { useAuthGuard } from '#/hooks/useAuthGuard'
 import { useCart } from '#/context/CartContext'
 import { useOrders, type Address } from '#/context/OrderContext'
 import { useAuth } from '#/context/AuthContext'
+import { notifyNewOrder } from '#/services/notificationService'
 
 export const Route = createFileRoute('/cart')({ component: CartPage })
 
 const DELIVERY_FEE = 49
+
+const DEMO_COUPONS: Record<string, { rate: number; min?: number }> = {
+  LOYAL10: { rate: 0.10 },
+  FRESH15: { rate: 0.15, min: 1000 },
+  TENK10:  { rate: 0.10 },
+}
 
 const STATES = [
   'Tamil Nadu', 'Kerala', 'Karnataka', 'Andhra Pradesh', 'Telangana',
@@ -74,8 +81,11 @@ function AddressCard({ address, selected, onSelect }: {
   )
 }
 
-function CheckoutModal({ onClose }: { onClose: () => void }) {
-  const { addresses, addAddress, placeOrder, loadAddresses } = useOrders()
+function CheckoutModal({ onClose, cartCoupon }: {
+  onClose: () => void
+  cartCoupon?: { code: string; discount: number } | null
+}) {
+  const { addresses, addAddress, placeOrder, loadAddresses, orders } = useOrders()
   const { items, clearCart } = useCart()
   const { user } = useAuth()
 
@@ -88,8 +98,9 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
   const [orderId, setOrderId] = useState('')
   const [placing, setPlacing] = useState(false)
   const [orderError, setOrderError] = useState('')
-  const [couponCode, setCouponCode] = useState('')
-  const [couponDiscount, setCouponDiscount] = useState(0)
+  const [couponCode, setCouponCode] = useState(cartCoupon?.code ?? '')
+  const [couponDiscount, setCouponDiscount] = useState(cartCoupon?.discount ?? 0)
+  const [wasRepeatCustomer] = useState(() => orders.length >= 1)
 
   const emptyForm = {
     name: user?.name ?? '',
@@ -104,7 +115,9 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState(emptyForm)
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0)
-  const total = subtotal + DELIVERY_FEE
+  const freeDelivery = subtotal >= 499
+  const deliveryFee = freeDelivery ? 0 : DELIVERY_FEE
+  const total = Math.max(0, subtotal + deliveryFee - couponDiscount)
 
   function setF(k: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -127,6 +140,13 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
       const result = await placeOrder(selectedAddr.id, couponCode || undefined)
       setOrderId(result.id)
       if (result.discountAmount) setCouponDiscount(result.discountAmount)
+      void notifyNewOrder({
+        id: result.id,
+        customerName: user?.name ?? selectedAddr.name,
+        customerEmail: user?.email,
+        items: items.map((i) => ({ name: i.name, qty: i.qty, price: i.price })),
+        total: Math.max(0, subtotal + deliveryFee - (result.discountAmount ?? couponDiscount)),
+      })
       clearCart()
       setStep('success')
     } catch (err) {
@@ -240,7 +260,7 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
                   <input
                     value={form.phone}
                     onChange={setF('phone')}
-                    placeholder="+91 98400 12345"
+                    placeholder="+91 70944 02579"
                     className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition"
                   />
                 </div>
@@ -417,8 +437,18 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Delivery</span>
-                  <span className="font-semibold text-gray-900">₹{DELIVERY_FEE}</span>
+                  {freeDelivery ? (
+                    <span className="font-semibold text-[#2f6a4a]">Free</span>
+                  ) : (
+                    <span className="font-semibold text-gray-900">₹{deliveryFee}</span>
+                  )}
                 </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-sm text-[#2f6a4a]">
+                    <span>Coupon ({couponCode})</span>
+                    <span className="font-semibold">−₹{couponDiscount}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Banana leaf wrap</span>
                   <span className="text-[#2f6a4a] font-medium">Complimentary</span>
@@ -466,7 +496,17 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
                 <p className="text-emerald-600 text-sm font-semibold mb-2">Coupon applied · ₹{couponDiscount} off</p>
               )}
               <p className="text-[#2f6a4a] font-mono font-bold text-lg mb-1">{orderId}</p>
-              <p className="text-gray-400 text-xs mb-5">You'll receive a confirmation shortly</p>
+              <p className="text-gray-400 text-xs mb-4">You'll receive a confirmation shortly</p>
+              {wasRepeatCustomer && (
+                <div className="bg-[#f0f8f4] border border-[#2f6a4a]/20 rounded-xl p-3 mb-4 text-center">
+                  <p className="text-xs font-bold text-[#2f6a4a] mb-1">Loyalty Reward Unlocked!</p>
+                  <p className="text-[10px] text-gray-500 mb-2">Use this on your next order</p>
+                  <div className="inline-block bg-white border-2 border-dashed border-[#2f6a4a]/50 rounded-lg py-1.5 px-4">
+                    <span className="font-mono font-bold text-[#2f6a4a] text-base tracking-widest">LOYAL10</span>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1.5">10% off on your next purchase</p>
+                </div>
+              )}
               <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mb-6 bg-gray-50 rounded-xl py-3">
                 <Package size={14} />
                 <span>Estimated delivery: Today by 7 PM</span>
@@ -501,7 +541,11 @@ function CheckoutModal({ onClose }: { onClose: () => void }) {
 function CartPage() {
   const user = useAuthGuard()
   const { items, updateQty, removeItem } = useCart()
+  const { orders } = useOrders()
   const [showCheckout, setShowCheckout] = useState(false)
+  const [couponInput, setCouponInput] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null)
+  const [couponError, setCouponError] = useState('')
 
   if (!user) {
     return (
@@ -512,7 +556,32 @@ function CartPage() {
   }
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0)
-  const total = subtotal + DELIVERY_FEE
+  const freeDelivery = subtotal >= 499
+  const deliveryFee = freeDelivery ? 0 : DELIVERY_FEE
+  const couponDiscount = appliedCoupon?.discount ?? 0
+  const total = Math.max(0, subtotal + deliveryFee - couponDiscount)
+  const isRepeatCustomer = orders.length >= 1
+
+  function handleApplyCoupon() {
+    const code = couponInput.trim().toUpperCase()
+    if (!code) { setCouponError('Enter a coupon code'); return }
+    const def = DEMO_COUPONS[code]
+    if (!def) { setCouponError('Invalid coupon code'); setAppliedCoupon(null); return }
+    if (def.min && subtotal < def.min) {
+      setCouponError(`${code} requires an order above ₹${def.min}`)
+      setAppliedCoupon(null)
+      return
+    }
+    const discount = Math.round(subtotal * def.rate)
+    setAppliedCoupon({ code, discount })
+    setCouponError('')
+    setCouponInput('')
+  }
+
+  function handleRemoveCoupon() {
+    setAppliedCoupon(null)
+    setCouponError('')
+  }
 
   return (
     <main className="min-h-screen bg-[#faf9f4]">
@@ -597,7 +666,95 @@ function CartPage() {
             {/* Order summary */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100 lg:sticky lg:top-28">
-                <h2 className="font-serif text-xl font-bold text-gray-900 mb-5">Order summary</h2>
+                <h2 className="font-serif text-xl font-bold text-gray-900 mb-4">Order summary</h2>
+
+                {/* Free delivery progress */}
+                {!freeDelivery ? (
+                  <div className="mb-4 bg-[#f0f8f4] rounded-xl p-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-semibold text-[#2f6a4a]">Free delivery above ₹499</span>
+                      <span className="text-xs font-bold text-[#2f6a4a]">₹{499 - subtotal} away</span>
+                    </div>
+                    <div className="w-full bg-[#c8e6d4] rounded-full h-1.5">
+                      <div
+                        className="bg-[#2f6a4a] h-1.5 rounded-full transition-all"
+                        style={{ width: `${Math.min((subtotal / 499) * 100, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-4 bg-[#e7f3ec] rounded-xl p-3 flex items-center gap-2">
+                    <span className="text-base">🎉</span>
+                    <span className="text-xs font-semibold text-[#2f6a4a]">You've unlocked free delivery!</span>
+                  </div>
+                )}
+
+                {/* Coupon suggestions */}
+                {subtotal >= 1000 && !appliedCoupon && (
+                  <button
+                    type="button"
+                    className="mb-3 w-full flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 hover:bg-amber-100 transition-colors text-left"
+                    onClick={() => setCouponInput('FRESH15')}
+                  >
+                    <span className="text-amber-500 text-sm flex-shrink-0">🎁</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-amber-800">Big order bonus!</p>
+                      <p className="text-[10px] text-amber-700">Apply <span className="font-mono font-bold">FRESH15</span> for 15% off</p>
+                    </div>
+                    <span className="text-[10px] font-semibold text-amber-600 flex-shrink-0">Tap to fill</span>
+                  </button>
+                )}
+                {isRepeatCustomer && !appliedCoupon && (
+                  <button
+                    type="button"
+                    className="mb-3 w-full flex items-center gap-2 bg-[#f0f8f4] border border-[#2f6a4a]/20 rounded-xl px-3 py-2 hover:bg-[#e7f3ec] transition-colors text-left"
+                    onClick={() => setCouponInput('LOYAL10')}
+                  >
+                    <span className="text-sm flex-shrink-0">💚</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-[#2f6a4a]">Welcome back!</p>
+                      <p className="text-[10px] text-[#2f6a4a]/80">Apply <span className="font-mono font-bold">LOYAL10</span> for 10% off</p>
+                    </div>
+                    <span className="text-[10px] font-semibold text-[#2f6a4a]/70 flex-shrink-0">Tap to fill</span>
+                  </button>
+                )}
+
+                {/* Coupon input */}
+                <div className="mb-4">
+                  {!appliedCoupon ? (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={couponInput}
+                        onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError('') }}
+                        onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
+                        placeholder="Enter coupon code"
+                        className="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#2f6a4a] focus:ring-2 focus:ring-[#2f6a4a]/10 transition font-mono uppercase"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        className="px-4 py-2.5 bg-[#2f6a4a] text-white rounded-xl text-sm font-semibold hover:bg-[#1f4a2f] transition-colors flex-shrink-0"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between bg-[#e7f3ec] rounded-xl px-3 py-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#2f6a4a] font-bold text-sm">✓</span>
+                        <span className="font-mono font-bold text-[#2f6a4a] text-sm">{appliedCoupon.code}</span>
+                        <span className="text-xs text-[#2f6a4a]/70">applied</span>
+                      </div>
+                      <button type="button" onClick={handleRemoveCoupon} className="text-[10px] text-gray-400 hover:text-red-500 transition-colors font-medium">
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  {couponError && <p className="text-xs text-red-500 mt-1.5">{couponError}</p>}
+                </div>
+
+                {/* Price breakdown */}
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal</span>
@@ -605,8 +762,18 @@ function CartPage() {
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Delivery</span>
-                    <span className="font-semibold text-gray-900">₹{DELIVERY_FEE}</span>
+                    {freeDelivery ? (
+                      <span className="font-semibold text-[#2f6a4a]">Free</span>
+                    ) : (
+                      <span className="font-semibold text-gray-900">₹{deliveryFee}</span>
+                    )}
                   </div>
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-sm text-[#2f6a4a]">
+                      <span>Coupon ({appliedCoupon.code})</span>
+                      <span className="font-semibold">−₹{appliedCoupon.discount}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Banana leaf wrap</span>
                     <span className="text-[#2f6a4a] font-medium">Complimentary</span>
@@ -637,7 +804,7 @@ function CartPage() {
         )}
       </div>
 
-      {showCheckout && <CheckoutModal onClose={() => setShowCheckout(false)} />}
+      {showCheckout && <CheckoutModal onClose={() => setShowCheckout(false)} cartCoupon={appliedCoupon} />}
     </main>
   )
 }

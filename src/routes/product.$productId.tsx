@@ -196,9 +196,9 @@ function fromApiDto(p: ProductDto): Product {
     originalPrice: p.price,
     image: primary?.url ?? '/images/categories/mangoes.jpg',
     images: allImgs.length > 1 ? allImgs : undefined,
-    rating: p.rating,
+    rating: p.rating ?? 4.5,
     reviews: 0,
-    unit: '1 unit',
+    unit: 'per unit',
   }
 }
 
@@ -227,7 +227,9 @@ function ProductDetailPage() {
       .finally(() => setApiLoading(false))
   }, [productId])
 
-  const product: Product | null = staticProduct ?? (apiProduct ? fromApiDto(apiProduct) : null)
+  const product: Product | null = isApiMode()
+    ? (apiProduct ? fromApiDto(apiProduct) : null)
+    : (staticProduct ?? null)
 
   if (!product) {
     if (apiLoading) {
@@ -257,6 +259,7 @@ function ProductDetailPage() {
   const fav = isFav(product.id)
   const images = product.images && product.images.length > 0 ? product.images : [product.image]
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const outOfStock = isApiMode() ? (apiProduct?.isOutOfStock ?? false) : false
 
   function handleAddToCart() {
     for (let i = 0; i < qty; i++) {
@@ -437,14 +440,17 @@ function ProductDetailPage() {
               <button
                 type="button"
                 onClick={handleAddToCart}
+                disabled={outOfStock}
                 className={`flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-                  added
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f]'
+                  outOfStock
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : added
+                      ? 'bg-emerald-500 text-white'
+                      : 'bg-[#2f6a4a] text-white hover:bg-[#1f4a2f]'
                 }`}
               >
-                <TiIcon name={added ? 'check' : 'shopping-cart'} size={18} className="text-white" />
-                {added ? 'Added to Cart!' : 'Add to Cart'}
+                <TiIcon name={added ? 'check' : 'shopping-cart'} size={18} className={outOfStock ? 'text-gray-400' : 'text-white'} />
+                {outOfStock ? 'Out of Stock' : added ? 'Added to Cart!' : 'Add to Cart'}
               </button>
               <button
                 type="button"
@@ -475,7 +481,10 @@ function ProductDetailPage() {
         </div>
 
         {/* Feedback section */}
-        <FeedbackSection productId={product.id} slug={product.id} />
+        <FeedbackSection
+          productId={product.id}
+          slug={(isApiMode() && apiProduct) ? (apiProduct.slug ?? product.id) : product.id}
+        />
       </div>
     </main>
   )

@@ -139,18 +139,14 @@ export default function Header() {
             </span>
           </div>
           <div className="flex items-center gap-4 sm:gap-6">
-            <a href="tel:+919840012345" className="flex items-center gap-1.5 text-white/70 hover:text-[#d4af37] transition-colors text-[10px] sm:text-[11px] font-medium no-underline">
+            <a href="tel:+917094402579" className="flex items-center gap-1.5 text-white/70 hover:text-[#d4af37] transition-colors text-[10px] sm:text-[11px] font-medium no-underline">
               <TiIcon name="headphone" size={12} className="text-[#d4af37]" />
-              <span className="hidden xs:inline">+91 98400 12345</span>
+              <span className="hidden xs:inline">+91 7094402579</span>
               <span className="xs:hidden">Call Us</span>
             </a>
             <span className="hidden sm:flex items-center gap-1.5 text-white/70 text-[11px] font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] inline-block animate-pulse" />
               Same Day Delivery
-            </span>
-            <span className="hidden md:flex items-center gap-1.5 text-white/70 text-[11px] font-medium">
-              <TiIcon name="tag" size={11} className="text-[#d4af37]" />
-              Free delivery above ₹499
             </span>
           </div>
         </div>
