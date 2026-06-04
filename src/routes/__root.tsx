@@ -67,7 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </BasketProvider>
         {!hideChrome && (
           <a
-            href="https://wa.me/919840012345"
+            href="https://wa.me/917094402579"
             target="_blank"
             rel="noopener noreferrer"
             className="fixed bottom-6 right-6 w-14 h-14 bg-[#25d366] rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50"

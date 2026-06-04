@@ -111,12 +111,6 @@ function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-6 sm:space-y-8 z-10">
-              <div className="inline-flex items-center gap-2 bg-[#e7f3ec] px-4 py-2 rounded-full">
-                <span className="text-xl">🌱</span>
-                <span className="text-[#2f6a4a] font-semibold text-sm">
-                  Mampalam season is here — மாம்பழ பருவம்
-                </span>
-              </div>
               <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
                 Sun-ripened,<br />
                 bounty from the<br />
@@ -322,6 +316,40 @@ function HomePage() {
             >
               →
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT */}
+      <section className="py-16 sm:py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-gradient-to-br from-[#1a3d2b] to-[#2f6a4a] rounded-3xl overflow-hidden p-10 sm:p-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="text-white space-y-5">
+                <p className="text-[#d4af37] text-xs font-bold tracking-widest uppercase">About Us</p>
+                <h2 className="font-serif text-4xl sm:text-5xl font-bold leading-tight">
+                  Rooted in Tenkasi,<br />trusted across Tamil Nadu
+                </h2>
+                <p className="text-white/80 text-lg leading-relaxed">
+                  Established in 1987, O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative is a network of 240+ farming families from the Western Ghats foothills. We cut out the middlemen and bring tropical fruits from our soil to your doorstep — fresh, chemical-free, and fairly priced.
+                </p>
+                <Link
+                  to="/about"
+                  className="inline-block bg-[#d4af37] text-[#1a3d2b] px-8 py-3 rounded-full font-bold hover:bg-[#e6c447] transition-colors no-underline mt-2"
+                >
+                  Read More →
+                </Link>
+              </div>
+              <div className="hidden lg:flex justify-center items-center">
+                <div className="bg-white/10 border-4 border-white/20 rounded-3xl p-8 shadow-2xl">
+                  <img
+                    src="/images/products/Logo.jpeg"
+                    alt="Tenkasi Fresh"
+                    className="w-52 h-52 object-contain rounded-2xl"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

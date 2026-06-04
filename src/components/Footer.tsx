@@ -41,13 +41,11 @@ export default function Footer() {
     <footer className="bg-[#1a3d2b] text-white">
       {/* Main Footer */}
       <div className="py-14 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-[#d4af37] rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-[#1a3d2b] font-bold text-base font-serif leading-none">த</span>
-              </div>
+              <img src="/images/products/Logo.jpeg" alt="Tenkasi Fresh" className="w-12 h-12 rounded-xl object-contain bg-white p-0.5 flex-shrink-0" />
               <span className="font-serif text-lg font-bold">Tenkasi Fresh Fruits</span>
             </div>
             <p className="text-white/70 text-sm leading-relaxed mb-5">
@@ -63,7 +61,7 @@ export default function Footer() {
               <a href="#" aria-label="YouTube" className="text-white/60 hover:text-white transition-colors">
                 <YoutubeIcon />
               </a>
-              <a href="#" aria-label="WhatsApp" className="text-white/60 hover:text-white transition-colors">
+              <a href="https://wa.me/917094402579" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="text-white/60 hover:text-white transition-colors">
                 <WhatsappIcon />
               </a>
             </div>
@@ -73,7 +71,7 @@ export default function Footer() {
               </p>
               <p className="text-white/55">42C/1A Rail Nagar Road, Tenkasi – 627 811</p>
               <a href="tel:+917094402579" className="text-white/55 hover:text-white transition-colors no-underline block">
-                +91 70944 02579
+                +91 7094402579
               </a>
               <a
                 href="mailto:01919cmstenkasi@gmail.com"
@@ -117,21 +115,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Stay Fresh */}
-          <div>
-            <h5 className="text-xs font-bold tracking-widest uppercase text-white/50 mb-4">Stay Fresh</h5>
-            <p className="text-white/70 text-sm mb-3">Seasonal harvest alerts.</p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Email"
-                className="flex-1 min-w-0 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-white/40 outline-none focus:border-white/40"
-              />
-              <button type="button" className="px-3 py-2 bg-[#d4af37] text-[#1a3d2b] rounded-lg text-sm font-bold hover:bg-[#e6c447] transition-colors flex-shrink-0">
-                Join
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 

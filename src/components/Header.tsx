@@ -9,17 +9,19 @@ const TICKER_ITEMS = ['Farm Fresh', 'Premium Quality', 'Organic Certified', 'Fas
 
 function HeaderTicker() {
   return (
-    <div className="overflow-hidden bg-gradient-to-r from-[#2f6a4a] via-[#4fb8b2] to-[#2f6a4a] py-1.5">
+    <div className="overflow-hidden bg-[#d4af37] py-1.5">
       <style>{`
         @keyframes header-ticker {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
-        .header-ticker-content { animation: header-ticker 28s linear infinite; }
+        .header-ticker-content { animation: header-ticker 30s linear infinite; display: flex; white-space: nowrap; }
       `}</style>
-      <div className="header-ticker-content flex gap-8 whitespace-nowrap">
+      <div className="header-ticker-content">
         {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, idx) => (
-          <span key={idx} className="text-white text-xs font-semibold tracking-wide flex-shrink-0">{item}</span>
+          <span key={idx} className="text-[#1a3d2b] text-xs font-bold tracking-wide flex-shrink-0 px-5">
+            {item}&nbsp;&nbsp;·
+          </span>
         ))}
       </div>
     </div>
