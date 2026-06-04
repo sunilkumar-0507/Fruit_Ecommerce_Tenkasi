@@ -341,9 +341,9 @@ function HomePage() {
                 </Link>
               </div>
               <div className="hidden lg:flex justify-center items-center">
-                <div className="bg-white/10 border-4 border-white/20 rounded-3xl p-8 shadow-2xl">
+                <div className="bg-white rounded-3xl p-8 shadow-2xl">
                   <img
-                    src="/images/products/MainLogo.jpeg"
+                    src="/images/products/LogoTop.jpeg"
                     alt="Tenkasi Fresh"
                     className="w-52 h-52 object-contain rounded-2xl"
                   />
