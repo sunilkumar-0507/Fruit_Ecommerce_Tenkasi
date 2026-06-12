@@ -7,14 +7,25 @@ import { PRODUCTS, SHOP_CATEGORIES } from '#/data/products'
 import type { Product } from '#/data/products'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
 import { useBaskets } from '#/context/BasketContext'
-import { api, isApiMode, type ProductDto, type ProductDtoPagedResult, type CategoryDto } from '#/lib/apiClient'
+import { api, isApiMode, type ProductDto, type ProductDtoPagedResult } from '#/lib/apiClient'
+import { extractFruitType } from '#/lib/fruitKeywords'
 
-export const Route = createFileRoute('/shop')({ component: ShopPage })
+function isSeasonalCat(nameEn: string | null, slug: string | null) {
+  return (nameEn ?? '').toLowerCase().includes('seasonal') || (slug ?? '').toLowerCase().includes('seasonal')
+}
+
+export const Route = createFileRoute('/shop')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    category: typeof search.category === 'string' ? search.category : '',
+  }),
+  component: ShopPage,
+})
 
 function mapProduct(p: ProductDto): Product {
   const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
   return {
     id: p.id,
+    slug: p.slug ?? undefined,
     name: p.nameEn ?? '',
     nameTamil: p.nameTa ?? '',
     category: p.category?.nameEn ?? '',
@@ -34,7 +45,8 @@ const ALL_CATEGORIES = ['All', 'Combos & Baskets', ...SHOP_CATEGORIES.filter((c)
 function ShopPage() {
   const user = useAuthGuard()
   const { baskets } = useBaskets()
-  const [activeCategory, setActiveCategory] = useState('All')
+  const { category: initialCategory } = Route.useSearch()
+  const [activeCategory, setActiveCategory] = useState(initialCategory || 'All')
   const [products, setProducts] = useState<Product[]>(isApiMode() ? [] : PRODUCTS)
   const [categories, setCategories] = useState<string[]>(isApiMode() ? ['All', 'Combos & Baskets'] : ALL_CATEGORIES)
   const [loading, setLoading] = useState(isApiMode())
@@ -43,13 +55,20 @@ function ShopPage() {
   useEffect(() => {
     if (!isApiMode()) return
     setLoading(true)
-    Promise.all([
-      api.get<ProductDtoPagedResult>('/api/Products?PageSize=100'),
-      api.get<CategoryDto[]>('/api/Categories'),
-    ])
-      .then(([result, cats]) => {
-        setProducts((result.items ?? []).map(mapProduct))
-        setCategories(['All', 'Combos & Baskets', ...cats.map((c) => c.nameEn ?? '').filter(Boolean)])
+    api.get<ProductDtoPagedResult>('/api/Products?PageSize=100')
+      .then((result) => {
+        // Exclude seasonal-category products — those belong on /seasonal
+        const mapped = (result.items ?? [])
+          .filter((p) => !isSeasonalCat(p.category?.nameEn ?? null, p.category?.slug ?? null))
+          .map(mapProduct)
+        setProducts(mapped)
+        // Build filter tabs from fruit-type keywords in product names
+        const seen = new Set<string>()
+        for (const p of mapped) {
+          const key = extractFruitType(p.name) ?? p.category
+          if (key) seen.add(key)
+        }
+        setCategories(['All', 'Combos & Baskets', ...Array.from(seen)])
       })
       .catch(() => setError('Failed to load products. Please refresh.'))
       .finally(() => setLoading(false))
@@ -68,7 +87,7 @@ function ShopPage() {
     ? []
     : activeCategory === 'All'
       ? products
-      : products.filter((p) => p.category === activeCategory)
+      : products.filter((p) => (extractFruitType(p.name) ?? p.category) === activeCategory)
 
   return (
     <main className="min-h-screen bg-[#faf9f4]">

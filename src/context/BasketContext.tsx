@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { api, isApiMode } from '#/lib/apiClient'
 
 export type BasketEntry = {
   id: string
@@ -15,7 +16,7 @@ const BASKETS_INIT: BasketEntry[] = [
     name: 'Pongal Festival Basket',
     description: 'Handcrafted festival hamper with premium mangoes, bananas, and pomegranates.',
     price: 1450,
-    images: ['/images/categories/fruit-baskets.jpg', '/images/categories/mangoes.jpg', '/images/categories/p-pomegranate.jpg'],
+    images: ['/images/categories/fruit-baskets.jpg', '/images/products/mangoes.jpeg', '/images/categories/p-pomegranate.jpg'],
     items: 'Mango × 4, Banana × 6, Pomegranate × 2',
   },
   {
@@ -37,7 +38,17 @@ type BasketContextType = {
 const BasketCtx = createContext<BasketContextType | null>(null)
 
 export function BasketProvider({ children }: { children: ReactNode }) {
-  const [baskets, setBaskets] = useState<BasketEntry[]>(BASKETS_INIT)
+  const [baskets, setBaskets] = useState<BasketEntry[]>(isApiMode() ? [] : BASKETS_INIT)
+
+  useEffect(() => {
+    if (!isApiMode()) return
+    api.get<BasketEntry[]>('/api/Baskets')
+      .then((data) => {
+        if (data && data.length > 0) setBaskets(data)
+        else setBaskets(BASKETS_INIT)
+      })
+      .catch(() => setBaskets(BASKETS_INIT))
+  }, [])
 
   function addBasket(b: BasketEntry) {
     setBaskets((prev) => [b, ...prev])

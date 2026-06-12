@@ -7,6 +7,7 @@ import TiIcon from '#/components/TiIcon'
 
 export default function ProductCard({
   id,
+  slug,
   name,
   nameTamil,
   category,
@@ -33,7 +34,7 @@ export default function ProductCard({
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col">
       {/* Image — click to go to product detail */}
-      <Link to="/product/$productId" params={{ productId: id }} className="no-underline block relative h-56 overflow-hidden bg-[#f5f0e8]">
+      <Link to="/product/$productId" params={{ productId: slug ?? id }} className="no-underline block relative h-56 overflow-hidden bg-[#f5f0e8]">
         <img
           src={image}
           alt={name}

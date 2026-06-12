@@ -1,0 +1,29 @@
+# Tenkasi Fresh — SPA hosting config for Hostinger (Apache/LiteSpeed)
+Options -MultiViews
+
+# Serve the SPA shell as the default document for "/"
+DirectoryIndex _shell.html
+
+RewriteEngine On
+
+# Force HTTPS (comment out these two lines if SSL is not active yet)
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Let real files and folders be served as-is
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Everything else -> SPA shell (client-side routing handles the rest)
+RewriteRule ^ _shell.html [QSA,L]
+
+# Long-cache hashed assets, no-cache the HTML shell
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|woff2?|ttf|eot|svg|png|jpe?g|gif|webp|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "_shell\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>

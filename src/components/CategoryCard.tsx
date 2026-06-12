@@ -8,7 +8,7 @@ interface CategoryCardProps {
 
 export default function CategoryCard({ name, image, productCount }: CategoryCardProps) {
   return (
-    <Link to="/shop" className="group cursor-pointer no-underline">
+    <Link to="/shop" search={{ category: name }} className="group cursor-pointer no-underline">
       <div className="relative h-44 rounded-2xl overflow-hidden bg-[#fdf4e8] mb-3 hover:shadow-lg transition-all duration-300">
         <img
           src={image}

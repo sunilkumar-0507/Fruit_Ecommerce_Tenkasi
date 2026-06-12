@@ -227,14 +227,6 @@ function LoginPage() {
               ))}
             </div>
 
-            {tab === 'signin' && (
-              <div className="mb-5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-800 space-y-1.5">
-                <p className="font-bold text-amber-900 mb-1">Demo credentials</p>
-                <p><span className="font-semibold">Admin —</span> admin@tenakasifresh.com · admin123</p>
-                <p><span className="font-semibold">Customer —</span> priya@example.com · customer123</p>
-              </div>
-            )}
-
             {tab === 'signin' ? (
               <SignInForm onSuccess={handleLoginSuccess} />
             ) : (

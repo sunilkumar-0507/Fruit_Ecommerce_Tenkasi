@@ -26,7 +26,14 @@ async function handle<T>(res: Response): Promise<T> {
   const text = await res.text()
   const data = text ? (JSON.parse(text) as unknown) : null
   if (!res.ok) {
-    const msg = (data as { message?: string } | null)?.message ?? `${res.status} ${res.statusText}`
+    const d = data as { message?: string; title?: string; errors?: Record<string, string[]> } | null
+    let msg = d?.message ?? d?.title ?? `${res.status} ${res.statusText}`
+    if (d?.errors) {
+      const details = Object.entries(d.errors)
+        .map(([k, v]) => `${k}: ${v.join(', ')}`)
+        .join('; ')
+      msg = `${msg} — ${details}`
+    }
     throw new Error(msg)
   }
   return data as T

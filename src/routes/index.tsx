@@ -8,6 +8,7 @@ import WelcomeScreen from '#/components/WelcomeScreen'
 import { PRODUCTS, HOME_CATEGORIES } from '#/data/products'
 import type { Product } from '#/data/products'
 import { api, isApiMode, type ProductDto, type ProductDtoPagedResult } from '#/lib/apiClient'
+import { extractFruitType } from '#/lib/fruitKeywords'
 
 export const Route = createFileRoute('/')({ component: HomePage })
 
@@ -15,6 +16,7 @@ function mapProduct(p: ProductDto): Product {
   const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
   return {
     id: p.id,
+    slug: p.slug ?? undefined,
     name: p.nameEn ?? '',
     nameTamil: p.nameTa ?? '',
     category: p.category?.nameEn ?? '',
@@ -77,13 +79,37 @@ function HomePage() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [featured, setFeatured] = useState<Product[]>(isApiMode() ? [] : DEMO_FEATURED)
   const [featuredLoading, setFeaturedLoading] = useState(isApiMode())
+  type HomeCat = { name: string; image: string; productCount: number }
+  const [liveCategories, setLiveCategories] = useState<HomeCat[]>([])
 
   useEffect(() => {
     if (!isApiMode()) return
-    api.get<ProductDtoPagedResult>('/api/Products?PageSize=8')
-      .then((result) => setFeatured((result.items ?? []).map(mapProduct)))
-      .catch(() => setFeatured(DEMO_FEATURED))
-      .finally(() => setFeaturedLoading(false))
+    let alive = true
+    api.get<ProductDtoPagedResult>('/api/Products?PageSize=100')
+      .then((result) => {
+        if (!alive) return
+        const products = (result.items ?? []).map(mapProduct)
+        setFeatured(products.slice(0, 8))
+        setFeaturedLoading(false)
+
+        // Group by fruit type extracted from product name (e.g. "Alphonso Mango" → "Mango")
+        const catMap = new Map<string, { count: number; image: string }>()
+        for (const p of products) {
+          const key = extractFruitType(p.name) ?? p.category
+          if (!key) continue
+          if (!catMap.has(key)) catMap.set(key, { count: 0, image: p.image })
+          catMap.get(key)!.count++
+        }
+        setLiveCategories(
+          Array.from(catMap.entries()).map(([name, { count, image }]) => ({ name, image, productCount: count }))
+        )
+      })
+      .catch(() => {
+        if (!alive) return
+        setFeatured(DEMO_FEATURED)
+        setFeaturedLoading(false)
+      })
+    return () => { alive = false }
   }, [])
 
   function handleWelcomeDone() {
@@ -174,7 +200,7 @@ function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            {HOME_CATEGORIES.map((cat) => (
+            {(isApiMode() && liveCategories.length > 0 ? liveCategories : HOME_CATEGORIES).map((cat) => (
               <CategoryCard
                 key={cat.name}
                 name={cat.name}

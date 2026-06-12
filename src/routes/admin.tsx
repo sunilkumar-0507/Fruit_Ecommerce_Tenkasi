@@ -175,7 +175,7 @@ function Stars({ rating }: { rating: number }) {
 
 // ─── Map API → inventory row ──────────────────────────────────────────────────
 
-type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; price: number; originalPrice?: number; stock: number; image: string; discount?: number; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null }
+type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; price: number; originalPrice?: number; stock: number; image: string; discount?: number; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null; rawImages?: import('#/lib/apiClient').ProductImageDto[] }
 
 function mapApiProduct(p: ProductDto): InventoryRow {
   const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
@@ -192,6 +192,7 @@ function mapApiProduct(p: ProductDto): InventoryRow {
     aboutEn: p.aboutEn,
     usageEn: p.usageEn,
     benefitsEn: p.benefitsEn,
+    rawImages: p.images ?? [],
   }
 }
 
@@ -502,6 +503,12 @@ function EditProductModal({
 
     if (isApiMode() && getStoredToken()) {
       try {
+        // If the image URL hasn't changed, send back the original images with their DB IDs
+        // to avoid the backend creating duplicate image records (which causes 500 errors)
+        const imagesPayload = form.image !== product.image
+          ? (form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [])
+          : (product.rawImages ?? []).map((img) => ({ id: img.id, url: img.url, altText: img.altText, isPrimary: img.isPrimary }))
+
         const dto = await api.put<ProductDto>(`/api/admin/products/${product.id}`, {
           nameEn: form.nameEn,
           nameTa: form.nameTa || null,
@@ -517,7 +524,7 @@ function EditProductModal({
           originalPrice: form.originalPrice ? Number(form.originalPrice) : null,
           stockQuantity: stockNum,
           categoryId: form.categoryId,
-          images: form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [],
+          images: imagesPayload,
         })
         if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
         setSaved(true)
@@ -1911,6 +1918,10 @@ function BasketsPanel() {
 
 // ─── Panel: Seasonal ──────────────────────────────────────────────────────────
 
+function isSeasonalCat(nameEn: string | null, slug: string | null) {
+  return (nameEn ?? '').toLowerCase().includes('seasonal') || (slug ?? '').toLowerCase().includes('seasonal')
+}
+
 function SeasonalPanel() {
   type SeasonalEntry = { id: string; name: string; nameTamil: string; category: string; price: number; unit: string; image: string; isSeasonal: boolean }
 
@@ -1927,12 +1938,25 @@ function SeasonalPanel() {
     })),
   )
   const [loading, setLoading] = useState(isApiMode())
+  const [creating, setCreating] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [normalCat, setNormalCat] = useState<{ id: string; name: string } | null>(null)
+  const [seasonalCat, setSeasonalCat] = useState<{ id: string; name: string } | null>(null)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
 
-  useEffect(() => {
+  function loadData() {
     if (!isApiMode() || !getStoredToken()) return
-    api.get<ProductDtoPagedResult>('/api/admin/products?PageSize=100')
-      .then((result) => {
+    setLoading(true)
+    Promise.all([
+      api.get<ProductDtoPagedResult>('/api/admin/products?PageSize=100'),
+      api.get<CategoryDto[]>('/api/admin/categories'),
+    ])
+      .then(([result, cats]) => {
+        const sc = cats.find((c) => isSeasonalCat(c.nameEn ?? null, c.slug ?? null))
+        const nc = cats.find((c) => !isSeasonalCat(c.nameEn ?? null, c.slug ?? null))
+        if (sc) setSeasonalCat({ id: sc.id, name: sc.nameEn ?? 'Seasonal Fruits' })
+        if (nc) setNormalCat({ id: nc.id, name: nc.nameEn ?? 'Normal Fruits' })
+
         setProducts((result.items ?? []).map((p) => {
           const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
           return {
@@ -1943,16 +1967,55 @@ function SeasonalPanel() {
             price: p.price,
             unit: 'per unit',
             image: primary?.url ?? '/images/products/mangoes.jpeg',
-            isSeasonal: false,
+            isSeasonal: isSeasonalCat(p.category?.nameEn ?? null, p.category?.slug ?? null),
           }
         }))
       })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [])
+  }
 
-  function toggle(id: string) {
-    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, isSeasonal: !p.isSeasonal } : p)))
+  useEffect(() => { loadData() }, [])
+
+  async function handleCreateSeasonalCategory() {
+    setCreating(true)
+    try {
+      const newCat = await api.post<CategoryDto>('/api/admin/categories', {
+        nameEn: 'Seasonal Fruits',
+        nameTa: 'சீசன் பழங்கள்',
+        slug: 'seasonal-fruits',
+        descriptionEn: 'Fresh fruits available only during their season',
+        descriptionTa: null,
+      })
+      setSeasonalCat({ id: newCat.id, name: newCat.nameEn ?? 'Seasonal Fruits' })
+    } catch {
+      alert('Could not auto-create category. Please create a "Seasonal Fruits" category manually in the backend database.')
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  async function toggle(id: string, currentlySeasonal: boolean) {
+    if (!isApiMode()) {
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, isSeasonal: !p.isSeasonal } : p)))
+      return
+    }
+    const target = currentlySeasonal ? normalCat : seasonalCat
+    if (!target) {
+      alert('Category not found. Use the "Create Seasonal Category" button first.')
+      return
+    }
+    setTogglingId(id)
+    try {
+      await api.patch<ProductDto>(`/api/admin/products/${id}`, { categoryId: target.id })
+      setProducts((prev) => prev.map((p) =>
+        p.id === id ? { ...p, isSeasonal: !currentlySeasonal, category: target.name } : p
+      ))
+    } catch {
+      alert('Failed to update product category. Please try again.')
+    } finally {
+      setTogglingId(null)
+    }
   }
 
   const seasonal    = products.filter((p) => p.isSeasonal)
@@ -1981,6 +2044,30 @@ function SeasonalPanel() {
         </div>
       )}
 
+      {/* Setup notice when no seasonal category exists in DB yet */}
+      {!loading && isApiMode() && !seasonalCat && (
+        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-amber-800 mb-1">Seasonal category not found in database</p>
+            <p className="text-xs text-amber-700 leading-relaxed">
+              A <span className="font-mono bg-amber-100 px-1 rounded">Seasonal Fruits</span> category is needed to separate seasonal products from regular ones.
+              Click the button to create it automatically.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void handleCreateSeasonalCategory()}
+            disabled={creating}
+            className="flex-shrink-0 flex items-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-amber-700 transition-colors disabled:opacity-50"
+          >
+            {creating
+              ? <><div className="w-3.5 h-3.5 border border-white border-t-transparent rounded-full animate-spin" /> Creating…</>
+              : <><TiIcon name="plus" size={14} /> Create Seasonal Category</>
+            }
+          </button>
+        </div>
+      )}
+
       {!loading && <>
       {/* Currently seasonal */}
       <div className="mb-7">
@@ -2003,11 +2090,14 @@ function SeasonalPanel() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => toggle(p.id)}
-                  className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition flex-shrink-0"
+                  onClick={() => void toggle(p.id, true)}
+                  disabled={togglingId === p.id}
+                  className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition flex-shrink-0 disabled:opacity-50"
                   title="Remove from seasonal"
                 >
-                  <TiIcon name="close" size={15} />
+                  {togglingId === p.id
+                    ? <div className="w-3.5 h-3.5 border border-gray-400 border-t-transparent rounded-full animate-spin" />
+                    : <TiIcon name="close" size={15} />}
                 </button>
               </div>
             ))}
@@ -2036,10 +2126,13 @@ function SeasonalPanel() {
               </div>
               <button
                 type="button"
-                onClick={() => toggle(p.id)}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-[#3d7a20] border border-[#3d7a20]/30 hover:bg-[#fdf4e8] rounded-lg text-xs font-semibold transition flex-shrink-0"
+                onClick={() => void toggle(p.id, false)}
+                disabled={togglingId === p.id}
+                className="flex items-center gap-1 px-2.5 py-1.5 text-[#3d7a20] border border-[#3d7a20]/30 hover:bg-[#fdf4e8] rounded-lg text-xs font-semibold transition flex-shrink-0 disabled:opacity-50"
               >
-                <TiIcon name="plus" size={12} />
+                {togglingId === p.id
+                  ? <div className="w-3 h-3 border border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
+                  : <TiIcon name="plus" size={12} />}
                 Season
               </button>
             </div>

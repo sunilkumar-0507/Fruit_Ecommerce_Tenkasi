@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Leaf, Zap, Sun } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import ProductCard from '#/components/ProductCard'
 import { PRODUCTS } from '#/data/products'
+import type { Product } from '#/data/products'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
+import { api, isApiMode, type ProductDto, type ProductDtoPagedResult } from '#/lib/apiClient'
 
 export const Route = createFileRoute('/seasonal')({ component: SeasonalPage })
 
@@ -30,10 +33,48 @@ const SEASONS = [
   },
 ]
 
-const seasonalProducts = PRODUCTS.filter((p) => p.seasonal || p.categorySlug === 'seasonal-fruits')
+function isSeasonalCat(nameEn: string | null, slug: string | null) {
+  return (nameEn ?? '').toLowerCase().includes('seasonal') || (slug ?? '').toLowerCase().includes('seasonal')
+}
+
+function mapProduct(p: ProductDto): Product {
+  const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
+  return {
+    id: p.id,
+    slug: p.slug ?? undefined,
+    name: p.nameEn ?? '',
+    nameTamil: p.nameTa ?? '',
+    category: p.category?.nameEn ?? '',
+    categorySlug: p.category?.slug ?? '',
+    price: p.price,
+    originalPrice: p.originalPrice ?? p.price,
+    image: primary?.url ?? '/images/products/p-mango.jpg',
+    rating: p.rating ?? 4.5,
+    reviews: 0,
+    unit: 'per unit',
+    featured: false,
+  }
+}
+
+const DEMO_SEASONAL = PRODUCTS.filter((p) => p.seasonal || p.categorySlug === 'seasonal-fruits')
 
 function SeasonalPage() {
   const user = useAuthGuard()
+  const [products, setProducts] = useState<Product[]>(isApiMode() ? [] : DEMO_SEASONAL)
+  const [loading, setLoading] = useState(isApiMode())
+
+  useEffect(() => {
+    if (!isApiMode()) return
+    api.get<ProductDtoPagedResult>('/api/Products?PageSize=100')
+      .then((result) => {
+        const seasonal = (result.items ?? [])
+          .filter((p) => isSeasonalCat(p.category?.nameEn ?? null, p.category?.slug ?? null))
+          .map(mapProduct)
+        setProducts(seasonal)
+      })
+      .catch(() => setProducts(DEMO_SEASONAL))
+      .finally(() => setLoading(false))
+  }, [])
 
   if (!user) {
     return (
@@ -102,20 +143,35 @@ function SeasonalPage() {
           </div>
 
           {/* Seasonal Products */}
-          <h2 className="font-serif text-3xl font-bold text-gray-900 mb-6">
-            In season right now
-          </h2>
-          {seasonalProducts.length > 0 ? (
+          <div className="flex items-end justify-between mb-6">
+            <h2 className="font-serif text-3xl font-bold text-gray-900">
+              In season right now
+            </h2>
+            {!loading && products.length > 0 && (
+              <p className="text-sm text-gray-400">{products.length} product{products.length !== 1 ? 's' : ''}</p>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-16">
+              <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : products.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {seasonalProducts.map((product) => (
+              {products.map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {PRODUCTS.slice(0, 4).map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))}
+            <div className="text-center py-16 text-gray-400">
+              <p className="text-lg font-medium">No seasonal products right now.</p>
+              <p className="text-sm mt-1 mb-6">The admin can mark products as seasonal from the admin panel.</p>
+              <Link
+                to="/shop"
+                className="inline-block bg-[#3d7a20] text-white px-6 py-2.5 rounded-full text-sm font-semibold no-underline hover:bg-[#2a5a14] transition-colors"
+              >
+                Browse All Products
+              </Link>
             </div>
           )}
         </div>

@@ -188,6 +188,7 @@ function fromApiDto(p: ProductDto): Product {
   const allImgs = (p.images ?? []).map((i) => i.url).filter((u): u is string => u != null)
   return {
     id: p.id,
+    slug: p.slug ?? undefined,
     name: p.nameEn ?? 'Product',
     nameTamil: p.nameTa ?? '',
     category: p.category?.nameEn ?? '',

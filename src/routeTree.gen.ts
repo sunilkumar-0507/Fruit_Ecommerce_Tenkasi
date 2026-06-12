@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SeasonalRouteImport } from './routes/seasonal'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MobileAppRouteImport } from './routes/mobile-app'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CartRouteImport } from './routes/cart'
@@ -29,6 +30,11 @@ const ShopRoute = ShopRouteImport.update({
 const SeasonalRoute = SeasonalRouteImport.update({
   id: '/seasonal',
   path: '/seasonal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MobileAppRoute = MobileAppRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/login': typeof LoginRoute
   '/mobile-app': typeof MobileAppRoute
+  '/orders': typeof OrdersRoute
   '/seasonal': typeof SeasonalRoute
   '/shop': typeof ShopRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/login': typeof LoginRoute
   '/mobile-app': typeof MobileAppRoute
+  '/orders': typeof OrdersRoute
   '/seasonal': typeof SeasonalRoute
   '/shop': typeof ShopRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/login': typeof LoginRoute
   '/mobile-app': typeof MobileAppRoute
+  '/orders': typeof OrdersRoute
   '/seasonal': typeof SeasonalRoute
   '/shop': typeof ShopRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/login'
     | '/mobile-app'
+    | '/orders'
     | '/seasonal'
     | '/shop'
     | '/demo/tanstack-query'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/login'
     | '/mobile-app'
+    | '/orders'
     | '/seasonal'
     | '/shop'
     | '/demo/tanstack-query'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/login'
     | '/mobile-app'
+    | '/orders'
     | '/seasonal'
     | '/shop'
     | '/demo/tanstack-query'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   LoginRoute: typeof LoginRoute
   MobileAppRoute: typeof MobileAppRoute
+  OrdersRoute: typeof OrdersRoute
   SeasonalRoute: typeof SeasonalRoute
   ShopRoute: typeof ShopRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/seasonal'
       fullPath: '/seasonal'
       preLoaderRoute: typeof SeasonalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mobile-app': {
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   LoginRoute: LoginRoute,
   MobileAppRoute: MobileAppRoute,
+  OrdersRoute: OrdersRoute,
   SeasonalRoute: SeasonalRoute,
   ShopRoute: ShopRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,

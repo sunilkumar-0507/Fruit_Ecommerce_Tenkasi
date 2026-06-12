@@ -48,7 +48,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 name: si.productName ?? 'Product',
                 nameTamil: '',
                 category: '',
-                image: '/images/categories/mangoes.jpg',
+                image: '/images/products/mangoes.jpeg',
                 price: si.unitPrice,
                 unit: 'unit',
                 qty: si.quantity,

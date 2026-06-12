@@ -197,7 +197,11 @@ export default function Header() {
                         <p className="text-xs text-gray-400 truncate">{user.email}</p>
                         {isAdmin && <span className="inline-block mt-1 text-[10px] font-bold text-[#3d7a20] bg-[#fdf4e8] px-2 py-0.5 rounded-full tracking-wide uppercase">Admin</span>}
                       </div>
-                      <button type="button" onClick={handleLogout} className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors text-left">
+                      <Link to="/orders" onClick={() => setUserMenuOpen(false)} className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors no-underline">
+                        <TiIcon name="bag" size={15} className="text-gray-500" />
+                        My Orders
+                      </Link>
+                      <button type="button" onClick={handleLogout} className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors text-left border-t border-gray-50">
                         <TiIcon name="power-off" size={15} className="text-red-600" />
                         Sign Out
                       </button>
@@ -268,9 +272,14 @@ export default function Header() {
                 </Link>
               )}
               {user && (
-                <button type="button" onClick={() => { handleLogout(); setIsMenuOpen(false) }} className="w-full text-left block px-4 py-2.5 text-red-300 font-medium text-sm hover:bg-white/10 rounded-lg">
-                  Sign Out
-                </button>
+                <>
+                  <Link to="/orders" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 rounded-lg no-underline transition-colors">
+                    My Orders
+                  </Link>
+                  <button type="button" onClick={() => { handleLogout(); setIsMenuOpen(false) }} className="w-full text-left block px-4 py-2.5 text-red-300 font-medium text-sm hover:bg-white/10 rounded-lg">
+                    Sign Out
+                  </button>
+                </>
               )}
             </div>
           )}
