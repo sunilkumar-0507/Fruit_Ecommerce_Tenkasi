@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Bell, MapPin, Zap, Star, Shield, Smartphone } from 'lucide-react'
-import { useAuthGuard } from '#/hooks/useAuthGuard'
 
 export const Route = createFileRoute('/mobile-app')({ component: MobileAppPage })
 
@@ -44,16 +43,6 @@ const REVIEWS = [
 ]
 
 function MobileAppPage() {
-  const user = useAuthGuard()
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
-
   return (
     <main className="min-h-screen bg-[#faf9f4]">
       {/* Hero */}
@@ -74,28 +63,27 @@ function MobileAppPage() {
               Shop anytime, track your delivery live, and never miss a harvest. Available on iOS and Android.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-10">
-              <button
-                type="button"
-                className="flex items-center gap-3 bg-white text-[#0c1d2b] px-6 py-3.5 rounded-xl font-semibold hover:scale-105 transition-transform"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              {/* App Store */}
+              <button type="button" className="flex items-center gap-3 bg-black text-white px-6 py-3.5 rounded-xl hover:scale-105 transition-transform">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                 </svg>
                 <div className="text-left">
-                  <p className="text-xs opacity-70">Download on the</p>
-                  <p className="font-bold leading-tight">App Store</p>
+                  <p className="text-[10px] opacity-70 leading-none">Download on the</p>
+                  <p className="font-bold leading-tight text-sm">App Store</p>
                 </div>
               </button>
-              <button
-                type="button"
-                className="flex items-center gap-3 bg-white text-[#0c1d2b] px-6 py-3.5 rounded-xl font-semibold hover:scale-105 transition-transform"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3 20.5v-17c0-.83.94-1.3 1.6-.8l14 8.5c.6.36.6 1.24 0 1.6l-14 8.5c-.66.5-1.6.03-1.6-.8z" />
+              {/* Google Play */}
+              <button type="button" className="flex items-center gap-3 bg-black text-white px-6 py-3.5 rounded-xl hover:scale-105 transition-transform">
+                <svg width="22" height="22" viewBox="0 0 512 512">
+                  <path fill="#EA4335" d="M325.3 234.3L104.6 13l280.8 161.2z"/>
+                  <path fill="#FBBC04" d="M396.8 293l-71.5-58.7-220.7 .3 220.7 221.7z" />
+                  <path fill="#34A853" d="M104.6 13L325.3 234.3l71.5-58.7z" />
+                  <path fill="#4285F4" d="M104.6 13L47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3L325.3 234.3z" />
                 </svg>
                 <div className="text-left">
-                  <p className="text-xs opacity-70">Get it on</p>
-                  <p className="font-bold leading-tight">Google Play</p>
+                  <p className="text-[10px] opacity-70 leading-none">Get it on</p>
+                  <p className="font-bold leading-tight text-sm">Google Play</p>
                 </div>
               </button>
             </div>
@@ -208,17 +196,26 @@ function MobileAppPage() {
             Join 500,000+ customers who get their fruits fresh from Tenkasi.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              type="button"
-              className="flex items-center justify-center gap-2 bg-[#0c1d2b] text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-[#3d7a20] transition-colors"
-            >
-              App Store
+            <button type="button" className="flex items-center gap-3 bg-black text-white px-6 py-3.5 rounded-xl hover:scale-105 transition-transform">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+              </svg>
+              <div className="text-left">
+                <p className="text-[10px] opacity-70 leading-none">Download on the</p>
+                <p className="font-bold leading-tight text-sm">App Store</p>
+              </div>
             </button>
-            <button
-              type="button"
-              className="flex items-center justify-center gap-2 bg-[#0c1d2b] text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-[#3d7a20] transition-colors"
-            >
-              Google Play
+            <button type="button" className="flex items-center gap-3 bg-black text-white px-6 py-3.5 rounded-xl hover:scale-105 transition-transform">
+              <svg width="20" height="20" viewBox="0 0 512 512">
+                <path fill="#EA4335" d="M325.3 234.3L104.6 13l280.8 161.2z"/>
+                <path fill="#FBBC04" d="M396.8 293l-71.5-58.7-220.7 .3 220.7 221.7z" />
+                <path fill="#34A853" d="M104.6 13L325.3 234.3l71.5-58.7z" />
+                <path fill="#4285F4" d="M104.6 13L47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3L325.3 234.3z" />
+              </svg>
+              <div className="text-left">
+                <p className="text-[10px] opacity-70 leading-none">Get it on</p>
+                <p className="font-bold leading-tight text-sm">Google Play</p>
+              </div>
             </button>
           </div>
         </div>

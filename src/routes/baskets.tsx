@@ -2,7 +2,6 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import TiIcon from '#/components/TiIcon'
 import { BasketCard } from '#/components/BasketCard'
-import { useAuthGuard } from '#/hooks/useAuthGuard'
 import { useBaskets } from '#/context/BasketContext'
 import { useCart } from '#/context/CartContext'
 import { PRODUCTS } from '#/data/products'
@@ -197,17 +196,8 @@ function CustomBasketModal({ onClose }: { onClose: () => void }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 function BasketsPage() {
-  const user = useAuthGuard()
   const { baskets } = useBaskets()
   const [showCustomModal, setShowCustomModal] = useState(false)
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
 
   return (
     <main className="min-h-screen bg-[#faf9f4]">
