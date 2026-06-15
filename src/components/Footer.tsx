@@ -45,7 +45,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-14 h-14 rounded-xl object-contain flex-shrink-0" />
+              <img src="/images/products/CoopLogo.png" alt="Tenkasi Fresh" className="w-14 h-14 rounded-xl object-contain flex-shrink-0" />
               <span className="font-serif text-lg font-bold">Tenkasi Fresh Fruits</span>
             </div>
             <p className="text-white/70 text-sm leading-relaxed mb-5">

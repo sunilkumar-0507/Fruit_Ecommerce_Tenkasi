@@ -2180,7 +2180,7 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
       <div className="px-5 py-5 border-b border-white/10">
         <div className="flex items-center gap-2.5 mb-1">
           <div className="rounded-xl p-1 flex-shrink-0">
-            <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
+            <img src="/images/products/CoopLogo.png" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
           </div>
           <span className="font-serif text-white font-bold text-sm">Tenkasi Fresh</span>
         </div>

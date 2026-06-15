@@ -24,7 +24,7 @@ interface MyRouterContext {
 
 const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
 
-const ROUNDED_FAVICON_SCRIPT = `(function(){var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=64;c.height=64;var ctx=c.getContext('2d');ctx.beginPath();ctx.arc(32,32,32,0,Math.PI*2);ctx.clip();ctx.drawImage(img,0,0,64,64);var link=document.querySelector('link[rel="icon"]');if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link);}link.type='image/png';link.href=c.toDataURL('image/png');};img.src='/images/products/MainLogo.jpeg';})();`
+const ROUNDED_FAVICON_SCRIPT = `(function(){var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=64;c.height=64;var ctx=c.getContext('2d');ctx.beginPath();ctx.arc(32,32,32,0,Math.PI*2);ctx.clip();ctx.drawImage(img,0,0,64,64);var link=document.querySelector('link[rel="icon"]');if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link);}link.type='image/png';link.href=c.toDataURL('image/png');};img.src='/images/products/CoopLogo.png';})();`
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
@@ -36,7 +36,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     links: [
       { rel: 'stylesheet', href: appCss },
       { rel: 'stylesheet', href: themifyUrl },
-      { rel: 'icon', type: 'image/jpeg', href: '/images/products/MainLogo.jpeg' },
+      { rel: 'icon', type: 'image/png', href: '/images/products/CoopLogo.png' },
     ],
   }),
   shellComponent: RootDocument,
