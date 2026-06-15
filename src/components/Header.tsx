@@ -4,10 +4,13 @@ import { useAuth } from '#/context/AuthContext'
 import { useCart } from '#/context/CartContext'
 import { useFav } from '#/context/FavContext'
 import TiIcon from '#/components/TiIcon'
+import { useLang } from '#/contexts/LanguageContext'
 
-const TICKER_ITEMS = ['Farm Fresh', 'Premium Quality', 'Fast Delivery', 'Best Prices', '240+ Farmers', 'Direct from Farm']
+const TICKER_EN = ['Farm Fresh', 'Premium Quality', 'Fast Delivery', 'Best Prices', '240+ Farmers', 'Direct from Farm']
+const TICKER_TA = ['பண்ணை புதிய பழங்கள்', 'உயர் தரம்', 'விரைவான டெலிவரி', 'சிறந்த விலை', '240+ விவசாயிகள்', 'நேரடியாக பண்ணையிலிருந்து']
 
-function HeaderTicker() {
+function HeaderTicker({ lang }: { lang: 'en' | 'ta' }) {
+  const items = lang === 'ta' ? TICKER_TA : TICKER_EN
   return (
     <div className="overflow-hidden bg-[#f5821f] py-1.5">
       <style>{`
@@ -18,7 +21,7 @@ function HeaderTicker() {
         .header-ticker-content { animation: header-ticker 30s linear infinite; display: flex; white-space: nowrap; }
       `}</style>
       <div className="header-ticker-content">
-        {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, idx) => (
+        {[...items, ...items].map((item, idx) => (
           <span key={idx} className="text-[#0c1d2b] text-xs font-bold tracking-wide flex-shrink-0 px-5">
             {item}&nbsp;&nbsp;·
           </span>
@@ -29,11 +32,11 @@ function HeaderTicker() {
 }
 
 const BASE_NAV = [
-  { label: 'Home', to: '/' },
-  { label: 'Shop', to: '/shop' },
-  { label: 'Seasonal', to: '/seasonal' },
-  { label: 'Baskets', to: '/baskets' },
-  { label: 'Mobile App', to: '/mobile-app' },
+  { en: 'Home',       ta: 'முகப்பு',    to: '/' },
+  { en: 'Shop',       ta: 'கடை',        to: '/shop' },
+  { en: 'Seasonal',   ta: 'பருவகால',   to: '/seasonal' },
+  { en: 'Baskets',    ta: 'கூடைகள்',   to: '/baskets' },
+  { en: 'Mobile App', ta: 'செயலி',      to: '/mobile-app' },
 ] as const
 
 function FavPopup({ onClose }: { onClose: () => void }) {
@@ -109,6 +112,7 @@ export default function Header() {
   const { user, isAdmin, logout } = useAuth()
   const { count: cartCount } = useCart()
   const { items: favItems } = useFav()
+  const { lang, setLang } = useLang()
   const navigate = useNavigate()
   const favRef = useRef<HTMLDivElement>(null)
   const userRef = useRef<HTMLDivElement>(null)
@@ -155,7 +159,7 @@ export default function Header() {
       </div>
 
       {/* Ticker */}
-      <HeaderTicker />
+      <HeaderTicker lang={lang} />
 
       {/* Main Header */}
       <nav className="bg-[#0c1d2b] border-b border-[#f5821f]/20 shadow-lg">
@@ -169,11 +173,13 @@ export default function Header() {
             <div className="hidden md:flex items-center gap-7">
               {BASE_NAV.map((link) => (
                 <Link key={link.to} to={link.to} className="header-nav-link" activeProps={{ className: 'header-nav-link active' }}>
-                  {link.label}
+                  {lang === 'ta' ? link.ta : link.en}
                 </Link>
               ))}
               {isAdmin && (
-                <Link to="/admin" className="header-nav-link" activeProps={{ className: 'header-nav-link active' }}>Admin</Link>
+                <Link to="/admin" className="header-nav-link" activeProps={{ className: 'header-nav-link active' }}>
+                  {lang === 'ta' ? 'நிர்வாகி' : 'Admin'}
+                </Link>
               )}
             </div>
 
@@ -183,6 +189,24 @@ export default function Header() {
             </div>
 
             <div className="flex items-center gap-1">
+              {/* Language toggle */}
+              <div className="flex items-center rounded-full border border-white/20 overflow-hidden mr-1">
+                <button
+                  type="button"
+                  onClick={() => setLang('en')}
+                  className={`px-3 py-1.5 text-[11px] font-bold tracking-wide transition-colors ${lang === 'en' ? 'bg-[#f5821f] text-[#0c1d2b]' : 'text-white/55 hover:text-white'}`}
+                >
+                  EN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLang('ta')}
+                  className={`px-3 py-1.5 text-[11px] font-bold tracking-wide transition-colors ${lang === 'ta' ? 'bg-[#f5821f] text-[#0c1d2b]' : 'text-white/55 hover:text-white'}`}
+                >
+                  தமிழ்
+                </button>
+              </div>
+
               {user ? (
                 <div className="relative" ref={userRef}>
                   <button type="button" onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 rounded-full transition" aria-label="Account menu">
@@ -248,18 +272,26 @@ export default function Header() {
           {/* Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden border-t border-white/10 py-3 space-y-1">
+              {/* Mobile language toggle */}
+              <div className="flex items-center gap-2 px-4 py-2">
+                <span className="text-white/50 text-xs font-semibold uppercase tracking-wide">Language</span>
+                <div className="flex items-center rounded-full border border-white/20 overflow-hidden ml-2">
+                  <button type="button" onClick={() => setLang('en')} className={`px-3 py-1 text-[11px] font-bold transition-colors ${lang === 'en' ? 'bg-[#f5821f] text-[#0c1d2b]' : 'text-white/55'}`}>EN</button>
+                  <button type="button" onClick={() => setLang('ta')} className={`px-3 py-1 text-[11px] font-bold transition-colors ${lang === 'ta' ? 'bg-[#f5821f] text-[#0c1d2b]' : 'text-white/55'}`}>தமிழ்</button>
+                </div>
+              </div>
               {BASE_NAV.map((link) => (
                 <Link key={link.to} to={link.to} onClick={() => setIsMenuOpen(false)}
                   className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white rounded-lg no-underline transition-colors"
                   activeProps={{ className: 'block px-4 py-2.5 text-[#ffab4a] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#f5821f]' }}>
-                  {link.label}
+                  {lang === 'ta' ? link.ta : link.en}
                 </Link>
               ))}
               {isAdmin && (
                 <Link to="/admin" onClick={() => setIsMenuOpen(false)}
                   className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white rounded-lg no-underline transition-colors"
                   activeProps={{ className: 'block px-4 py-2.5 text-[#ffab4a] font-bold text-sm bg-white/10 rounded-lg no-underline border-l-4 border-[#f5821f]' }}>
-                  Admin
+                  {lang === 'ta' ? 'நிர்வாகி' : 'Admin'}
                 </Link>
               )}
               <button type="button" onClick={() => { setIsMenuOpen(false); setFavOpen(true) }} className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 rounded-lg transition-colors">
