@@ -32,7 +32,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Tenkasi Fresh — Farm to Home Since 1987' },
+      { title: 'Tenkasi Fresh — Farm to Home Since 1959' },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },

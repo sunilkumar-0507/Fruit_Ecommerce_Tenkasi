@@ -167,7 +167,7 @@ function LoginPage() {
               </div>
               <div>
                 <p className="font-serif text-lg font-bold leading-tight">Tenkasi Fresh</p>
-                <p className="text-white/50 text-[10px] tracking-widest uppercase">Farm to Home · Since 1987</p>
+                <p className="text-white/50 text-[10px] tracking-widest uppercase">Farm to Home · Since 1959</p>
               </div>
             </Link>
           </div>

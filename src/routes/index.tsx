@@ -367,8 +367,8 @@ function HomePage() {
                 </h2>
                 <p className="text-white/80 text-lg leading-relaxed">
                   {t(
-                    'Established in 1987, O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative is a network of 240+ farming families from the Western Ghats foothills. We cut out the middlemen and bring tropical fruits from our soil to your doorstep — fresh, chemical-free, and fairly priced.',
-                    '1987இல் நிறுவப்பட்ட O.1919 டெங்காசி செங்கோட்டை தாலுகா விவசாய உற்பத்தியாளர் கூட்டுறவு, மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து 240+ விவசாயி குடும்பங்களின் வலையமைப்பு. இடைத்தரகர்களை கடந்து, எங்கள் மண்ணிலிருந்து நேரடியாக உங்கள் வீட்டுக்கு — புதியதாக, கேமிக்கல் இல்லாமல், நியாயமான விலையில்.'
+                    'Established in 1959, O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative is a network of 240+ farming families from the Western Ghats foothills. We cut out the middlemen and bring tropical fruits from our soil to your doorstep — fresh, chemical-free, and fairly priced.',
+                    '1959இல் நிறுவப்பட்ட O.1919 டெங்காசி செங்கோட்டை தாலுகா விவசாய உற்பத்தியாளர் கூட்டுறவு, மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து 240+ விவசாயி குடும்பங்களின் வலையமைப்பு. இடைத்தரகர்களை கடந்து, எங்கள் மண்ணிலிருந்து நேரடியாக உங்கள் வீட்டுக்கு — புதியதாக, கேமிக்கல் இல்லாமல், நியாயமான விலையில்.'
                   )}
                 </p>
                 <Link
