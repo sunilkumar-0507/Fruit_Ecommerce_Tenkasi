@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { useLang } from '#/contexts/LanguageContext'
 
 function FacebookIcon() {
   return (
@@ -37,6 +38,8 @@ function WhatsappIcon() {
 }
 
 export default function Footer() {
+  const { t } = useLang()
+
   return (
     <footer className="bg-[#0c1d2b] text-white">
       {/* Main Footer */}
@@ -46,10 +49,13 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-14 h-14 rounded-xl object-contain flex-shrink-0" />
-              <span className="font-serif text-lg font-bold">Tenkasi Fresh Fruits</span>
+              <span className="font-serif text-lg font-bold">{t('Tenkasi Fresh Fruits', 'டெங்காசி பிரெஷ் பழங்கள்')}</span>
             </div>
             <p className="text-white/70 text-sm leading-relaxed mb-5">
-              Hand-picked at sunrise from the foothills of the Western Ghats. Wrapped in banana leaves, delivered to your door before dusk.
+              {t(
+                'Hand-picked at sunrise from the foothills of the Western Ghats. Wrapped in banana leaves, delivered to your door before dusk.',
+                'மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து விடியற்காலையில் கையால் பறிக்கப்படும். வாழை இலைகளில் மூடி, சாயங்காலத்திற்கு முன் உங்கள் வீட்டுக்கு வழங்கப்படும்.'
+              )}
             </p>
             <div className="flex gap-3 mb-5">
               <a href="#" aria-label="Facebook" className="text-white/60 hover:text-white transition-colors">
@@ -67,9 +73,12 @@ export default function Footer() {
             </div>
             <div className="space-y-1 text-xs leading-relaxed border-t border-white/10 pt-4">
               <p className="font-semibold text-white/85 text-[11px] leading-snug">
-                O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative Marketing Society
+                {t(
+                  'O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative Marketing Society',
+                  'O.1919 டெங்காசி செங்கோட்டை தாலுகா விவசாய உற்பத்தியாளர் கூட்டுறவு சந்தை சமூகம்'
+                )}
               </p>
-              <p className="text-white/55">42C/1A Rail Nagar Road, Tenkasi – 627 811</p>
+              <p className="text-white/55">{t('42C/1A Rail Nagar Road, Tenkasi – 627 811', '42C/1A ரெயில் நகர் சாலை, டெங்காசி – 627 811')}</p>
               <a href="tel:+917094402579" className="text-white/55 hover:text-white transition-colors no-underline block">
                 +91 7094402579
               </a>
@@ -84,34 +93,34 @@ export default function Footer() {
 
           {/* Shop */}
           <div>
-            <h5 className="text-xs font-bold tracking-widest uppercase text-white/50 mb-4">Shop</h5>
+            <h5 className="text-xs font-bold tracking-widest uppercase text-white/50 mb-4">{t('Shop', 'கடை')}</h5>
             <ul className="space-y-2.5 text-white/75 text-sm">
-              <li><Link to="/shop" className="hover:text-white transition-colors no-underline">All Fruits</Link></li>
-              <li><Link to="/seasonal" className="hover:text-white transition-colors no-underline">Seasonal</Link></li>
-              <li><Link to="/baskets" className="hover:text-white transition-colors no-underline">Festival Baskets</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Bulk Orders</a></li>
+              <li><Link to="/shop" className="hover:text-white transition-colors no-underline">{t('All Fruits', 'அனைத்து பழங்கள்')}</Link></li>
+              <li><Link to="/seasonal" className="hover:text-white transition-colors no-underline">{t('Seasonal', 'பருவகால பழங்கள்')}</Link></li>
+              <li><Link to="/baskets" className="hover:text-white transition-colors no-underline">{t('Festival Baskets', 'விழா பழக்கூடைகள்')}</Link></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Bulk Orders', 'மொத்த ஆர்டர்கள்')}</a></li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h5 className="text-xs font-bold tracking-widest uppercase text-white/50 mb-4">Support</h5>
+            <h5 className="text-xs font-bold tracking-widest uppercase text-white/50 mb-4">{t('Support', 'ஆதரவு')}</h5>
             <ul className="space-y-2.5 text-white/75 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Track Order</a></li>
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Delivery</a></li>
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Returns</a></li>
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Contact</a></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Track Order', 'ஆர்டர் கண்காணிக்க')}</a></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Delivery', 'டெலிவரி')}</a></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Returns', 'திரும்பப் பெறல்')}</a></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Contact', 'தொடர்பு கொள்ளுங்கள்')}</a></li>
             </ul>
           </div>
 
           {/* Heritage */}
           <div>
-            <h5 className="text-xs font-bold tracking-widest uppercase text-white/50 mb-4">Heritage</h5>
+            <h5 className="text-xs font-bold tracking-widest uppercase text-white/50 mb-4">{t('Heritage', 'பாரம்பரியம்')}</h5>
             <ul className="space-y-2.5 text-white/75 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Our Story</a></li>
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Farmer Network</a></li>
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Sustainability</a></li>
-              <li><a href="#" className="hover:text-white transition-colors no-underline">Press</a></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Our Story', 'எங்கள் கதை')}</a></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Farmer Network', 'விவசாயி வலையமைப்பு')}</a></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Sustainability', 'நிலையான வேளாண்மை')}</a></li>
+              <li><a href="#" className="hover:text-white transition-colors no-underline">{t('Press', 'செய்தி மையம்')}</a></li>
             </ul>
           </div>
 
@@ -121,8 +130,8 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-white/10 py-4 px-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-white/50 text-xs">
-          <p>© 2026 Tenkasi Fresh Fruits. From our soil to your soul.</p>
-          <p>Made with ♥ in Tamil Nadu · FSSAI Lic. 22824105000124</p>
+          <p>{t('© 2026 Tenkasi Fresh Fruits. From our soil to your soul.', '© 2026 டெங்காசி பிரெஷ் பழங்கள். எங்கள் மண்ணிலிருந்து உங்கள் உள்ளத்திற்கு.')}</p>
+          <p>{t('Made with ♥ in Tamil Nadu · FSSAI Lic. 22824105000124', 'தமிழ்நாட்டில் ♥ உடன் தயாரிக்கப்பட்டது · FSSAI உரிமம். 22824105000124')}</p>
         </div>
       </div>
     </footer>

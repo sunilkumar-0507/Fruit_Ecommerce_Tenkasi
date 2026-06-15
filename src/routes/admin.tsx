@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, Fragment, useRef } from 'react'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
+import { useLang } from '#/contexts/LanguageContext'
 import TiIcon from '#/components/TiIcon'
 import { ImageCollage } from '#/components/BasketCard'
 import { useBaskets, type BasketEntry } from '#/context/BasketContext'
@@ -33,15 +34,15 @@ const NAV_ICONS: Record<string, string> = {
 }
 
 const NAV_ITEMS = [
-  { label: 'Overview' },
-  { label: 'Inventory' },
-  { label: 'Discounts' },
-  { label: 'Seasonal' },
-  { label: 'Baskets' },
-  { label: 'Orders' },
-  { label: 'Delivery' },
-  { label: 'Farmers' },
-  { label: 'Settings' },
+  { label: 'Overview',  ta: 'கண்ணோட்டம்' },
+  { label: 'Inventory', ta: 'சரக்கு பட்டியல்' },
+  { label: 'Discounts', ta: 'தள்ளுபடிகள்' },
+  { label: 'Seasonal',  ta: 'பருவகால' },
+  { label: 'Baskets',   ta: 'கூடைகள்' },
+  { label: 'Orders',    ta: 'ஆர்டர்கள்' },
+  { label: 'Delivery',  ta: 'டெலிவரி' },
+  { label: 'Farmers',   ta: 'விவசாயிகள்' },
+  { label: 'Settings',  ta: 'அமைப்புகள்' },
 ]
 
 const OVERVIEW_PERIODS = ['Today', 'Last 7 days', 'Last 30 days'] as const
@@ -2304,6 +2305,7 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
   onNavClick?: () => void
   user: { name: string }
 }) {
+  const { lang, t } = useLang()
   return (
     <>
       <div className="px-5 py-5 border-b border-white/10">
@@ -2311,12 +2313,12 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
           <div className="rounded-xl p-1 flex-shrink-0">
             <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
           </div>
-          <span className="font-serif text-white font-bold text-sm">Tenkasi Fresh</span>
+          <span className="font-serif text-white font-bold text-sm">{t('Tenkasi Fresh', 'டெங்காசி பிரெஷ்')}</span>
         </div>
-        <p className="text-white/40 text-[10px] tracking-widest uppercase ml-11">Admin Console</p>
+        <p className="text-white/40 text-[10px] tracking-widest uppercase ml-11">{t('Admin Console', 'நிர்வாக மேடை')}</p>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {NAV_ITEMS.map(({ label }) => (
+        {NAV_ITEMS.map(({ label, ta }) => (
           <button
             type="button"
             key={label}
@@ -2326,12 +2328,12 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
             }`}
           >
             <TiIcon name={NAV_ICONS[label] ?? 'layout'} size={17} />
-            {label}
+            {lang === 'ta' ? ta : label}
           </button>
         ))}
       </nav>
       <div className="px-5 py-4 border-t border-white/10">
-        <p className="text-white/30 text-[10px]">v1.0.0 · {isApiMode() ? 'API Mode' : 'Demo Mode'}</p>
+        <p className="text-white/30 text-[10px]">v1.0.0 · {isApiMode() ? t('API Mode', 'API நிலை') : t('Demo Mode', 'டெமோ நிலை')}</p>
       </div>
     </>
   )
@@ -2343,6 +2345,7 @@ function AdminPage() {
   const user = useAuthGuard('admin')
   const [activeNav, setActiveNav] = useState('Overview')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { t } = useLang()
 
   if (!user) {
     return (
@@ -2386,12 +2389,12 @@ function AdminPage() {
             className="flex items-center gap-1 text-sm font-semibold !text-white hover:!text-white bg-[#3d7a20] hover:bg-[#2a5a14] px-3 py-1.5 rounded-lg transition-colors no-underline flex-shrink-0"
           >
             <TiIcon name="angle-left" size={16} />
-            <span className="hidden xs:inline sm:inline">Back to Store</span>
+            <span className="hidden xs:inline sm:inline">{t('Back to Store', 'கடைக்கு திரும்பு')}</span>
           </Link>
 
           <div className="flex-1 flex items-center bg-gray-100 rounded-lg px-3 py-2 gap-2 max-w-md">
             <TiIcon name="search" size={15} className="text-gray-400 flex-shrink-0" />
-            <input type="text" placeholder="Search orders, products..." className="bg-transparent text-sm text-gray-600 placeholder-gray-400 outline-none w-full" />
+            <input type="text" placeholder={t('Search orders, products...', 'ஆர்டர்கள், பொருட்களை தேடுங்கள்...')} className="bg-transparent text-sm text-gray-600 placeholder-gray-400 outline-none w-full" />
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
@@ -2405,7 +2408,7 @@ function AdminPage() {
               </div>
               <div className="hidden sm:block">
                 <p className="text-sm font-semibold text-gray-900 leading-tight">{user.name}</p>
-                <p className="text-xs text-gray-500">Admin · Tenkasi</p>
+                <p className="text-xs text-gray-500">{t('Admin · Tenkasi', 'நிர்வாகி · டெங்காசி')}</p>
               </div>
             </div>
           </div>

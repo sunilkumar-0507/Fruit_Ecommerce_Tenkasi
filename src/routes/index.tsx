@@ -9,6 +9,7 @@ import { PRODUCTS, HOME_CATEGORIES } from '#/data/products'
 import type { Product } from '#/data/products'
 import { api, isApiMode, type ProductDto, type ProductDtoPagedResult } from '#/lib/apiClient'
 import { extractFruitType } from '#/lib/fruitKeywords'
+import { useLang } from '#/contexts/LanguageContext'
 
 export const Route = createFileRoute('/')({ component: HomePage })
 
@@ -26,7 +27,7 @@ function mapProduct(p: ProductDto): Product {
     image: primary?.url ?? '/images/products/p-mango.jpg',
     rating: p.rating ?? 4.5,
     reviews: 0,
-    unit: 'per unit',
+    unit: 'per kg',
     featured: true,
   }
 }
@@ -65,6 +66,7 @@ const TESTIMONIALS = [
 ]
 
 function HomePage() {
+  const { lang, t } = useLang()
   // Show welcome if: first visit this session (!tf_home_seen) OR coming from login (tf_show_welcome)
   const [showWelcome] = useState(() => {
     try {
@@ -138,15 +140,18 @@ function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-6 sm:space-y-8 z-10">
               <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
-                Sun-ripened,<br />
-                bounty from the<br />
-                foothills of{' '}
-                <span className="text-[#3d7a20]">Tenkasi</span>.
+                {lang === 'ta' ? (
+                  <>வெயிலில் பழுத்த,<br />மேற்கு தொடர்ச்சி மலை<br /><span className="text-[#3d7a20]">டெங்காசியின்</span> கொடை.</>
+                ) : (
+                  <>Sun-ripened,<br />bounty from the<br />foothills of{' '}<span className="text-[#3d7a20]">Tenkasi</span>.</>
+                )}
               </h1>
               <p className="text-base sm:text-lg text-gray-600 max-w-lg leading-relaxed">
-                Harvested at dawn. Wrapped in banana leaves. Delivered by dusk across{' '}
-                <span className="text-[#3d7a20] font-semibold">Tamil Nadu</span> — directly
-                from our 240+ farmer families.
+                {lang === 'ta' ? (
+                  <>விடியற்காலையில் அறுவடை. வாழை இலைகளில் மூட்டு. <span className="text-[#3d7a20] font-semibold">தமிழ்நாடு</span> முழுவதும் சாயங்காலத்திற்கு முன் டெலிவரி — நேரடியாக எங்கள் 240+ விவசாயி குடும்பங்களிடமிருந்து.</>
+                ) : (
+                  <>Harvested at dawn. Wrapped in banana leaves. Delivered by dusk across{' '}<span className="text-[#3d7a20] font-semibold">Tamil Nadu</span> — directly from our 240+ farmer families.</>
+                )}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Link
@@ -154,13 +159,13 @@ function HomePage() {
                   className="bg-[#3d7a20] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#2a5a14] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 no-underline"
                 >
                   <ShoppingCart size={20} />
-                  Shop Now
+                  {t('Shop Now', 'இப்போது வாங்குங்கள்')}
                 </Link>
                 <Link
                   to="/seasonal"
                   className="border-2 border-[#3d7a20] text-[#3d7a20] px-8 py-3 rounded-full font-semibold hover:bg-[#3d7a20] hover:text-white transition-all duration-300 flex items-center justify-center no-underline"
                 >
-                  Explore Seasonal
+                  {t('Explore Seasonal', 'பருவகாலத்தை ஆராயுங்கள்')}
                 </Link>
               </div>
             </div>
@@ -177,10 +182,10 @@ function HomePage() {
               <div className="absolute top-6 right-6 bg-[#3d7a20] text-white rounded-2xl px-4 py-3 shadow-lg">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-lg">🌿</span>
-                  <span className="font-bold text-sm">100% Farm Fresh</span>
+                  <span className="font-bold text-sm">{t('100% Farm Fresh', '100% பண்ணை புதியது')}</span>
                 </div>
                 <p className="text-[10px] font-bold tracking-widest text-[#f5821f]">
-                  DIRECT FROM FARMERS
+                  {t('DIRECT FROM FARMERS', 'நேரடியாக விவசாயிகளிடமிருந்து')}
                 </p>
               </div>
             </div>
@@ -193,10 +198,10 @@ function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#3d7a20] mb-3">
-              Shop by Category
+              {t('Shop by Category', 'வகைப்படி கடையில் வாங்குங்கள்')}
             </h2>
             <p className="text-gray-500 text-lg max-w-xl mx-auto">
-              Browse our carefully curated selection of fresh and organic fruits
+              {t('Browse our carefully curated selection of fresh and organic fruits', 'புதிய மற்றும் இயற்கை பழங்களின் எங்கள் தெரிவுசெய்யப்பட்ட தொகுப்பை உலாவுங்கள்')}
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
@@ -218,15 +223,15 @@ function HomePage() {
           <div className="flex items-end justify-between mb-10">
             <div>
               <h2 className="font-serif text-4xl sm:text-5xl font-bold text-gray-900 mb-2">
-                Bestseller Products
+                {t('Bestseller Products', 'அதிகம் விற்பனையான பொருட்கள்')}
               </h2>
-              <p className="text-gray-400">Most loved by our customers</p>
+              <p className="text-gray-400">{t('Most loved by our customers', 'எங்கள் வாடிக்கையாளர்கள் அதிகம் விரும்புவது')}</p>
             </div>
             <Link
               to="/shop"
               className="hidden sm:block text-[#3d7a20] font-semibold text-sm hover:underline no-underline"
             >
-              View all →
+              {t('View all →', 'அனைத்தும் காண →')}
             </Link>
           </div>
           {featuredLoading ? (
@@ -248,16 +253,16 @@ function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#3d7a20] mb-3">
-              Why Choose Tenkasi Fresh?
+              {t('Why Choose Tenkasi Fresh?', 'ஏன் டெங்காசி பிரெஷ் தேர்வு செய்ய வேண்டும்?')}
             </h2>
-            <p className="text-gray-500 text-lg">We deliver excellence in every bite</p>
+            <p className="text-gray-500 text-lg">{t('We deliver excellence in every bite', 'ஒவ்வொரு கடியிலும் சிறந்த தரம் வழங்குகிறோம்')}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: <Leaf size={28} />, title: 'Organic & Natural', desc: 'Pesticide-free fruits grown in natural conditions' },
-              { icon: <Zap size={28} />, title: 'Farm Fresh', desc: 'Picked and delivered within 24 hours' },
-              { icon: <Award size={28} />, title: 'Quality Assured', desc: 'Stringent quality checks at every step' },
-              { icon: <Truck size={28} />, title: 'Fast Delivery', desc: 'Quick delivery available across Tamil Nadu' },
+              { icon: <Leaf size={28} />, title: t('Organic & Natural', 'இயற்கை மற்றும் கேமிக்கல் இல்லாதது'), desc: t('Pesticide-free fruits grown in natural conditions', 'இயற்கை சூழலில் பூச்சிக்கொல்லி இல்லாமல் வளர்க்கப்பட்ட பழங்கள்') },
+              { icon: <Zap size={28} />, title: t('Farm Fresh', 'பண்ணை புதியது'), desc: t('Picked and delivered within 24 hours', '24 மணி நேரத்திற்குள் பறித்து டெலிவரி செய்யப்படும்') },
+              { icon: <Award size={28} />, title: t('Quality Assured', 'தரம் உறுதி'), desc: t('Stringent quality checks at every step', 'ஒவ்வொரு கட்டத்திலும் கடுமையான தர சோதனை') },
+              { icon: <Truck size={28} />, title: t('Fast Delivery', 'விரைவான டெலிவரி'), desc: t('Quick delivery available across Tamil Nadu', 'தமிழ்நாடு முழுவதும் விரைவான டெலிவரி கிடைக்கும்') },
             ].map((item) => (
               <div
                 key={item.title}
@@ -279,19 +284,19 @@ function HomePage() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#f5821f]/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="relative z-10 max-w-xl">
               <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-3">
-                Limited Time
+                {t('Limited Time', 'குறைந்த காலம் மட்டுமே')}
               </p>
               <h2 className="font-serif text-3xl sm:text-5xl font-bold mb-4">
-                Festival Season Mega Sale
+                {t('Festival Season Mega Sale', 'விழா காலத்தில் மகா தள்ளுபடி')}
               </h2>
               <p className="text-white/80 text-lg mb-8 leading-relaxed">
-                Celebrate with us! Get up to 50% off on premium fruits and festival baskets.
+                {t('Celebrate with us! Get up to 50% off on premium fruits and festival baskets.', 'எங்களுடன் கொண்டாடுங்கள்! உயர்தர பழங்கள் மற்றும் விழா கூடைகளில் 50% வரை தள்ளுபடி.')}
               </p>
               <Link
                 to="/baskets"
                 className="inline-block bg-[#f5821f] text-[#0c1d2b] px-8 py-3 rounded-full font-bold hover:bg-[#f59a2e] transition-colors no-underline"
               >
-                Shop Festival Deals
+                {t('Shop Festival Deals', 'விழா சலுகைகளை வாங்குங்கள்')}
               </Link>
             </div>
           </div>
@@ -303,9 +308,9 @@ function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-serif text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
-              What Our Customers Say
+              {t('What Our Customers Say', 'எங்கள் வாடிக்கையாளர்கள் என்ன சொல்கிறார்கள்')}
             </h2>
-            <p className="text-gray-500 text-lg">Real experiences from real customers</p>
+            <p className="text-gray-500 text-lg">{t('Real experiences from real customers', 'உண்மையான வாடிக்கையாளர்களின் உண்மையான அனுபவங்கள்')}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {TESTIMONIALS.map((t, idx) => (
@@ -352,18 +357,25 @@ function HomePage() {
           <div className="bg-gradient-to-br from-[#0c1d2b] to-[#3d7a20] rounded-3xl overflow-hidden p-10 sm:p-16">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="text-white space-y-5">
-                <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase">About Us</p>
+                <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase">{t('About Us', 'எங்களைப் பற்றி')}</p>
                 <h2 className="font-serif text-4xl sm:text-5xl font-bold leading-tight">
-                  Rooted in Tenkasi,<br />trusted across Tamil Nadu
+                  {lang === 'ta' ? (
+                    <>டெங்காசியில் வேரூன்றியது,<br />தமிழ்நாடு முழுவதும் நம்பகமானது</>
+                  ) : (
+                    <>Rooted in Tenkasi,<br />trusted across Tamil Nadu</>
+                  )}
                 </h2>
                 <p className="text-white/80 text-lg leading-relaxed">
-                  Established in 1987, O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative is a network of 240+ farming families from the Western Ghats foothills. We cut out the middlemen and bring tropical fruits from our soil to your doorstep — fresh, chemical-free, and fairly priced.
+                  {t(
+                    'Established in 1987, O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative is a network of 240+ farming families from the Western Ghats foothills. We cut out the middlemen and bring tropical fruits from our soil to your doorstep — fresh, chemical-free, and fairly priced.',
+                    '1987இல் நிறுவப்பட்ட O.1919 டெங்காசி செங்கோட்டை தாலுகா விவசாய உற்பத்தியாளர் கூட்டுறவு, மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து 240+ விவசாயி குடும்பங்களின் வலையமைப்பு. இடைத்தரகர்களை கடந்து, எங்கள் மண்ணிலிருந்து நேரடியாக உங்கள் வீட்டுக்கு — புதியதாக, கேமிக்கல் இல்லாமல், நியாயமான விலையில்.'
+                  )}
                 </p>
                 <Link
                   to="/about"
                   className="inline-block bg-[#f5821f] text-[#0c1d2b] px-8 py-3 rounded-full font-bold hover:bg-[#f59a2e] transition-colors no-underline mt-2"
                 >
-                  Read More →
+                  {t('Read More →', 'மேலும் படிக்க →')}
                 </Link>
               </div>
               <div className="hidden lg:flex justify-center items-center">
@@ -386,9 +398,9 @@ function HomePage() {
           <div className="bg-gradient-to-r from-[#3d7a20]/90 to-[#4fb8b2]/90 rounded-3xl overflow-hidden p-10 sm:p-16">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div className="text-white space-y-5">
-                <h2 className="font-serif text-4xl sm:text-5xl font-bold">Download Our App</h2>
+                <h2 className="font-serif text-4xl sm:text-5xl font-bold">{t('Download Our App', 'எங்கள் செயலியை பதிவிறக்குங்கள்')}</h2>
                 <p className="text-white/85 text-lg leading-relaxed">
-                  Shop anytime, anywhere! Get exclusive app-only deals and live order tracking.
+                  {t('Shop anytime, anywhere! Get exclusive app-only deals and live order tracking.', 'எப்போதும், எங்கும் வாங்குங்கள்! செயலி மட்டும் சலுகைகளும் நேரடி ஆர்டர் கண்காணிப்பும் பெறுங்கள்.')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   {/* App Store */}
@@ -417,11 +429,11 @@ function HomePage() {
                 </div>
                 <div className="flex gap-8 pt-2">
                   <div>
-                    <p className="text-white/70 text-xs">App Downloads</p>
+                    <p className="text-white/70 text-xs">{t('App Downloads', 'செயலி பதிவிறக்கங்கள்')}</p>
                     <p className="text-2xl font-bold">500K+</p>
                   </div>
                   <div>
-                    <p className="text-white/70 text-xs">User Rating</p>
+                    <p className="text-white/70 text-xs">{t('User Rating', 'பயனர் மதிப்பீடு')}</p>
                     <p className="text-2xl font-bold">4.8 ★</p>
                   </div>
                 </div>

@@ -32,22 +32,22 @@ function HeaderTicker({ lang }: { lang: 'en' | 'ta' }) {
 }
 
 const BASE_NAV = [
-  { en: 'Home',       ta: 'முகப்பு',    to: '/' },
-  { en: 'Shop',       ta: 'கடை',        to: '/shop' },
-  { en: 'Seasonal',   ta: 'பருவகால',   to: '/seasonal' },
-  { en: 'Baskets',    ta: 'கூடைகள்',   to: '/baskets' },
-  { en: 'Mobile App', ta: 'செயலி',      to: '/mobile-app' },
+  { en: 'Home',     ta: 'முகப்பு',  to: '/' },
+  { en: 'Shop',     ta: 'கடை',      to: '/shop' },
+  { en: 'Seasonal', ta: 'பருவகால', to: '/seasonal' },
+  { en: 'Baskets',  ta: 'கூடைகள்', to: '/baskets' },
 ] as const
 
 function FavPopup({ onClose }: { onClose: () => void }) {
   const { items, toggle } = useFav()
+  const { t } = useLang()
 
   return (
     <div className="absolute right-0 top-full mt-2 z-50 w-[min(320px,calc(100vw-1rem))] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-[#faf9f4]">
         <div className="flex items-center gap-2">
           <TiIcon name="heart" size={16} className="text-red-500" />
-          <span className="font-serif font-bold text-gray-900 text-sm">Wishlist</span>
+          <span className="font-serif font-bold text-gray-900 text-sm">{t('Wishlist', 'விருப்பப்பட்டியல்')}</span>
           {items.length > 0 && (
             <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
               {items.length}
@@ -62,10 +62,10 @@ function FavPopup({ onClose }: { onClose: () => void }) {
       {items.length === 0 ? (
         <div className="px-4 py-10 text-center">
           <TiIcon name="heart" size={36} className="text-gray-200 mb-3" />
-          <p className="text-gray-600 text-sm font-semibold">Your wishlist is empty</p>
-          <p className="text-gray-400 text-xs mt-1 leading-relaxed">Tap the ♥ on any product to save it here</p>
+          <p className="text-gray-600 text-sm font-semibold">{t('Your wishlist is empty', 'உங்கள் விருப்பப்பட்டியல் காலியாக உள்ளது')}</p>
+          <p className="text-gray-400 text-xs mt-1 leading-relaxed">{t('Tap the ♥ on any product to save it here', 'எந்த பொருளிலும் ♥ அழுத்தி சேமியுங்கள்')}</p>
           <Link to="/shop" onClick={onClose} className="inline-block mt-4 bg-[#3d7a20] text-white text-xs font-bold px-5 py-2 rounded-full no-underline hover:bg-[#2a5a14] transition-colors">
-            Browse Products
+            {t('Browse Products', 'பொருட்களை உலாவுங்கள்')}
           </Link>
         </div>
       ) : (
@@ -96,7 +96,7 @@ function FavPopup({ onClose }: { onClose: () => void }) {
           </ul>
           <div className="px-4 py-3 bg-[#faf9f4] border-t border-gray-100">
             <Link to="/shop" onClick={onClose} className="block w-full text-center text-sm font-bold text-white bg-[#3d7a20] py-2.5 rounded-xl no-underline hover:bg-[#2a5a14] transition-colors">
-              Shop Now
+              {t('Shop Now', 'இப்போது வாங்குங்கள்')}
             </Link>
           </div>
         </>
@@ -112,7 +112,7 @@ export default function Header() {
   const { user, isAdmin, logout } = useAuth()
   const { count: cartCount } = useCart()
   const { items: favItems } = useFav()
-  const { lang, setLang } = useLang()
+  const { lang, setLang, t } = useLang()
   const navigate = useNavigate()
   const favRef = useRef<HTMLDivElement>(null)
   const userRef = useRef<HTMLDivElement>(null)
@@ -141,7 +141,7 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#f5821f] inline-block" />
             <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-[#f5821f]">
-              Fresh Fruits Delivered Across Tamil Nadu
+              {t('Fresh Fruits Delivered Across Tamil Nadu', 'தமிழ்நாடு முழுவதும் புதிய பழங்கள்')}
             </span>
           </div>
           <div className="flex items-center gap-4 sm:gap-6">
@@ -152,7 +152,7 @@ export default function Header() {
             </a>
             <span className="hidden sm:flex items-center gap-1.5 text-white/70 text-[11px] font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] inline-block animate-pulse" />
-              Fresh Daily Delivery
+              {t('Fresh Daily Delivery', 'தினமும் புதிய டெலிவரி')}
             </span>
           </div>
         </div>
@@ -220,23 +220,23 @@ export default function Header() {
                       <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
                         <p className="text-xs text-gray-400 truncate">{user.email}</p>
-                        {isAdmin && <span className="inline-block mt-1 text-[10px] font-bold text-[#3d7a20] bg-[#fdf4e8] px-2 py-0.5 rounded-full tracking-wide uppercase">Admin</span>}
+                        {isAdmin && <span className="inline-block mt-1 text-[10px] font-bold text-[#3d7a20] bg-[#fdf4e8] px-2 py-0.5 rounded-full tracking-wide uppercase">{t('Admin', 'நிர்வாகி')}</span>}
                       </div>
                       <Link to="/orders" onClick={() => setUserMenuOpen(false)} className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors no-underline">
                         <TiIcon name="bag" size={15} className="text-gray-500" />
-                        My Orders
+                        {t('My Orders', 'என் ஆர்டர்கள்')}
                       </Link>
                       <button type="button" onClick={handleLogout} className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors text-left border-t border-gray-50">
                         <TiIcon name="power-off" size={15} className="text-red-600" />
-                        Sign Out
+                        {t('Sign Out', 'வெளியேறு')}
                       </button>
                     </div>
                   )}
                 </div>
               ) : (
-                <Link to="/login" className="flex items-center gap-1.5 px-4 py-2 bg-[#f5821f] text-[#0c1d2b] text-sm font-bold rounded-full hover:bg-[#ffab4a] transition-colors no-underline">
+                <Link to="/login" className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-[#f5821f] text-[#0c1d2b] text-sm font-bold rounded-full hover:bg-[#ffab4a] transition-colors no-underline">
                   <TiIcon name="user" size={15} className="text-[#0c1d2b]" />
-                  Sign In
+                  <span className="hidden sm:inline">{t('Sign In', 'உள்நுழைவு')}</span>
                 </Link>
               )}
 
@@ -274,7 +274,7 @@ export default function Header() {
             <div className="md:hidden border-t border-white/10 py-3 space-y-1">
               {/* Mobile language toggle */}
               <div className="flex items-center gap-2 px-4 py-2">
-                <span className="text-white/50 text-xs font-semibold uppercase tracking-wide">Language</span>
+                <span className="text-white/50 text-xs font-semibold uppercase tracking-wide">{t('Language', 'மொழி')}</span>
                 <div className="flex items-center rounded-full border border-white/20 overflow-hidden ml-2">
                   <button type="button" onClick={() => setLang('en')} className={`px-3 py-1 text-[11px] font-bold transition-colors ${lang === 'en' ? 'bg-[#f5821f] text-[#0c1d2b]' : 'text-white/55'}`}>EN</button>
                   <button type="button" onClick={() => setLang('ta')} className={`px-3 py-1 text-[11px] font-bold transition-colors ${lang === 'ta' ? 'bg-[#f5821f] text-[#0c1d2b]' : 'text-white/55'}`}>தமிழ்</button>
@@ -296,21 +296,21 @@ export default function Header() {
               )}
               <button type="button" onClick={() => { setIsMenuOpen(false); setFavOpen(true) }} className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 rounded-lg transition-colors">
                 <TiIcon name="heart" size={16} className={favItems.length > 0 ? 'text-red-400' : 'text-white/60'} />
-                Wishlist
+                {t('Wishlist', 'விருப்பப்பட்டியல்')}
                 {favItems.length > 0 && <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-auto">{favItems.length}</span>}
               </button>
               {!user && (
                 <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2.5 text-[#0c1d2b] font-bold text-sm bg-[#f5821f] rounded-lg no-underline">
-                  Sign In / Register
+                  {t('Sign In / Register', 'உள்நுழைவு / பதிவு')}
                 </Link>
               )}
               {user && (
                 <>
                   <Link to="/orders" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2.5 text-white/80 font-semibold text-sm hover:bg-white/10 rounded-lg no-underline transition-colors">
-                    My Orders
+                    {t('My Orders', 'என் ஆர்டர்கள்')}
                   </Link>
                   <button type="button" onClick={() => { handleLogout(); setIsMenuOpen(false) }} className="w-full text-left block px-4 py-2.5 text-red-300 font-medium text-sm hover:bg-white/10 rounded-lg">
-                    Sign Out
+                    {t('Sign Out', 'வெளியேறு')}
                   </button>
                 </>
               )}

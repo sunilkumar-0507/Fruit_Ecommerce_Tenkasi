@@ -8,7 +8,7 @@ Based on the images you provided, here's the mapping:
 
 | Filename | Image | Size |
 |----------|-------|------|
-| `mangoes.jpg` | Golden mangoes on green leaf (Image 6) | 300x300px |
+| `mangoes.jpeg` | Golden mangoes on green leaf (Image 6) | 300x300px |
 | `banana.jpg` | Bunch of yellow bananas (Image 1) | 300x300px |
 | `organic-fruits.jpg` | Mixed fruit basket with vegetables (Image 2) | 300x300px |
 | `grapes.jpg` | Black and green grapes (Image 4) | 300x300px |

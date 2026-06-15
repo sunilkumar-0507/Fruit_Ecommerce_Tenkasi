@@ -6,6 +6,7 @@ import { useFav } from '#/context/FavContext'
 import { useFeedback } from '#/context/FeedbackContext'
 import { isApiMode, api, type ProductDto } from '#/lib/apiClient'
 import TiIcon from '#/components/TiIcon'
+import { useLang } from '#/contexts/LanguageContext'
 
 export const Route = createFileRoute('/product/$productId')({ component: ProductDetailPage })
 
@@ -66,6 +67,7 @@ function StarInput({ value, onChange }: { value: number; onChange: (n: number) =
 
 function FeedbackSection({ productId, slug }: { productId: string; slug: string }) {
   const { getForProduct, loadForProduct, addFeedback, reviewError } = useFeedback()
+  const { t } = useLang()
   const reviews = getForProduct(productId)
   const [name, setName] = useState('')
   const [rating, setRating] = useState(5)
@@ -93,7 +95,7 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
 
   return (
     <div className="mt-10">
-      <h2 className="font-serif text-2xl font-bold text-gray-900 mb-1">Customer Reviews</h2>
+      <h2 className="font-serif text-2xl font-bold text-gray-900 mb-1">{t('Customer Reviews', 'வாடிக்கையாளர் மதிப்புரைகள்')}</h2>
       {reviews.length > 0 && (
         <div className="flex items-center gap-3 mb-5">
           <span className="text-4xl font-bold text-gray-900">{avg.toFixed(1)}</span>
@@ -103,7 +105,7 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
                 <span key={s} className={`text-lg ${s <= Math.round(avg) ? 'text-amber-400' : 'text-gray-200'}`}>★</span>
               ))}
             </div>
-            <p className="text-xs text-gray-400 mt-0.5">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-gray-400 mt-0.5">{reviews.length} {t('review', 'மதிப்புரை')}{reviews.length !== 1 ? t('s', 'கள்') : ''}</p>
           </div>
         </div>
       )}
@@ -132,33 +134,33 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
           ))}
         </div>
       ) : (
-        <p className="text-gray-400 text-sm mb-6">No reviews yet. Be the first to share your experience!</p>
+        <p className="text-gray-400 text-sm mb-6">{t('No reviews yet. Be the first to share your experience!', 'இன்னும் மதிப்புரைகள் இல்லை. முதலில் உங்கள் அனுபவத்தை பகிருங்கள்!')}</p>
       )}
 
       {/* Feedback form */}
       <div className="bg-[#f5f9f7] rounded-2xl p-5 border border-[#3d7a20]/10">
-        <h3 className="font-serif text-lg font-bold text-gray-900 mb-4">Write a Review</h3>
+        <h3 className="font-serif text-lg font-bold text-gray-900 mb-4">{t('Write a Review', 'மதிப்புரை எழுதுங்கள்')}</h3>
         <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('Your Name', 'உங்கள் பெயர்')}</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Priya Sharma"
+              placeholder={t('e.g. Priya Sharma', 'எ.கா. முருகன்')}
               className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Rating</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('Rating', 'மதிப்பீடு')}</label>
             <StarInput value={rating} onChange={setRating} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Review <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('Your Review', 'உங்கள் மதிப்புரை')} <span className="text-red-500">*</span></label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Tell us what you think about this product…"
+              placeholder={t('Tell us what you think about this product…', 'இந்த பொருளைப் பற்றி உங்கள் கருத்தை கூறுங்கள்…')}
               rows={3}
               className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white resize-none"
             />
@@ -175,7 +177,7 @@ function FeedbackSection({ productId, slug }: { productId: string; slug: string 
                 : 'bg-[#3d7a20] text-white hover:bg-[#2a5a14] disabled:opacity-40 disabled:cursor-not-allowed'
             }`}
           >
-            {submitted ? '✓ Review Submitted!' : 'Submit Review'}
+            {submitted ? `✓ ${t('Review Submitted!', 'மதிப்புரை சமர்ப்பிக்கப்பட்டது!')}` : t('Submit Review', 'மதிப்புரை சமர்ப்பிக்கவும்')}
           </button>
         </form>
       </div>
@@ -212,7 +214,8 @@ function ProductDetailPage() {
   const staticProduct = PRODUCTS.find((p) => p.id === productId)
   const [apiProduct, setApiProduct] = useState<ProductDto | null>(null)
   const [apiLoading, setApiLoading] = useState(isApiMode())
-  const [isTamil, setIsTamil] = useState(false)
+  const { lang, t } = useLang()
+  const isTamil = lang === 'ta'
   const { addToCart } = useCart()
   const { toggle, isFav } = useFav()
   const [added, setAdded] = useState(false)
@@ -238,7 +241,7 @@ function ProductDetailPage() {
         <main className="min-h-screen bg-[#faf9f4] flex items-center justify-center">
           <div className="text-center px-4">
             <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">Loading product…</p>
+            <p className="text-gray-500 text-sm">{t('Loading product…', 'பொருள் ஏற்றப்படுகிறது…')}</p>
           </div>
         </main>
       )
@@ -247,10 +250,10 @@ function ProductDetailPage() {
       <main className="min-h-screen bg-[#faf9f4] flex items-center justify-center">
         <div className="text-center px-4">
           <p className="text-6xl mb-4">🍃</p>
-          <h2 className="font-serif text-2xl font-bold text-gray-900 mb-2">Product not found</h2>
-          <p className="text-gray-500 mb-6">This product may have been removed or the link is incorrect.</p>
+          <h2 className="font-serif text-2xl font-bold text-gray-900 mb-2">{t('Product not found', 'பொருள் கிடைக்கவில்லை')}</h2>
+          <p className="text-gray-500 mb-6">{t('This product may have been removed or the link is incorrect.', 'இந்த பொருள் அகற்றப்பட்டிருக்கலாம் அல்லது இணைப்பு தவறாக உள்ளது.')}</p>
           <Link to="/shop" className="bg-[#3d7a20] text-white px-6 py-3 rounded-full font-semibold no-underline hover:bg-[#2a5a14] transition-colors">
-            Back to Shop
+            {t('Back to Shop', 'கடைக்கு திரும்பு')}
           </Link>
         </div>
       </main>
@@ -273,9 +276,9 @@ function ProductDetailPage() {
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2 text-sm text-gray-400 overflow-x-auto">
-          <button type="button" onClick={() => void navigate({ to: '/' })} className="hover:text-[#3d7a20] transition-colors whitespace-nowrap">Home</button>
+          <button type="button" onClick={() => void navigate({ to: '/' })} className="hover:text-[#3d7a20] transition-colors whitespace-nowrap">{t('Home', 'முகப்பு')}</button>
           <TiIcon name="angle-right" size={12} />
-          <Link to="/shop" className="hover:text-[#3d7a20] transition-colors no-underline text-gray-400 whitespace-nowrap">Shop</Link>
+          <Link to="/shop" className="hover:text-[#3d7a20] transition-colors no-underline text-gray-400 whitespace-nowrap">{t('Shop', 'கடை')}</Link>
           <TiIcon name="angle-right" size={12} />
           <span className="text-gray-600 font-medium truncate max-w-[160px] sm:max-w-none">{product.name}</span>
         </div>
@@ -308,15 +311,6 @@ function ProductDetailPage() {
             <div>
               <div className="flex items-start justify-between gap-2">
                 <p className="text-[#3d7a20] text-xs font-bold tracking-widest uppercase mb-1">{product.category}</p>
-                {isApiMode() && apiProduct && (
-                  <button
-                    type="button"
-                    onClick={() => setIsTamil((t) => !t)}
-                    className="flex-shrink-0 px-3 py-1 rounded-full border border-gray-200 text-xs font-semibold text-gray-500 hover:border-[#3d7a20] hover:text-[#3d7a20] transition-colors"
-                  >
-                    {isTamil ? 'EN' : 'தமிழ்'}
-                  </button>
-                )}
               </div>
               <h1 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 leading-tight">
                 {isApiMode() && apiProduct ? pick(apiProduct.nameEn, apiProduct.nameTa, isTamil) : product.name}
@@ -350,25 +344,25 @@ function ProductDetailPage() {
               <>
                 {(apiProduct.descriptionEn || apiProduct.descriptionTa) && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">Description</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">{t('Description', 'விளக்கம்')}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">{pick(apiProduct.descriptionEn, apiProduct.descriptionTa, isTamil)}</p>
                   </div>
                 )}
                 {(apiProduct.aboutEn || apiProduct.aboutTa) && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">About</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">{t('About', 'பற்றி')}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">{pick(apiProduct.aboutEn, apiProduct.aboutTa, isTamil)}</p>
                   </div>
                 )}
                 {(apiProduct.usageEn || apiProduct.usageTa) && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">How to Use</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">{t('How to Use', 'பயன்படுத்தும் முறை')}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">{pick(apiProduct.usageEn, apiProduct.usageTa, isTamil)}</p>
                   </div>
                 )}
                 {(apiProduct.benefitsEn || apiProduct.benefitsTa) && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">Benefits</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">{t('Benefits', 'பலன்கள்')}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">{pick(apiProduct.benefitsEn, apiProduct.benefitsTa, isTamil)}</p>
                   </div>
                 )}
@@ -377,13 +371,13 @@ function ProductDetailPage() {
               <>
                 {product.description && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">About this product</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">{t('About this product', 'இந்த பொருளைப் பற்றி')}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">{product.description}</p>
                   </div>
                 )}
                 {product.uses && product.uses.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2.5 text-sm uppercase tracking-wide">Uses &amp; Benefits</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2.5 text-sm uppercase tracking-wide">{t('Uses & Benefits', 'பயன்கள் மற்றும் நன்மைகள்')}</h3>
                     <ul className="space-y-2">
                       {product.uses.map((use, i) => (
                         <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
@@ -399,7 +393,7 @@ function ProductDetailPage() {
 
             {/* Quantity selector */}
             <div className="flex items-center gap-4">
-              <span className="text-sm font-semibold text-gray-700">Quantity</span>
+              <span className="text-sm font-semibold text-gray-700">{t('Quantity', 'அளவு')}</span>
               <div className="flex items-center bg-gray-100 rounded-xl p-1 gap-1">
                 <button
                   type="button"
@@ -439,7 +433,7 @@ function ProductDetailPage() {
                 }`}
               >
                 <TiIcon name={added ? 'check' : 'shopping-cart'} size={18} className={outOfStock ? 'text-gray-400' : 'text-white'} />
-                {outOfStock ? 'Out of Stock' : added ? 'Added to Cart!' : 'Add to Cart'}
+                {outOfStock ? t('Out of Stock', 'கையிருப்பில் இல்லை') : added ? t('Added to Cart!', 'கூடையில் சேர்க்கப்பட்டது!') : t('Add to Cart', 'கூடையில் சேர்')}
               </button>
               <button
                 type="button"
@@ -454,15 +448,14 @@ function ProductDetailPage() {
             </div>
 
             {/* Quick info chips */}
-            <div className="grid grid-cols-3 gap-2 pt-1">
+            <div className="grid grid-cols-2 gap-2 pt-1">
               {[
-                { icon: 'package', label: '100% Fresh' },
-                { icon: 'time', label: '24h Harvest' },
-                { icon: 'check-box', label: 'Quality Assured' },
+                { icon: 'package', en: '100% Fresh', ta: '100% புதியது' },
+                { icon: 'check-box', en: 'Quality Assured', ta: 'தரம் உறுதி' },
               ].map((item) => (
-                <div key={item.label} className="text-center bg-white rounded-xl py-3 px-2 border border-gray-100 shadow-sm">
+                <div key={item.en} className="text-center bg-white rounded-xl py-3 px-2 border border-gray-100 shadow-sm">
                   <TiIcon name={item.icon} size={20} className="text-[#3d7a20] mb-1" />
-                  <p className="text-[10px] font-semibold text-gray-700 leading-tight">{item.label}</p>
+                  <p className="text-[10px] font-semibold text-gray-700 leading-tight">{t(item.en, item.ta)}</p>
                 </div>
               ))}
             </div>
