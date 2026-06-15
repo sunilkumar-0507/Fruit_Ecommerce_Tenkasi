@@ -199,7 +199,7 @@ function fromApiDto(p: ProductDto): Product {
     images: allImgs.length > 1 ? allImgs : undefined,
     rating: p.rating ?? 4.5,
     reviews: 0,
-    unit: 'per unit',
+    unit: 'per kg',
   }
 }
 
@@ -216,7 +216,7 @@ function ProductDetailPage() {
   const { addToCart } = useCart()
   const { toggle, isFav } = useFav()
   const [added, setAdded] = useState(false)
-  const [qty, setQty] = useState(1)
+  const [qty, setQty] = useState(0.5)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -263,9 +263,7 @@ function ProductDetailPage() {
   const outOfStock = isApiMode() ? (apiProduct?.isOutOfStock ?? false) : false
 
   function handleAddToCart() {
-    for (let i = 0; i < qty; i++) {
-      addToCart({ id: product.id, name: product.name, nameTamil: product.nameTamil, category: product.category, image: product.image, price: product.price, unit: product.unit })
-    }
+    addToCart({ id: product.id, name: product.name, nameTamil: product.nameTamil, category: product.category, image: product.image, price: product.price, unit: product.unit }, qty)
     setAdded(true)
     setTimeout(() => setAdded(false), 1500)
   }
@@ -337,7 +335,6 @@ function ProductDetailPage() {
                 <span className="text-amber-300 text-sm">★</span>
               </div>
               <span className="text-gray-500 text-sm">{product.reviews.toLocaleString('en-IN')} ratings</span>
-              <span className="text-[#3d7a20] text-xs font-semibold bg-[#fdf4e8] px-2.5 py-1 rounded-full">Chemical Free</span>
             </div>
 
             {/* Price */}
@@ -400,40 +397,31 @@ function ProductDetailPage() {
               </>
             )}
 
-            {/* Delivery info */}
-            <div className="flex items-center gap-3 bg-[#f5f9f7] rounded-xl px-4 py-3">
-              <TiIcon name="truck" size={18} className="text-[#3d7a20] flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-gray-900">Same-day delivery available</p>
-                <p className="text-xs text-gray-500">Order before 12 PM for delivery by evening</p>
-              </div>
-            </div>
-
             {/* Quantity selector */}
             <div className="flex items-center gap-4">
               <span className="text-sm font-semibold text-gray-700">Quantity</span>
               <div className="flex items-center bg-gray-100 rounded-xl p-1 gap-1">
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  onClick={() => setQty((q) => Math.max(0.5, Math.round((q - 0.5) * 10) / 10))}
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
                   aria-label="Decrease quantity"
                 >
                   <TiIcon name="minus" size={13} className="text-gray-600" />
                 </button>
-                <span className="w-8 text-center font-bold text-gray-900 text-sm">{qty}</span>
+                <span className="w-14 text-center font-bold text-gray-900 text-sm">
+                  {qty < 1 ? '½' : qty % 1 === 0 ? `${qty}` : `${qty}`} kg
+                </span>
                 <button
                   type="button"
-                  onClick={() => setQty((q) => q + 1)}
+                  onClick={() => setQty((q) => Math.round((q + 0.5) * 10) / 10)}
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
                   aria-label="Increase quantity"
                 >
                   <TiIcon name="plus" size={13} className="text-gray-600" />
                 </button>
               </div>
-              {qty > 1 && (
-                <span className="text-sm font-semibold text-[#3d7a20]">= ₹{product.price * qty}</span>
-              )}
+              <span className="text-sm font-semibold text-[#3d7a20]">= ₹{(product.price * qty).toFixed(0)}</span>
             </div>
 
             {/* Action buttons */}

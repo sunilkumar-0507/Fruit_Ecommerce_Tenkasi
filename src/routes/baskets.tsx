@@ -32,8 +32,8 @@ const FEATURES = [
   },
   {
     icon: <TiIcon name="truck" size={24} className="text-[#3d7a20]" />,
-    title: 'Same-day delivery',
-    desc: 'Order by noon for same-day delivery wrapped in traditional banana leaves.',
+    title: 'Fast delivery',
+    desc: 'Quick delivery wrapped in traditional banana leaves, fresh to your door.',
   },
 ]
 

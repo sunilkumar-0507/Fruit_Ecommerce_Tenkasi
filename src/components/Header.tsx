@@ -5,7 +5,7 @@ import { useCart } from '#/context/CartContext'
 import { useFav } from '#/context/FavContext'
 import TiIcon from '#/components/TiIcon'
 
-const TICKER_ITEMS = ['Farm Fresh', 'Premium Quality', 'Organic Certified', 'Fast Delivery', 'Best Prices', '240+ Farmers']
+const TICKER_ITEMS = ['Farm Fresh', 'Premium Quality', 'Fast Delivery', 'Best Prices', '240+ Farmers', 'Direct from Farm']
 
 function HeaderTicker() {
   return (
@@ -148,7 +148,7 @@ export default function Header() {
             </a>
             <span className="hidden sm:flex items-center gap-1.5 text-white/70 text-[11px] font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] inline-block animate-pulse" />
-              Same Day Delivery
+              Fresh Daily Delivery
             </span>
           </div>
         </div>

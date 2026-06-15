@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import ProductCard from '#/components/ProductCard'
 import { PRODUCTS } from '#/data/products'
 import type { Product } from '#/data/products'
-import { useAuthGuard } from '#/hooks/useAuthGuard'
 import { api, isApiMode, type ProductDto, type ProductDtoPagedResult } from '#/lib/apiClient'
 
 export const Route = createFileRoute('/seasonal')({ component: SeasonalPage })
@@ -51,7 +50,7 @@ function mapProduct(p: ProductDto): Product {
     image: primary?.url ?? '/images/products/p-mango.jpg',
     rating: p.rating ?? 4.5,
     reviews: 0,
-    unit: 'per unit',
+    unit: 'per kg',
     featured: false,
   }
 }
@@ -59,7 +58,6 @@ function mapProduct(p: ProductDto): Product {
 const DEMO_SEASONAL = PRODUCTS.filter((p) => p.seasonal || p.categorySlug === 'seasonal-fruits')
 
 function SeasonalPage() {
-  const user = useAuthGuard()
   const [products, setProducts] = useState<Product[]>(isApiMode() ? [] : DEMO_SEASONAL)
   const [loading, setLoading] = useState(isApiMode())
 
@@ -75,14 +73,6 @@ function SeasonalPage() {
       .catch(() => setProducts(DEMO_SEASONAL))
       .finally(() => setLoading(false))
   }, [])
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
 
   return (
     <main className="min-h-screen bg-[#faf9f4]">

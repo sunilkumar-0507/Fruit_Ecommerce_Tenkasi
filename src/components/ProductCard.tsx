@@ -70,9 +70,6 @@ export default function ProductCard({
             <span className="text-gray-700 text-xs font-semibold">{rating}</span>
             <span className="text-gray-400 text-xs">({reviews})</span>
           </div>
-          <span className="text-[#3d7a20] text-xs font-medium bg-[#fdf4e8] px-2 py-0.5 rounded-full">
-            Chemical Free
-          </span>
         </div>
         <div className="flex items-end justify-between mt-auto">
           <div>

@@ -16,7 +16,7 @@ export interface CartItem {
 interface CartContextValue {
   items: CartItem[]
   count: number
-  addToCart: (product: Omit<CartItem, 'qty' | 'cartItemId'>) => void
+  addToCart: (product: Omit<CartItem, 'qty' | 'cartItemId'>, qty?: number) => void
   updateQty: (id: string, delta: number) => void
   removeItem: (id: string) => void
   clearCart: () => void
@@ -61,16 +61,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       .catch(() => {})
   }, [])
 
-  function addToCart(product: Omit<CartItem, 'qty' | 'cartItemId'>) {
+  function addToCart(product: Omit<CartItem, 'qty' | 'cartItemId'>, qty = 1) {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id)
-      if (existing) return prev.map((i) => (i.id === product.id ? { ...i, qty: i.qty + 1 } : i))
-      return [...prev, { ...product, qty: 1 }]
+      if (existing) return prev.map((i) => (i.id === product.id ? { ...i, qty: i.qty + qty } : i))
+      return [...prev, { ...product, qty }]
     })
 
     if (isApiMode() && getStoredToken()) {
       api
-        .post<CartDto>('/api/Cart/items', { productId: product.id, quantity: 1 })
+        .post<CartDto>('/api/Cart/items', { productId: product.id, quantity: qty })
         .then((cart) => {
           const cartItem = (cart.items ?? []).find((ci) => ci.productId === product.id)
           if (cartItem) {

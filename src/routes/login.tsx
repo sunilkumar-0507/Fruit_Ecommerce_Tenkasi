@@ -125,7 +125,7 @@ function LoginPage() {
   const navigate = useNavigate()
   const { redirect } = Route.useSearch()
   const { login, user } = useAuth()
-  const [tab, setTab] = useState<'signin' | 'register'>('signin')
+  const [tab, setTab] = useState<'signin' | 'register' | 'forgot'>('signin')
   const [successUser, setSuccessUser] = useState<{ name: string } | null>(null)
   const redirectTarget = useRef(redirect)
 
@@ -183,8 +183,8 @@ function LoginPage() {
             </div>
             <div className="space-y-4">
               {[
-                { icon: 'shine', label: '100% Chemical Free' },
-                { icon: 'truck', label: 'Same Day Delivery across TN' },
+                { icon: 'shine', label: '100% Farm Fresh Fruits' },
+                { icon: 'truck', label: 'Fast Delivery across TN' },
                 { icon: 'user', label: '240+ Farmer Families' },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 text-sm text-white/75">
@@ -208,29 +208,33 @@ function LoginPage() {
             </Link>
 
             <h1 className="font-serif text-3xl font-bold text-gray-900 mb-1">
-              {tab === 'signin' ? 'Welcome back' : 'Create account'}
+              {tab === 'signin' ? 'Welcome back' : tab === 'register' ? 'Create account' : 'Reset password'}
             </h1>
             <p className="text-gray-500 text-sm mb-7">
-              {tab === 'signin' ? 'Sign in to continue shopping' : 'Join 500K+ happy customers'}
+              {tab === 'signin' ? 'Sign in to continue shopping' : tab === 'register' ? 'Join 500K+ happy customers' : 'Enter your email and we\'ll send a reset link'}
             </p>
 
-            <div className="flex bg-gray-100 rounded-xl p-1 mb-7">
-              {(['signin', 'register'] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTab(t)}
-                  className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${tab === t ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  {t === 'signin' ? 'Sign In' : 'Register'}
-                </button>
-              ))}
-            </div>
+            {tab !== 'forgot' && (
+              <div className="flex bg-gray-100 rounded-xl p-1 mb-7">
+                {(['signin', 'register'] as const).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTab(t)}
+                    className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${tab === t ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    {t === 'signin' ? 'Sign In' : 'Register'}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {tab === 'signin' ? (
-              <SignInForm onSuccess={handleLoginSuccess} />
-            ) : (
+              <SignInForm onSuccess={handleLoginSuccess} onForgot={() => setTab('forgot')} />
+            ) : tab === 'register' ? (
               <RegisterForm onSuccess={handleLoginSuccess} />
+            ) : (
+              <ForgotPasswordForm onBack={() => setTab('signin')} />
             )}
 
             <Link to="/" className="mt-6 flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-[#3d7a20] transition-colors no-underline">
@@ -243,7 +247,7 @@ function LoginPage() {
   )
 }
 
-function SignInForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').User) => void }) {
+function SignInForm({ onSuccess, onForgot }: { onSuccess: (u: import('#/services/auth').User) => void; onForgot: () => void }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
@@ -272,7 +276,12 @@ function SignInForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').Us
         <input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="signin-pw">Password</label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-medium text-gray-700" htmlFor="signin-pw">Password</label>
+          <button type="button" onClick={onForgot} className="text-xs text-[#3d7a20] hover:underline font-medium">
+            Forgot password?
+          </button>
+        </div>
         <div className="relative">
           <input id="signin-pw" type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
           <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label={showPw ? 'Hide password' : 'Show password'}>
@@ -282,6 +291,72 @@ function SignInForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').Us
       </div>
       <button type="submit" disabled={loading} className="w-full bg-[#3d7a20] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
         {loading ? 'Signing in…' : 'Sign In'}
+      </button>
+    </form>
+  )
+}
+
+function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e: { preventDefault(): void }) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      await fetch(`${(import.meta.env as Record<string, string>).VITE_API_URL ?? ''}/api/Auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      setSent(true)
+    } catch {
+      setError('Could not send reset email. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (sent) {
+    return (
+      <div className="text-center space-y-4">
+        <div className="w-14 h-14 rounded-full bg-[#f5f9f7] flex items-center justify-center mx-auto">
+          <TiIcon name="email" size={26} className="text-[#3d7a20]" />
+        </div>
+        <p className="font-semibold text-gray-900">Check your inbox</p>
+        <p className="text-gray-500 text-sm leading-relaxed">
+          We've sent a password reset link to <span className="font-medium text-gray-700">{email}</span>. Check your spam folder if you don't see it.
+        </p>
+        <button type="button" onClick={onBack} className="text-sm text-[#3d7a20] hover:underline font-medium">
+          ← Back to Sign In
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
+      {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="forgot-email">Email address</label>
+        <input
+          id="forgot-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white"
+        />
+      </div>
+      <button type="submit" disabled={loading} className="w-full bg-[#3d7a20] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+        {loading ? 'Sending…' : 'Send Reset Link'}
+      </button>
+      <button type="button" onClick={onBack} className="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors">
+        ← Back to Sign In
       </button>
     </form>
   )

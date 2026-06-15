@@ -5,7 +5,6 @@ import ProductCard from '#/components/ProductCard'
 import { BasketCard } from '#/components/BasketCard'
 import { PRODUCTS, SHOP_CATEGORIES } from '#/data/products'
 import type { Product } from '#/data/products'
-import { useAuthGuard } from '#/hooks/useAuthGuard'
 import { useBaskets } from '#/context/BasketContext'
 import { api, isApiMode, type ProductDto, type ProductDtoPagedResult } from '#/lib/apiClient'
 import { extractFruitType } from '#/lib/fruitKeywords'
@@ -35,7 +34,7 @@ function mapProduct(p: ProductDto): Product {
     image: primary?.url ?? '/images/products/p-mango.jpg',
     rating: p.rating ?? 4.5,
     reviews: 0,
-    unit: 'per unit',
+    unit: 'per kg',
     featured: false,
   }
 }
@@ -43,7 +42,6 @@ function mapProduct(p: ProductDto): Product {
 const ALL_CATEGORIES = ['All', 'Combos & Baskets', ...SHOP_CATEGORIES.filter((c) => c !== 'All')]
 
 function ShopPage() {
-  const user = useAuthGuard()
   const { baskets } = useBaskets()
   const { category: initialCategory } = Route.useSearch()
   const [activeCategory, setActiveCategory] = useState(initialCategory || 'All')
@@ -73,14 +71,6 @@ function ShopPage() {
       .catch(() => setError('Failed to load products. Please refresh.'))
       .finally(() => setLoading(false))
   }, [])
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f4]">
-        <div className="w-10 h-10 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
 
   const showCombos = activeCategory === 'Combos & Baskets'
   const filtered = showCombos

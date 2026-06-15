@@ -177,10 +177,10 @@ function HomePage() {
               <div className="absolute top-6 right-6 bg-[#3d7a20] text-white rounded-2xl px-4 py-3 shadow-lg">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-lg">🌿</span>
-                  <span className="font-bold text-sm">100% Chemical free</span>
+                  <span className="font-bold text-sm">100% Farm Fresh</span>
                 </div>
                 <p className="text-[10px] font-bold tracking-widest text-[#f5821f]">
-                  NO CARBIDE RIPENING
+                  DIRECT FROM FARMERS
                 </p>
               </div>
             </div>
@@ -257,7 +257,7 @@ function HomePage() {
               { icon: <Leaf size={28} />, title: 'Organic & Natural', desc: 'Pesticide-free fruits grown in natural conditions' },
               { icon: <Zap size={28} />, title: 'Farm Fresh', desc: 'Picked and delivered within 24 hours' },
               { icon: <Award size={28} />, title: 'Quality Assured', desc: 'Stringent quality checks at every step' },
-              { icon: <Truck size={28} />, title: 'Fast Delivery', desc: 'Same-day delivery available across Tamil Nadu' },
+              { icon: <Truck size={28} />, title: 'Fast Delivery', desc: 'Quick delivery available across Tamil Nadu' },
             ].map((item) => (
               <div
                 key={item.title}
