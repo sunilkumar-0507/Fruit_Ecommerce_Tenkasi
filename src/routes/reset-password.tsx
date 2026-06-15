@@ -64,7 +64,7 @@ function ResetPasswordPage() {
         <div className="relative">
           <Link to="/" className="flex items-center gap-3 no-underline w-fit">
             <div className="rounded-xl p-1.5 flex-shrink-0">
-              <img src="/images/products/CoopLogo.png" alt="Tenkasi Fresh" className="w-10 h-10 rounded-lg object-contain" />
+              <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-10 h-10 rounded-lg object-contain" />
             </div>
             <div>
               <p className="font-serif text-lg font-bold leading-tight">Tenkasi Fresh</p>
@@ -103,7 +103,7 @@ function ResetPasswordPage() {
         <div className="w-full max-w-sm">
           <Link to="/" className="lg:hidden flex items-center gap-2.5 no-underline mb-8">
             <div className="rounded-xl p-1 flex-shrink-0">
-              <img src="/images/products/CoopLogo.png" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
+              <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
             </div>
             <span className="font-serif font-bold text-gray-900">Tenkasi Fresh</span>
           </Link>

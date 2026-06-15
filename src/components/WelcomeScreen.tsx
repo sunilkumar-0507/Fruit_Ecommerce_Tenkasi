@@ -50,12 +50,7 @@ export default function WelcomeScreen({ onDone }: Props) {
             animation: 'welcome-fade-up 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards',
           }}
         >
-          <div className="flex items-center gap-3" style={{ filter: 'drop-shadow(0 0 20px rgba(212,175,55,0.35))' }}>
-            <img
-              src="/images/products/CoopLogo.png"
-              alt="Tenkasi Fresh Coop"
-              className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-contain"
-            />
+          <div style={{ filter: 'drop-shadow(0 0 20px rgba(212,175,55,0.35))' }}>
             <img
               src="/images/products/MainLogo.jpeg"
               alt="Tenkasi Fresh"
