@@ -5,6 +5,7 @@ Options -MultiViews
 DirectoryIndex _shell.html
 
 RewriteEngine On
+RewriteBase /
 
 # Force HTTPS (comment out these two lines if SSL is not active yet)
 RewriteCond %{HTTPS} off
@@ -16,7 +17,10 @@ RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
 # Everything else -> SPA shell (client-side routing handles the rest)
-RewriteRule ^ _shell.html [QSA,L]
+RewriteRule ^ /_shell.html [QSA,L]
+
+# Fallback: serve SPA shell for any 404 (LiteSpeed/Hostinger safety net)
+ErrorDocument 404 /_shell.html
 
 # Long-cache hashed assets, no-cache the HTML shell
 <IfModule mod_headers.c>

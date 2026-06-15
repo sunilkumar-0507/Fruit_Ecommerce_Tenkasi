@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SeasonalRouteImport } from './routes/seasonal'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MobileAppRouteImport } from './routes/mobile-app'
 import { Route as LoginRouteImport } from './routes/login'
@@ -30,6 +31,11 @@ const ShopRoute = ShopRouteImport.update({
 const SeasonalRoute = SeasonalRouteImport.update({
   id: '/seasonal',
   path: '/seasonal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersRoute = OrdersRouteImport.update({
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mobile-app': typeof MobileAppRoute
   '/orders': typeof OrdersRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/seasonal': typeof SeasonalRoute
   '/shop': typeof ShopRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mobile-app': typeof MobileAppRoute
   '/orders': typeof OrdersRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/seasonal': typeof SeasonalRoute
   '/shop': typeof ShopRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mobile-app': typeof MobileAppRoute
   '/orders': typeof OrdersRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/seasonal': typeof SeasonalRoute
   '/shop': typeof ShopRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mobile-app'
     | '/orders'
+    | '/reset-password'
     | '/seasonal'
     | '/shop'
     | '/demo/tanstack-query'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mobile-app'
     | '/orders'
+    | '/reset-password'
     | '/seasonal'
     | '/shop'
     | '/demo/tanstack-query'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mobile-app'
     | '/orders'
+    | '/reset-password'
     | '/seasonal'
     | '/shop'
     | '/demo/tanstack-query'
@@ -180,6 +192,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MobileAppRoute: typeof MobileAppRoute
   OrdersRoute: typeof OrdersRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SeasonalRoute: typeof SeasonalRoute
   ShopRoute: typeof ShopRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/seasonal'
       fullPath: '/seasonal'
       preLoaderRoute: typeof SeasonalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orders': {
@@ -284,6 +304,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MobileAppRoute: MobileAppRoute,
   OrdersRoute: OrdersRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SeasonalRoute: SeasonalRoute,
   ShopRoute: ShopRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
