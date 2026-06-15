@@ -9,6 +9,7 @@ import {
   api, isApiMode, getStoredToken, uploadProductImage,
   type ProductDto, type ProductDtoPagedResult,
   type CategoryDto, type OrderDto, type OrderDtoPagedResult,
+  type FarmerDto,
   ORDER_STATUS,
 } from '#/lib/apiClient'
 import {
@@ -336,7 +337,7 @@ function AddProductModal({
           categoryId: form.categoryId,
           images: form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [],
         })
-        if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
+        if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn ?? undefined })
         setSaved(true)
         setTimeout(() => { onSave(mapApiProduct(dto)); onClose() }, 900)
       } catch (err) {
@@ -348,7 +349,7 @@ function AddProductModal({
     }
 
     // Demo fallback
-    if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
+    if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn ?? undefined })
     setSaved(true)
     setTimeout(() => {
       onSave({
@@ -526,7 +527,7 @@ function EditProductModal({
           categoryId: form.categoryId,
           images: imagesPayload,
         })
-        if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
+        if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn ?? undefined })
         setSaved(true)
         setTimeout(() => { onSave(mapApiProduct(dto)); onClose() }, 900)
       } catch (err) {
@@ -537,7 +538,7 @@ function EditProductModal({
       return
     }
 
-    if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn })
+    if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn ?? undefined })
     setSaved(true)
     setTimeout(() => {
       onSave({
@@ -1231,15 +1232,47 @@ function OrdersPanel() {
 // ─── Panel: Delivery ──────────────────────────────────────────────────────────
 
 function DeliveryPanel() {
-  const inTransit = DELIVERIES.filter((d) => d.status === 'In Transit').length
-  const delivered = DELIVERIES.filter((d) => d.status === 'Delivered').length
-  const pending   = DELIVERIES.filter((d) => d.status === 'Pending').length
+  const [apiOrders, setApiOrders] = useState<OrderDto[]>([])
+  const [loading, setLoading] = useState(isApiMode())
+
+  useEffect(() => {
+    if (!isApiMode() || !getStoredToken()) return
+    api.get<OrderDtoPagedResult>('/api/admin/orders?pageSize=100')
+      .then((r) => setApiOrders(r.items ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  const apiDeliveries = apiOrders
+    .filter((o) => [1, 2, 3, 4].includes(o.status))
+    .map((o) => {
+      const statusName = ORDER_STATUS[o.status] ?? 'Pending'
+      const deliveryStatus = statusName === 'Shipped' ? 'In Transit'
+        : statusName === 'Delivered' ? 'Delivered' : 'Pending'
+      const dateStr = new Date(o.createdAtUtc).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+      return {
+        id: o.orderNumber ?? `#${o.id.slice(0, 8).toUpperCase()}`,
+        customer: o.orderNumber ?? o.id.slice(0, 8).toUpperCase(),
+        area: statusName === 'Delivered' ? 'Delivered' : statusName,
+        address: o.trackingNumber ? `Tracking: ${o.trackingNumber}` : `Placed ${dateStr}`,
+        driver: o.trackingNumber ?? '–',
+        eta: statusName === 'Delivered' ? 'Done' : dateStr,
+        status: deliveryStatus,
+      }
+    })
+
+  const deliveries = isApiMode() ? (loading ? [] : apiDeliveries) : DELIVERIES
+  const inTransit = deliveries.filter((d) => d.status === 'In Transit').length
+  const delivered = deliveries.filter((d) => d.status === 'Delivered').length
+  const pending   = deliveries.filter((d) => d.status === 'Pending').length
 
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-6">
         <h1 className="font-serif text-2xl font-bold text-gray-900">Delivery</h1>
-        <p className="text-gray-500 text-sm mt-0.5">Live dispatch board · {DELIVERIES.length} active routes today</p>
+        <p className="text-gray-500 text-sm mt-0.5">
+          {isApiMode() ? `${deliveries.length} active orders from database` : `Live dispatch board · ${deliveries.length} active routes today`}
+        </p>
       </div>
       <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
         {[
@@ -1256,42 +1289,55 @@ function DeliveryPanel() {
           </div>
         ))}
       </div>
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
-        <table className="w-full text-sm min-w-[480px]">
-          <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Order</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Address</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Driver</th>
-              <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">ETA</th>
-              <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {DELIVERIES.map((d) => (
-              <tr key={d.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">{d.id}</td>
-                <td className="px-4 py-3 font-medium text-gray-900 text-sm">{d.customer}</td>
-                <td className="px-4 py-3 hidden sm:table-cell">
-                  <div className="flex items-start gap-1 text-xs">
-                    <TiIcon name="location-pin" size={11} className="text-[#3d7a20] mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-gray-700">{d.area}</p>
-                      <p className="text-gray-400">{d.address}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-gray-700 text-sm hidden md:table-cell">{d.driver}</td>
-                <td className="px-4 py-3 text-center text-sm font-medium text-gray-700">{d.eta}</td>
-                <td className="px-4 py-3 text-center">
-                  <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${deliveryStatusStyle(d.status)}`}>{d.status}</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
+          {deliveries.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
+              <TiIcon name="truck" size={36} className="text-gray-200 mb-3" />
+              <p className="text-sm">No active deliveries found.</p>
+            </div>
+          ) : (
+            <table className="w-full text-sm min-w-[480px]">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Order</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Order Ref</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Info</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Tracking</th>
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {deliveries.map((d) => (
+                  <tr key={d.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">{d.id}</td>
+                    <td className="px-4 py-3 font-medium text-gray-900 text-sm">{d.customer}</td>
+                    <td className="px-4 py-3 hidden sm:table-cell">
+                      <div className="flex items-start gap-1 text-xs">
+                        <TiIcon name="location-pin" size={11} className="text-[#3d7a20] mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-gray-700">{d.area}</p>
+                          <p className="text-gray-400">{d.address}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-gray-700 text-sm hidden md:table-cell">{d.driver}</td>
+                    <td className="px-4 py-3 text-center text-sm font-medium text-gray-700">{d.eta}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${deliveryStatusStyle(d.status)}`}>{d.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -1299,12 +1345,48 @@ function DeliveryPanel() {
 // ─── Panel: Farmers ───────────────────────────────────────────────────────────
 
 function FarmersPanel() {
+  const [apiFarmers, setApiFarmers] = useState<FarmerDto[]>([])
+  const [loading, setLoading] = useState(isApiMode())
+  const [useDemo, setUseDemo] = useState(!isApiMode())
+
+  useEffect(() => {
+    if (!isApiMode() || !getStoredToken()) return
+    api.get<FarmerDto[]>('/api/admin/farmers')
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setApiFarmers(data)
+        else setUseDemo(true)
+      })
+      .catch(() => setUseDemo(true))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const farmers = useDemo
+    ? FARMERS
+    : apiFarmers.map((f) => ({
+        id: f.id,
+        name: f.name ?? '–',
+        village: f.village ?? '–',
+        produce: f.produce ?? '–',
+        supply: f.weeklySupplyKg != null ? `${f.weeklySupplyKg} kg/wk` : '–',
+        rating: f.rating ?? 4.5,
+        phone: f.phone ?? '–',
+        active: f.isActive,
+      }))
+
+  const activeCount = farmers.filter((f) => f.active).length
+  const avgRating = farmers.length > 0
+    ? (farmers.reduce((s, f) => s + f.rating, 0) / farmers.length).toFixed(1)
+    : '–'
+
   return (
     <div className="p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="font-serif text-2xl font-bold text-gray-900">Farmers</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{FARMERS.length} partner farmers · {FARMERS.filter(f => f.active).length} active this month</p>
+          <p className="text-gray-500 text-sm mt-0.5">
+            {loading ? 'Loading…' : `${farmers.length} partner farmers · ${activeCount} active this month`}
+            {isApiMode() && useDemo && !loading && <span className="ml-2 text-xs text-amber-600">(demo data — API endpoint not found)</span>}
+          </p>
         </div>
         <button type="button" className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#2a5a14] transition-colors self-start sm:self-auto">
           <TiIcon name="plus" size={15} />
@@ -1313,9 +1395,9 @@ function FarmersPanel() {
       </div>
       <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
         {[
-          { label: 'Total Partners',    value: '240+',  icon: <TiIcon name="shine" size={18} className="text-[#3d7a20]" /> },
-          { label: 'Active This Month', value: '186',   icon: <TiIcon name="stats-up" size={18} className="text-emerald-500" /> },
-          { label: 'Avg Rating',        value: '4.7 ★', icon: <TiIcon name="crown" size={18} className="text-amber-500" /> },
+          { label: 'Total Partners',    value: loading ? '…' : `${farmers.length}`,  icon: <TiIcon name="shine" size={18} className="text-[#3d7a20]" /> },
+          { label: 'Active This Month', value: loading ? '…' : String(activeCount),  icon: <TiIcon name="stats-up" size={18} className="text-emerald-500" /> },
+          { label: 'Avg Rating',        value: loading ? '…' : `${avgRating} ★`,     icon: <TiIcon name="crown" size={18} className="text-amber-500" /> },
         ].map((s) => (
           <div key={s.label} className="bg-white rounded-xl p-3 sm:p-4 border border-gray-100 shadow-sm flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">{s.icon}</div>
@@ -1326,41 +1408,47 @@ function FarmersPanel() {
           </div>
         ))}
       </div>
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
-        <table className="w-full text-sm min-w-[520px]">
-          <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Farmer</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Village</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Produce</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Weekly Supply</th>
-              <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Rating</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Contact</th>
-              <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {FARMERS.map((f) => (
-              <tr key={f.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[#fdf4e8] rounded-full flex items-center justify-center flex-shrink-0"><TiIcon name="shine" size={14} className="text-[#3d7a20]" /></div>
-                    <span className="font-medium text-gray-900 text-sm">{f.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell"><div className="flex items-center gap-1"><TiIcon name="location-pin" size={11} />{f.village}</div></td>
-                <td className="px-4 py-3 text-gray-600 text-xs">{f.produce}</td>
-                <td className="px-4 py-3 text-right font-medium text-gray-900 hidden md:table-cell">{f.supply}</td>
-                <td className="px-4 py-3 text-center"><Stars rating={f.rating} /></td>
-                <td className="px-4 py-3 hidden lg:table-cell"><div className="flex items-center gap-1 text-xs text-gray-500"><TiIcon name="headphone" size={11} />{f.phone}</div></td>
-                <td className="px-4 py-3 text-center">
-                  <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${f.active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>{f.active ? 'Active' : 'Inactive'}</span>
-                </td>
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
+          <table className="w-full text-sm min-w-[520px]">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Farmer</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Village</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Produce</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Weekly Supply</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Rating</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Contact</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {farmers.map((f) => (
+                <tr key={f.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-[#fdf4e8] rounded-full flex items-center justify-center flex-shrink-0"><TiIcon name="shine" size={14} className="text-[#3d7a20]" /></div>
+                      <span className="font-medium text-gray-900 text-sm">{f.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell"><div className="flex items-center gap-1"><TiIcon name="location-pin" size={11} />{f.village}</div></td>
+                  <td className="px-4 py-3 text-gray-600 text-xs">{f.produce}</td>
+                  <td className="px-4 py-3 text-right font-medium text-gray-900 hidden md:table-cell">{f.supply}</td>
+                  <td className="px-4 py-3 text-center"><Stars rating={f.rating} /></td>
+                  <td className="px-4 py-3 hidden lg:table-cell"><div className="flex items-center gap-1 text-xs text-gray-500"><TiIcon name="headphone" size={11} />{f.phone}</div></td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${f.active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>{f.active ? 'Active' : 'Inactive'}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

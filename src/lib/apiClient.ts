@@ -194,3 +194,14 @@ export const ORDER_STATUS: Record<number, string> = {
   4: 'Delivered',
   5: 'Cancelled',
 }
+
+export interface FarmerDto {
+  id: string
+  name: string | null
+  village: string | null
+  produce: string | null
+  weeklySupplyKg: number | null
+  rating: number | null
+  phone: string | null
+  isActive: boolean
+}
