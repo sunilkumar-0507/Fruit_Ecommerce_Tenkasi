@@ -517,6 +517,7 @@ function EditProductModal({
           : (product.rawImages ?? []).map((img) => ({ id: img.id, url: img.url, altText: img.altText, isPrimary: img.isPrimary }))
 
         const dto = await api.put<ProductDto>(`/api/admin/products/${product.id}`, {
+          id: product.id,
           nameEn: form.nameEn,
           nameTa: form.nameTa || null,
           descriptionEn: form.description || null,
@@ -1104,7 +1105,7 @@ function OrdersPanel() {
   async function handleStatusChange(rawId: string, newStatus: number) {
     if (!isApiMode() || !getStoredToken()) return
     try {
-      await api.patch<OrderDto>(`/api/admin/orders/${rawId}/status`, { status: newStatus })
+      await api.patch<OrderDto>(`/api/admin/orders/${rawId}/status`, { id: rawId, status: newStatus })
       setApiOrders((prev) =>
         prev.map((o) => (o.id === rawId ? { ...o, status: newStatus } : o)),
       )
@@ -1705,6 +1706,7 @@ function CouponFormModal({
     if (!form.code || !form.discountAmount || !form.endsAtUtc) return
     setSaving(true)
     const body = {
+      ...(coupon ? { id: coupon.id } : {}),
       code: form.code.toUpperCase(),
       discountAmount: Number(form.discountAmount),
       minimumOrderAmount: Number(form.minimumOrderAmount) || 0,
@@ -2092,7 +2094,7 @@ function SeasonalPanel() {
             nameTamil: p.nameTa ?? '',
             category: p.category?.nameEn ?? '',
             price: p.price,
-            unit: 'per unit',
+            unit: 'per Kg',
             image: primary?.url ?? '/images/products/mangoes.jpeg',
             isSeasonal: isSeasonalCat(p.category?.nameEn ?? null, p.category?.slug ?? null),
           }
@@ -2134,7 +2136,7 @@ function SeasonalPanel() {
     }
     setTogglingId(id)
     try {
-      await api.patch<ProductDto>(`/api/admin/products/${id}`, { categoryId: target.id })
+      await api.patch<ProductDto>(`/api/admin/products/${id}`, { id, categoryId: target.id })
       setProducts((prev) => prev.map((p) =>
         p.id === id ? { ...p, isSeasonal: !currentlySeasonal, category: target.name } : p
       ))
