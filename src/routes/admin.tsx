@@ -119,11 +119,11 @@ const ORDERS_STATIC = [
 ]
 
 const DELIVERIES = [
-  { id: '#TF-1283', customer: 'Murugan P.',   area: 'Madurai',    address: '45, Ganesh St, Madurai – 625 001',             driver: 'Selvam R.',  eta: '2:30 PM', status: 'In Transit' },
-  { id: '#TF-1277', customer: 'Vijaya L.',     area: 'Chennai',    address: '12, Anna Nagar, Chennai – 600 040',            driver: 'Arjun M.',   eta: '3:15 PM', status: 'In Transit' },
-  { id: '#TF-1280', customer: 'Anitha S.',     area: 'Coimbatore', address: '7, RS Puram, Coimbatore – 641 002',            driver: 'Kumar S.',   eta: 'Done',    status: 'Delivered' },
-  { id: '#TF-1284', customer: 'Priya Sharma',  area: 'Trichy',     address: '3, Srirangam Rd, Trichy – 620 006',           driver: 'Assigning…', eta: '4:00 PM', status: 'Pending' },
-  { id: '#TF-1278', customer: 'Ramesh B.',     area: 'Salem',      address: '18, Omalur Main Rd, Salem – 636 004',         driver: 'Bala T.',    eta: 'Done',    status: 'Delivered' },
+  { id: '#TF-1283', customer: 'Murugan P.',   phone: '+91 98430 00001', area: 'Madurai',    address: '45, Ganesh St, Madurai – 625 001',        tracking: 'TRK-001', eta: '2:30 PM', status: 'In Transit' },
+  { id: '#TF-1277', customer: 'Vijaya L.',     phone: '+91 98430 00002', area: 'Chennai',    address: '12, Anna Nagar, Chennai – 600 040',       tracking: 'TRK-002', eta: '3:15 PM', status: 'In Transit' },
+  { id: '#TF-1280', customer: 'Anitha S.',     phone: '+91 98430 00003', area: 'Coimbatore', address: '7, RS Puram, Coimbatore – 641 002',       tracking: 'TRK-003', eta: 'Done',    status: 'Delivered' },
+  { id: '#TF-1284', customer: 'Priya Sharma',  phone: '+91 98430 00004', area: 'Trichy',     address: '3, Srirangam Rd, Trichy – 620 006',      tracking: '–',       eta: '4:00 PM', status: 'Pending' },
+  { id: '#TF-1278', customer: 'Ramesh B.',     phone: '+91 98430 00005', area: 'Salem',      address: '18, Omalur Main Rd, Salem – 636 004',    tracking: 'TRK-005', eta: 'Done',    status: 'Delivered' },
 ]
 
 const FARMERS = [
@@ -172,6 +172,12 @@ function Stars({ rating }: { rating: number }) {
       <span className="text-xs text-gray-500 ml-1">{rating}</span>
     </div>
   )
+}
+
+function fmtAddress(addr: OrderDto['shippingAddress']): string {
+  if (!addr) return ''
+  return [addr.line1, addr.line2, addr.city, addr.state, addr.postalCode]
+    .filter(Boolean).join(', ')
 }
 
 // ─── Map API → inventory row ──────────────────────────────────────────────────
@@ -1061,19 +1067,21 @@ function OrdersPanel() {
     ? apiOrders.map((o) => ({
         id: o.orderNumber ?? o.id.slice(0, 8).toUpperCase(),
         rawId: o.id,
-        customer: `Order ${o.orderNumber ?? o.id.slice(0, 6)}`,
+        customer: o.customerName ?? o.customerEmail ?? `Order ${o.orderNumber ?? o.id.slice(0, 6)}`,
+        phone: o.customerPhone ?? null,
         date: new Date(o.createdAtUtc).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
         itemCount: (o.items ?? []).length,
         amount: o.total,
         status: ORDER_STATUS[o.status] ?? 'Pending',
         items: o.items ?? [],
-        address: '',
+        address: fmtAddress(o.shippingAddress),
         isReal: true,
       }))
     : ORDERS_STATIC.map((o) => ({
         id: o.id,
         rawId: o.id,
         customer: o.customer,
+        phone: null as string | null,
         date: o.date,
         itemCount: o.items,
         amount: o.amount,
@@ -1129,10 +1137,11 @@ function OrdersPanel() {
             <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <table className="w-full text-sm min-w-[520px]">
+          <table className="w-full text-sm min-w-[640px]">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Order ID</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Date</th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Items</th>
                 <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Amount</th>
@@ -1149,6 +1158,10 @@ function OrdersPanel() {
                         {order.id}
                         {order.isReal && <span className="w-1.5 h-1.5 rounded-full bg-[#3d7a20] flex-shrink-0" />}
                       </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-gray-900 text-sm">{order.customer}</p>
+                      {order.phone && <p className="text-xs text-gray-400 mt-0.5">{order.phone}</p>}
                     </td>
                     <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell">{order.date}</td>
                     <td className="px-4 py-3 text-center text-gray-700">{order.itemCount ?? '—'}</td>
@@ -1186,9 +1199,30 @@ function OrdersPanel() {
 
                   {expandedId === order.id && (
                     <tr className="bg-[#f5f9f7]">
-                      <td colSpan={6} className="px-4 py-4">
+                      <td colSpan={7} className="px-4 py-4">
                         <div className="space-y-3">
-                          {/* Customer address */}
+                          {/* Customer details */}
+                          <div className="flex flex-wrap gap-4">
+                            {order.customer && (
+                              <div className="flex items-start gap-2">
+                                <TiIcon name="user" size={13} className="text-[#3d7a20] flex-shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Customer</p>
+                                  <p className="text-sm font-medium text-gray-800">{order.customer}</p>
+                                </div>
+                              </div>
+                            )}
+                            {order.phone && (
+                              <div className="flex items-start gap-2">
+                                <TiIcon name="headphone" size={13} className="text-[#3d7a20] flex-shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Phone</p>
+                                  <p className="text-sm font-medium text-gray-800">{order.phone}</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          {/* Delivery address */}
                           {order.address && (
                             <div className="flex items-start gap-2">
                               <TiIcon name="location-pin" size={13} className="text-[#3d7a20] flex-shrink-0 mt-0.5" />
@@ -1213,7 +1247,7 @@ function OrdersPanel() {
                               </div>
                             </div>
                           ) : (
-                            !order.address && <p className="text-xs text-gray-400 italic">No details available.</p>
+                            !order.address && !order.phone && <p className="text-xs text-gray-400 italic">No details available.</p>
                           )}
                         </div>
                       </td>
@@ -1250,12 +1284,14 @@ function DeliveryPanel() {
       const deliveryStatus = statusName === 'Shipped' ? 'In Transit'
         : statusName === 'Delivered' ? 'Delivered' : 'Pending'
       const dateStr = new Date(o.createdAtUtc).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+      const addrStr = fmtAddress(o.shippingAddress)
       return {
         id: o.orderNumber ?? `#${o.id.slice(0, 8).toUpperCase()}`,
-        customer: o.orderNumber ?? o.id.slice(0, 8).toUpperCase(),
-        area: statusName === 'Delivered' ? 'Delivered' : statusName,
-        address: o.trackingNumber ? `Tracking: ${o.trackingNumber}` : `Placed ${dateStr}`,
-        driver: o.trackingNumber ?? '–',
+        customer: o.customerName ?? o.customerEmail ?? (o.orderNumber ?? o.id.slice(0, 8).toUpperCase()),
+        phone: o.customerPhone ?? null,
+        area: o.shippingAddress?.city ?? (statusName === 'Delivered' ? 'Delivered' : statusName),
+        address: addrStr || (o.trackingNumber ? `Tracking: ${o.trackingNumber}` : `Placed ${dateStr}`),
+        tracking: o.trackingNumber ?? '–',
         eta: statusName === 'Delivered' ? 'Done' : dateStr,
         status: deliveryStatus,
       }
@@ -1301,12 +1337,12 @@ function DeliveryPanel() {
               <p className="text-sm">No active deliveries found.</p>
             </div>
           ) : (
-            <table className="w-full text-sm min-w-[480px]">
+            <table className="w-full text-sm min-w-[600px]">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Order</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Order Ref</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Info</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Address</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Tracking</th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
@@ -1316,17 +1352,20 @@ function DeliveryPanel() {
                 {deliveries.map((d) => (
                   <tr key={d.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-4 py-3 font-mono text-xs font-semibold text-gray-700">{d.id}</td>
-                    <td className="px-4 py-3 font-medium text-gray-900 text-sm">{d.customer}</td>
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-gray-900 text-sm">{d.customer}</p>
+                      {d.phone && <p className="text-xs text-gray-400 mt-0.5">{d.phone}</p>}
+                    </td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       <div className="flex items-start gap-1 text-xs">
                         <TiIcon name="location-pin" size={11} className="text-[#3d7a20] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-medium text-gray-700">{d.area}</p>
-                          <p className="text-gray-400">{d.address}</p>
+                          <p className="text-gray-400 max-w-[200px]">{d.address}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-700 text-sm hidden md:table-cell">{d.driver}</td>
+                    <td className="px-4 py-3 text-gray-700 text-xs hidden md:table-cell">{d.tracking}</td>
                     <td className="px-4 py-3 text-center text-sm font-medium text-gray-700">{d.eta}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${deliveryStatusStyle(d.status)}`}>{d.status}</span>

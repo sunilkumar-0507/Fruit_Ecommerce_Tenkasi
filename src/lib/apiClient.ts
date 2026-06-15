@@ -142,6 +142,15 @@ export interface OrderItemDto {
   quantity: number
 }
 
+export interface OrderShippingAddress {
+  line1?: string | null
+  line2?: string | null
+  city?: string | null
+  state?: string | null
+  postalCode?: string | null
+  country?: string | null
+}
+
 export interface OrderDto {
   id: string
   orderNumber: string | null
@@ -152,6 +161,10 @@ export interface OrderDto {
   trackingNumber: string | null
   createdAtUtc: string
   items: OrderItemDto[] | null
+  customerName?: string | null
+  customerPhone?: string | null
+  customerEmail?: string | null
+  shippingAddress?: OrderShippingAddress | null
 }
 
 export interface OrderDtoPagedResult {
