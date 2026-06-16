@@ -75,7 +75,7 @@ export default function Footer() {
               <p className="font-semibold text-white/85 text-[11px] leading-snug">
                 {t(
                   'O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative Marketing Society',
-                  'O.1919 டெங்காசி செங்கோட்டை தாலுகா விவசாய உற்பத்தியாளர் கூட்டுறவு சந்தை சமூகம்'
+                  'O.1919 டெங்காசி செங்கோட்டை தாலுக்கா விவசாய உற்பத்தியாளர் கூட்டுறவு சந்தை சமூகம்'
                 )}
               </p>
               <p className="text-white/55">{t('42C/1A Rail Nagar Road, Tenkasi – 627 811', '42C/1A ரெயில் நகர் சாலை, டெங்காசி – 627 811')}</p>

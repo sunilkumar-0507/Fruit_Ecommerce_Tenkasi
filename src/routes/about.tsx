@@ -32,7 +32,7 @@ function AboutPage() {
         </div>
         <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-4">{t('Est. 1959 · Tenkasi, Tamil Nadu', 'நி.ஆ. 1959 · டெங்காசி, தமிழ்நாடு')}</p>
+            <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-4">{t('Est. 1959 · Tenkasi, Tamil Nadu', 'நிறுவப்பட்டது 1959 · டெங்காசி, தமிழ்நாடு')}</p>
             <h1 className="font-serif text-5xl sm:text-6xl font-bold mb-5 leading-tight">
               {lang === 'ta' ? (
                 <>எங்கள் மண்ணிலிருந்து<br />உங்கள் உள்ளத்திற்கு.</>
@@ -57,8 +57,10 @@ function AboutPage() {
             </div>
           </div>
           <div className="hidden lg:flex justify-center items-center">
-            <div className="bg-white rounded-3xl p-10 shadow-2xl">
-              <img src="/images/products/LogoTop.jpeg" alt="Tenkasi Fresh" className="w-52 h-52 object-contain rounded-2xl" />
+            <div className="bg-white rounded-3xl p-8 shadow-2xl flex flex-col items-center gap-5">
+              <img src="/images/products/CoopLogo.png" alt="O.1919 Cooperative" className="w-40 h-40 object-contain" />
+              <div className="w-full h-px bg-gray-100" />
+              <img src="/images/products/LogoTop.jpeg" alt="Tenkasi Fresh" className="w-36 h-36 object-contain rounded-2xl" />
             </div>
           </div>
         </div>

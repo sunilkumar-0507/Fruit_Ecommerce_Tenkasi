@@ -132,14 +132,24 @@ function OrdersPage() {
       <div className="max-w-3xl mx-auto px-4 py-10">
 
         {/* Back + title */}
-        <div className="flex items-center gap-3 mb-6">
-          <Link to="/shop" className="p-2 hover:bg-gray-100 rounded-lg transition no-underline">
-            <TiIcon name="angle-left" size={18} className="text-gray-500" />
-          </Link>
-          <div>
-            <h1 className="font-serif text-2xl font-bold text-gray-900">My Orders</h1>
-            <p className="text-gray-400 text-sm">{orders.length} total order{orders.length !== 1 ? 's' : ''}</p>
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <div className="flex items-center gap-3">
+            <Link to="/shop" className="p-2 hover:bg-gray-100 rounded-lg transition no-underline">
+              <TiIcon name="angle-left" size={18} className="text-gray-500" />
+            </Link>
+            <div>
+              <h1 className="font-serif text-2xl font-bold text-gray-900">My Orders</h1>
+              <p className="text-gray-400 text-sm">{orders.length} total order{orders.length !== 1 ? 's' : ''}</p>
+            </div>
           </div>
+          <Link
+            to="/cart"
+            className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2.5 rounded-full text-sm font-bold hover:bg-[#2a5a14] transition-colors no-underline flex-shrink-0"
+          >
+            <TiIcon name="shopping-cart" size={15} className="text-white" />
+            <span className="hidden sm:inline">Proceed to Checkout</span>
+            <span className="sm:hidden">Checkout</span>
+          </Link>
         </div>
 
         {/* Tabs */}

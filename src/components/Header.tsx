@@ -34,7 +34,7 @@ function HeaderTicker({ lang }: { lang: 'en' | 'ta' }) {
 const BASE_NAV = [
   { en: 'Home',     ta: 'முகப்பு',  to: '/' },
   { en: 'Shop',     ta: 'கடை',      to: '/shop' },
-  { en: 'Seasonal', ta: 'பருவகால', to: '/seasonal' },
+  { en: 'Seasonal', ta: 'பருவகாலம்', to: '/seasonal' },
   { en: 'Baskets',  ta: 'கூடைகள்', to: '/baskets' },
 ] as const
 

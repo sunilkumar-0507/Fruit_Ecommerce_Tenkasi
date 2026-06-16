@@ -37,7 +37,7 @@ const NAV_ITEMS = [
   { label: 'Overview',  ta: 'கண்ணோட்டம்' },
   { label: 'Inventory', ta: 'சரக்கு பட்டியல்' },
   { label: 'Discounts', ta: 'தள்ளுபடிகள்' },
-  { label: 'Seasonal',  ta: 'பருவகால' },
+  { label: 'Seasonal',  ta: 'பருவகாலம்' },
   { label: 'Baskets',   ta: 'கூடைகள்' },
   { label: 'Orders',    ta: 'ஆர்டர்கள்' },
   { label: 'Delivery',  ta: 'டெலிவரி' },
@@ -183,7 +183,7 @@ function fmtAddress(addr: OrderDto['shippingAddress']): string {
 
 // ─── Map API → inventory row ──────────────────────────────────────────────────
 
-type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; price: number; originalPrice?: number; stock: number; image: string; discount?: number; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null; rawImages?: import('#/lib/apiClient').ProductImageDto[] }
+type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; categoryId?: string; price: number; originalPrice?: number; stock: number; image: string; discount?: number; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null; rawImages?: import('#/lib/apiClient').ProductImageDto[] }
 
 function mapApiProduct(p: ProductDto): InventoryRow {
   const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
@@ -192,6 +192,7 @@ function mapApiProduct(p: ProductDto): InventoryRow {
     name: p.nameEn ?? '',
     nameTa: p.nameTa,
     category: p.category?.nameEn ?? '',
+    categoryId: p.category?.id,
     price: p.price,
     originalPrice: p.originalPrice ?? undefined,
     stock: p.stockQuantity,
@@ -477,7 +478,7 @@ function EditProductModal({
   onSave: (p: InventoryRow) => void
   apiCategories: CategoryDto[]
 }) {
-  const matchedCatId = apiCategories.find((c) => c.nameEn === product.category)?.id ?? product.category
+  const matchedCatId = product.categoryId ?? apiCategories.find((c) => c.nameEn === product.category)?.id ?? product.category
   const [form, setForm] = useState({
     nameEn: product.name,
     nameTa: product.nameTa ?? '',

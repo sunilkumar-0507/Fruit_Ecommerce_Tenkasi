@@ -368,7 +368,7 @@ function HomePage() {
                 <p className="text-white/80 text-lg leading-relaxed">
                   {t(
                     'Established in 1959, O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative is a network of 240+ farming families from the Western Ghats foothills. We cut out the middlemen and bring tropical fruits from our soil to your doorstep — fresh, chemical-free, and fairly priced.',
-                    '1959இல் நிறுவப்பட்ட O.1919 டெங்காசி செங்கோட்டை தாலுகா விவசாய உற்பத்தியாளர் கூட்டுறவு, மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து 240+ விவசாயி குடும்பங்களின் வலையமைப்பு. இடைத்தரகர்களை கடந்து, எங்கள் மண்ணிலிருந்து நேரடியாக உங்கள் வீட்டுக்கு — புதியதாக, கேமிக்கல் இல்லாமல், நியாயமான விலையில்.'
+                    '1959இல் நிறுவப்பட்ட O.1919 டெங்காசி செங்கோட்டை தாலுக்கா விவசாய உற்பத்தியாளர் கூட்டுறவு, மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து 240+ விவசாயி குடும்பங்களின் வலையமைப்பு. இடைத்தரகர்களை கடந்து, எங்கள் மண்ணிலிருந்து நேரடியாக உங்கள் வீட்டுக்கு — புதியதாக, கேமிக்கல் இல்லாமல், நியாயமான விலையில்.'
                   )}
                 </p>
                 <Link
@@ -379,12 +379,10 @@ function HomePage() {
                 </Link>
               </div>
               <div className="hidden lg:flex justify-center items-center">
-                <div className="bg-white rounded-3xl p-8 shadow-2xl">
-                  <img
-                    src="/images/products/LogoTop.jpeg"
-                    alt="Tenkasi Fresh"
-                    className="w-52 h-52 object-contain rounded-2xl"
-                  />
+                <div className="bg-white rounded-3xl p-8 shadow-2xl flex flex-col items-center gap-5">
+                  <img src="/images/products/CoopLogo.png" alt="O.1919 Cooperative" className="w-40 h-40 object-contain" />
+                  <div className="w-full h-px bg-gray-100" />
+                  <img src="/images/products/LogoTop.jpeg" alt="Tenkasi Fresh" className="w-36 h-36 object-contain rounded-2xl" />
                 </div>
               </div>
             </div>
