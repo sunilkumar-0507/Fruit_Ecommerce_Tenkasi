@@ -379,9 +379,9 @@ function HomePage() {
                 </Link>
               </div>
               <div className="hidden lg:flex justify-center items-center">
-                <div className="bg-white rounded-3xl p-8 shadow-2xl flex flex-col items-center gap-5">
-                  <img src="/images/products/CoopLogo.png" alt="O.1919 Cooperative" className="w-40 h-40 object-contain" />
-                  <div className="w-full h-px bg-gray-100" />
+                <div className="bg-white rounded-3xl p-8 shadow-[0_8px_40px_rgba(0,0,0,0.18)] flex flex-row items-center gap-6">
+                  <img src="/images/products/CoopLogo.png" alt="O.1919 Cooperative" className="w-36 h-36 object-contain" />
+                  <div className="w-px h-28 bg-gray-200" />
                   <img src="/images/products/LogoTop.jpeg" alt="Tenkasi Fresh" className="w-36 h-36 object-contain rounded-2xl" />
                 </div>
               </div>
