@@ -13,21 +13,21 @@ const SEASONS = [
     name: 'Summer',
     period: 'March – June',
     icon: <Sun size={22} className="text-yellow-500" />,
-    desc: 'Peak mango season. Alphonso, Banganapalli, and hill-grown varieties at their sweetest.',
+    desc: 'The season of sunshine and sweetness. Enjoy a vibrant collection of mangoes, watermelons, pineapples, and other tropical favorites known for their rich flavor and refreshing taste.',
     color: 'bg-yellow-50 border-yellow-200',
   },
   {
     name: 'Monsoon',
     period: 'July – September',
     icon: <Leaf size={22} className="text-emerald-500" />,
-    desc: 'Jackfruit, guava, and fresh papaya flood the orchards after the first rains.',
+    desc: 'Nature comes alive with abundance. The rains bring a variety of fruits including guava, papaya, jackfruit, and other seasonal specialties that thrive in the lush landscapes of the Western Ghats.',
     color: 'bg-emerald-50 border-emerald-200',
   },
   {
     name: 'Winter',
     period: 'October – February',
     icon: <Zap size={22} className="text-blue-500" />,
-    desc: 'Strawberries, grapes, and pomegranates. The sweetest time of the year.',
+    desc: 'A season of richness and variety. Discover grapes, pomegranates, citrus fruits, and other seasonal treasures celebrated for their sweetness, freshness, and nutritional benefits.',
     color: 'bg-blue-50 border-blue-200',
   },
 ]
@@ -90,7 +90,7 @@ function SeasonalPage() {
             Seasonal Fruits
           </h1>
           <p className="text-white/80 max-w-xl mx-auto text-lg leading-relaxed">
-            Nature's finest, picked at the right moment. We follow the seasons so every fruit reaches you at peak flavour.
+            Every fruit has its season, and every season has its own unique flavors. At Tenkasi Fresh, we celebrate nature's natural cycles by bringing you fruits at their peak freshness, taste, and nutritional value.
           </p>
         </div>
       </section>
@@ -119,9 +119,9 @@ function SeasonalPage() {
               <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-2">
                 Now in Season
               </p>
-              <h2 className="font-serif text-3xl sm:text-4xl font-bold mb-2">Summer Harvest 2026</h2>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold mb-2">Seasonal Highlights 2026</h2>
               <p className="text-white/80 max-w-lg">
-                Mangoes, watermelons, and fresh pineapples from the Tenkasi foothills — harvested daily at sunrise.
+                Explore the finest fruits currently available from our seasonal collection — selected based on freshness, quality, and seasonal availability.
               </p>
             </div>
             <Link

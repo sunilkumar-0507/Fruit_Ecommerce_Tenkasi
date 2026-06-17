@@ -5,15 +5,15 @@ import { useLang } from '#/contexts/LanguageContext'
 export const Route = createFileRoute('/about')({ component: AboutPage })
 
 const MILESTONES = [
-  { year: '1959', titleEn: 'Founded', titleTa: 'நிறுவப்பட்டது', descEn: 'O.1919 Tenkasi Cooperative established by local farmers of the Western Ghats foothills to serve the farming community.', descTa: 'மேற்கு தொடர்ச்சி மலையடிவாரத்தின் உள்ளூர் விவசாயிகளால் O.1919 டெங்காசி கூட்டுறவு நிறுவப்பட்டது.' },
-  { year: '2005', titleEn: 'Expanded Network', titleTa: 'வலையமைப்பு விரிவாக்கம்', descEn: 'Grew from founding families to 100+ certified farmer partners across Tenkasi & Shencottai taluks.', descTa: 'டெங்காசி & செங்கோட்டை தாலுகாக்களில் 100+ சான்றளிக்கப்பட்ட விவசாயி கூட்டாளிகளாக வளர்ந்தது.' },
-  { year: '2018', titleEn: 'Direct Delivery', titleTa: 'நேரடி டெலிவரி', descEn: 'Launched doorstep delivery across Tamil Nadu — eliminating middlemen, passing savings to customers.', descTa: 'தமிழ்நாடு முழுவதும் வீட்டு வாசல் டெலிவரி தொடங்கியது — இடைத்தரகர்களை நீக்கி சேமிப்பை வாடிக்கையாளர்களுக்கு வழங்கியது.' },
-  { year: '2024', titleEn: 'Digital Platform', titleTa: 'டிஜிட்டல் மேடை', descEn: 'Launched Tenkasi Fresh online — bringing 240+ farming families to customers across India.', descTa: 'டெங்காசி பிரெஷ் ஆன்லைன் தொடங்கியது — 240+ விவசாயி குடும்பங்களை இந்தியா முழுவதும் உள்ள வாடிக்கையாளர்களிடம் கொண்டு சேர்த்தது.' },
+  { year: '1959', titleEn: 'The Beginning', titleTa: 'தொடக்கம்', descEn: 'O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative Marketing Society was established to support and strengthen the agricultural community of the region.', descTa: 'O.1919 தென்காசி செங்கோட்டை தாலுகா விவசாய உற்பத்தியாளர் கூட்டுறவு சந்தை சங்கம் நிறுவப்பட்டது.' },
+  { year: '2005', titleEn: 'Expanding Agricultural Reach', titleTa: 'விவசாய வளர்ச்சி', descEn: 'The cooperative broadened its activities across multiple regions of Tenkasi and Shencottai, contributing to the development of local agriculture and community welfare.', descTa: 'தென்காசி மற்றும் செங்கோட்டையின் பல பகுதிகளில் கூட்டுறவின் செயல்பாடுகள் விரிவடைந்தன.' },
+  { year: '2018', titleEn: 'Direct Delivery', titleTa: 'நேரடி டெலிவரி', descEn: 'Launched doorstep delivery across Tamil Nadu — eliminating middlemen, passing savings to customers and better returns to farmers.', descTa: 'தமிழ்நாடு முழுவதும் வீட்டு வாசல் டெலிவரி தொடங்கியது — இடைத்தரகர்களை நீக்கி வாடிக்கையாளர்களுக்கு சேமிப்பும் விவசாயிகளுக்கு சிறந்த வருமானமும் வழங்கியது.' },
+  { year: '2026', titleEn: 'Tenkasi Fresh Launches Online', titleTa: 'தென்காசி பிரெஷ் ஆன்லைன் தொடங்கியது', descEn: 'Tenkasi Fresh was introduced as a modern platform dedicated to promoting native fruits, seasonal produce, and the agricultural heritage of Tenkasi to a wider audience across Tamil Nadu.', descTa: 'தென்காசி பிரெஷ் ஒரு நவீன மேடையாக தொடங்கப்பட்டது — தமிழ்நாடு முழுவதும் நாட்டுப் பழங்கள் மற்றும் பருவகால விளைபொருட்களை மக்களிடம் கொண்டு சேர்க்கிறது.' },
 ]
 
 const HOW_IT_WORKS = [
   { step: '01', icon: <Leaf size={22} className="text-[#3d7a20]" />, titleEn: 'Harvested at Dawn', titleTa: 'விடியற்காலையில் அறுவடை', descEn: 'Our farmers handpick fruits at peak ripeness every morning before sunrise — no carbide, no chemicals, no shortcuts.', descTa: 'எங்கள் விவசாயிகள் ஒவ்வொரு காலையும் சூரிய உதயத்திற்கு முன் உச்சகட்ட பழுத்த நிலையில் கையால் பறிக்கிறார்கள்.' },
-  { step: '02', icon: <Award size={22} className="text-[#3d7a20]" />, titleEn: 'Quality Checked', titleTa: 'தரம் சோதிக்கப்படுகிறது', descEn: 'Each lot is graded and inspected at the cooperative centre in Tenkasi for size, colour, and freshness before packing.', descTa: 'ஒவ்வொரு தொகுதியும் அளவு, நிறம் மற்றும் புதுமை ஆகியவற்றிற்கு டெங்காசி கூட்டுறவு மையத்தில் சோதிக்கப்படுகிறது.' },
+  { step: '02', icon: <Award size={22} className="text-[#3d7a20]" />, titleEn: 'Quality Checked', titleTa: 'தரம் சோதிக்கப்படுகிறது', descEn: 'Each lot is graded and inspected at the cooperative centre in Tenkasi for size, colour, and freshness before packing.', descTa: 'ஒவ்வொரு தொகுதியும் அளவு, நிறம் மற்றும் புதுமை ஆகியவற்றிற்கு தென்காசி கூட்டுறவு மையத்தில் சோதிக்கப்படுகிறது.' },
   { step: '03', icon: <Truck size={22} className="text-[#3d7a20]" />, titleEn: 'Packed & Dispatched', titleTa: 'பொதிந்து அனுப்பப்படுகிறது', descEn: 'Wrapped in banana leaves or eco-boxes and loaded into refrigerated vehicles by mid-morning for same-day dispatch.', descTa: 'வாழை இலைகளில் அல்லது சுற்றுச்சூழல் பெட்டிகளில் மூடி, அதே நாள் அனுப்புவதற்கு குளிர்சாதன வாகனங்களில் ஏற்றப்படுகிறது.' },
   { step: '04', icon: <MapPin size={22} className="text-[#3d7a20]" />, titleEn: 'Delivered to Your Door', titleTa: 'உங்கள் வீட்டுக்கு டெலிவரி', descEn: 'Orders reach customers across Tamil Nadu by dusk — farm to home in under 12 hours.', descTa: 'ஆர்டர்கள் சாயங்காலத்திற்குள் தமிழ்நாடு முழுவதும் உள்ள வாடிக்கையாளர்களை சென்றடைகின்றன — 12 மணி நேரத்திற்குள் பண்ணையிலிருந்து வீட்டுக்கு.' },
 ]
@@ -32,7 +32,7 @@ function AboutPage() {
         </div>
         <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-4">{t('Est. 1959 · Tenkasi, Tamil Nadu', 'நிறுவப்பட்டது 1959 · டெங்காசி, தமிழ்நாடு')}</p>
+            <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase mb-4">{t('Est. 1959 · Tenkasi, Tamil Nadu', 'நிறுவப்பட்டது 1959 · தென்காசி, தமிழ்நாடு')}</p>
             <h1 className="font-serif text-5xl sm:text-6xl font-bold mb-5 leading-tight">
               {lang === 'ta' ? (
                 <>எங்கள் மண்ணிலிருந்து<br />உங்கள் உள்ளத்திற்கு.</>
@@ -71,31 +71,32 @@ function AboutPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <div>
-              <p className="text-[#3d7a20] text-xs font-bold tracking-widest uppercase mb-3">{t('About Tenkasi Fresh', 'டெங்காசி பிரெஷ் பற்றி')}</p>
+              <p className="text-[#3d7a20] text-xs font-bold tracking-widest uppercase mb-3">{t('About Tenkasi Fresh', 'தென்காசி பிரெஷ் பற்றி')}</p>
               <h2 className="font-serif text-4xl font-bold text-gray-900 mb-5 leading-tight">{t('A cooperative built on trust and community', 'நம்பிக்கையிலும் சமூகத்திலும் கட்டப்பட்ட கூட்டுறவு')}</h2>
               <p className="text-gray-600 leading-relaxed mb-4">
                 {t(
                   'Tenkasi Fresh is a farmer-centric cooperative initiative established to create a sustainable bridge between agricultural producers and consumers.',
-                  'டெங்காசி பிரெஷ் என்பது விவசாய உற்பத்தியாளர்களுக்கும் நுகர்வோருக்கும் இடையே நிலையான பாலத்தை உருவாக்குவதற்கு நிறுவப்பட்ட விவசாயி மையமான கூட்டுறவு முயற்சியாகும்.'
+                  'தென்காசி பிரெஷ் என்பது விவசாய உற்பத்தியாளர்களுக்கும் நுகர்வோருக்கும் இடையே நிலையான பாலத்தை உருவாக்குவதற்கு நிறுவப்பட்ட விவசாயி மையமான கூட்டுறவு முயற்சியாகும்.'
                 )}
               </p>
               <p className="text-gray-600 leading-relaxed mb-4">
                 {t(
                   'Supported by the cooperative ecosystem of Tenkasi District, we work closely with local farmers to source fresh, quality produce directly from farms. Our objective is to eliminate unnecessary intermediaries, ensure better returns for farmers, and provide consumers with safe and affordable agricultural products.',
-                  'டெங்காசி மாவட்டத்தின் கூட்டுறவு சூழலால் ஆதரிக்கப்பட்டு, நாங்கள் உள்ளூர் விவசாயிகளுடன் நெருக்கமாக பணியாற்றுகிறோம். தேவையற்ற இடைத்தரகர்களை நீக்குவதும், விவசாயிகளுக்கு சிறந்த வருமானம் உறுதி செய்வதும், நுகர்வோருக்கு பாதுகாப்பான மற்றும் மலிவான விவசாய பொருட்கள் வழங்குவதும் எங்கள் குறிக்கோளாகும்.'
+                  'தென்காசி மாவட்டத்தின் கூட்டுறவு சூழலால் ஆதரிக்கப்பட்டு, நாங்கள் உள்ளூர் விவசாயிகளுடன் நெருக்கமாக பணியாற்றுகிறோம். தேவையற்ற இடைத்தரகர்களை நீக்குவதும், விவசாயிகளுக்கு சிறந்த வருமானம் உறுதி செய்வதும், நுகர்வோருக்கு பாதுகாப்பான மற்றும் மலிவான விவசாய பொருட்கள் வழங்குவதும் எங்கள் குறிக்கோளாகும்.'
                 )}
               </p>
               <p className="text-gray-600 leading-relaxed mb-6">
                 {t(
                   'We believe in transparency, sustainability, and community development. Every purchase through Tenkasi Fresh contributes to strengthening local agriculture and rural livelihoods.',
-                  'நாங்கள் வெளிப்படைத்தன்மை, நிலைத்தன்மை மற்றும் சமூக வளர்ச்சியில் நம்பிக்கை கொள்கிறோம். டெங்காசி பிரெஷ் மூலம் ஒவ்வொரு கொள்முதலும் உள்ளூர் விவசாயம் மற்றும் கிராமப்புற வாழ்வாதாரங்களை வலுப்படுத்த பங்களிக்கிறது.'
+                  'நாங்கள் வெளிப்படைத்தன்மை, நிலைத்தன்மை மற்றும் சமூக வளர்ச்சியில் நம்பிக்கை கொள்கிறோம். தென்காசி பிரெஷ் மூலம் ஒவ்வொரு கொள்முதலும் உள்ளூர் விவசாயம் மற்றும் கிராமப்புற வாழ்வாதாரங்களை வலுப்படுத்த பங்களிக்கிறது.'
                 )}
               </p>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                  { value: '240+', labelEn: 'Farming Families', labelTa: 'விவசாயி குடும்பங்கள்' },
                   { value: '65+', labelEn: 'Years of Heritage', labelTa: 'ஆண்டுகள் பாரம்பரியம்' },
-                  { value: '12 hrs', labelEn: 'Farm to Doorstep', labelTa: 'பண்ணையிலிருந்து வீடு' },
+                  { value: '1959', labelEn: 'Year Established', labelTa: 'நிறுவிய ஆண்டு' },
+                  { value: '5+', labelEn: 'Growing Regions', labelTa: 'வளர்ப்பு பகுதிகள்' },
+                  { value: '100%', labelEn: 'Quality Focused', labelTa: 'தரம் உறுதி' },
                 ].map((s) => (
                   <div key={s.labelEn} className="text-center bg-[#fdf4e8] rounded-2xl py-5 px-3">
                     <p className="font-serif text-2xl font-bold text-[#3d7a20]">{s.value}</p>
@@ -201,18 +202,18 @@ function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-[#3d7a20] text-xs font-bold tracking-widest uppercase mb-3">{t('Where We Are', 'நாங்கள் எங்கே இருக்கிறோம்')}</p>
-              <h2 className="font-serif text-4xl font-bold text-gray-900 mb-5">{t('Located at the heart of Tenkasi', 'டெங்காசியின் இதயத்தில் அமைந்துள்ளது')}</h2>
+              <h2 className="font-serif text-4xl font-bold text-gray-900 mb-5">{t('Located at the heart of Tenkasi', 'தென்காசியின் இதயத்தில் அமைந்துள்ளது')}</h2>
               <p className="text-gray-600 leading-relaxed mb-6">
                 {t(
                   "Our cooperative centre sits at the foothills of the Western Ghats — one of the world's richest biodiversity hotspots. The combination of altitude, rainfall, and red laterite soil makes Tenkasi ideal for growing intensely flavourful tropical fruits without artificial inputs.",
-                  'எங்கள் கூட்டுறவு மையம் மேற்கு தொடர்ச்சி மலையின் அடிவாரத்தில் உள்ளது — உலகின் மிகவும் செழுமையான உயிரியல் பல்வகைமை அதிவிருப்புப் பகுதிகளில் ஒன்று. உயரம், மழை மற்றும் சிவப்பு லேட்டரைட் மண் ஆகியவற்றின் கலவை செயற்கை இடுபொருட்கள் இல்லாமல் மிகவும் சுவையான வெப்பமண்டல பழங்களை வளர்க்க டெங்காசியை சிறந்ததாக ஆக்குகிறது.'
+                  'எங்கள் கூட்டுறவு மையம் மேற்கு தொடர்ச்சி மலையின் அடிவாரத்தில் உள்ளது — உலகின் மிகவும் செழுமையான உயிரியல் பல்வகைமை அதிவிருப்புப் பகுதிகளில் ஒன்று. உயரம், மழை மற்றும் சிவப்பு லேட்டரைட் மண் ஆகியவற்றின் கலவை செயற்கை இடுபொருட்கள் இல்லாமல் மிகவும் சுவையான வெப்பமண்டல பழங்களை வளர்க்க தென்காசியை சிறந்ததாக ஆக்குகிறது.'
                 )}
               </p>
               <div className="space-y-3">
                 {[
-                  { icon: <MapPin size={16} className="text-[#3d7a20]" />, en: '42C/1A Rail Nagar Road, Tenkasi – 627 811, Tamil Nadu', ta: '42C/1A ரெயில் நகர் சாலை, டெங்காசி – 627 811, தமிழ்நாடு' },
+                  { icon: <MapPin size={16} className="text-[#3d7a20]" />, en: '42C/1A Rail Nagar Road, Tenkasi – 627 811, Tamil Nadu', ta: '42C/1A ரெயில் நகர் சாலை, தென்காசி – 627 811, தமிழ்நாடு' },
                   { icon: <Phone size={16} className="text-[#3d7a20]" />, en: '+91 7094402579', ta: '+91 7094402579' },
-                  { icon: <Users size={16} className="text-[#3d7a20]" />, en: '240+ partner farmers across Tenkasi & Shencottai taluks', ta: 'டெங்காசி & செங்கோட்டை தாலுகாக்களில் 240+ கூட்டாளி விவசாயிகள்' },
+                  { icon: <Users size={16} className="text-[#3d7a20]" />, en: '240+ partner farmers across Tenkasi & Shencottai taluks', ta: 'தென்காசி & செங்கோட்டை தாலுகாக்களில் 240+ கூட்டாளி விவசாயிகள்' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3 bg-[#faf9f4] rounded-xl border border-gray-100 px-4 py-3">
                     <div className="flex-shrink-0 mt-0.5">{item.icon}</div>
@@ -254,7 +255,7 @@ function AboutPage() {
       <section className="py-16 px-4 bg-[#faf9f4] border-t border-gray-100">
         <div className="max-w-xl mx-auto text-center">
           <h2 className="font-serif text-3xl font-bold text-gray-900 mb-3">{t('Taste the difference', 'வித்தியாசத்தை சுவையுங்கள்')}</h2>
-          <p className="text-gray-500 mb-8">{t('From 240+ farmer families in Tenkasi — straight to your table.', 'டெங்காசியில் 240+ விவசாயி குடும்பங்களிடமிருந்து — நேரடியாக உங்கள் மேஜைக்கு.')}</p>
+          <p className="text-gray-500 mb-8">{t('From 240+ farmer families in Tenkasi — straight to your table.', 'தென்காசியில் 240+ விவசாயி குடும்பங்களிடமிருந்து — நேரடியாக உங்கள் மேஜைக்கு.')}</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/shop" className="inline-block bg-[#3d7a20] text-white px-8 py-3 rounded-full font-bold hover:bg-[#2a5a14] transition-colors no-underline text-center">
               {t('Shop Now', 'இப்போது வாங்குங்கள்')}

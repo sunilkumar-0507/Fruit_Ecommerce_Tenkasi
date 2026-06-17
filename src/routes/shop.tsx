@@ -93,7 +93,7 @@ function ShopPage() {
           <p className="text-gray-500 max-w-xl leading-relaxed">
             {showCombos
               ? 'Curated fruit combos and gift baskets — hand-assembled with the finest produce.'
-              : 'From mountain hill bananas to Kabul pomegranates — every fruit traceable to a farmer we know by name.'}
+              : 'Welcome to our collection of carefully selected fruits inspired by the rich agricultural heritage of the Western Ghats. From beloved traditional varieties to seasonal specialties, every fruit is chosen for its freshness, flavor, and authenticity.'}
           </p>
         </div>
       </section>

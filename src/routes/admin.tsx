@@ -10,7 +10,6 @@ import {
   api, isApiMode, getStoredToken, uploadProductImage,
   type ProductDto, type ProductDtoPagedResult,
   type CategoryDto, type OrderDto, type OrderDtoPagedResult,
-  type FarmerDto,
   ORDER_STATUS,
 } from '#/lib/apiClient'
 import {
@@ -25,11 +24,11 @@ const NAV_ICONS: Record<string, string> = {
   Overview:  'dashboard',
   Inventory: 'package',
   Discounts: 'tag',
+  Coupons:   'ticket',
   Seasonal:  'shine',
   Baskets:   'gift',
   Orders:    'bag',
   Delivery:  'truck',
-  Farmers:   'layers',
   Settings:  'settings',
 }
 
@@ -37,11 +36,11 @@ const NAV_ITEMS = [
   { label: 'Overview',  ta: 'கண்ணோட்டம்' },
   { label: 'Inventory', ta: 'சரக்கு பட்டியல்' },
   { label: 'Discounts', ta: 'தள்ளுபடிகள்' },
+  { label: 'Coupons',   ta: 'கூப்பன்கள்' },
   { label: 'Seasonal',  ta: 'பருவகாலம்' },
   { label: 'Baskets',   ta: 'கூடைகள்' },
   { label: 'Orders',    ta: 'ஆர்டர்கள்' },
   { label: 'Delivery',  ta: 'டெலிவரி' },
-  { label: 'Farmers',   ta: 'விவசாயிகள்' },
   { label: 'Settings',  ta: 'அமைப்புகள்' },
 ]
 
@@ -484,7 +483,6 @@ function EditProductModal({
     nameTa: product.nameTa ?? '',
     categoryId: matchedCatId,
     price: String(product.price),
-    originalPrice: product.originalPrice ? String(product.originalPrice) : '',
     stock: String(product.stock),
     image: product.image,
     description: product.descriptionEn ?? '',
@@ -518,8 +516,7 @@ function EditProductModal({
           ? (form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [])
           : (product.rawImages ?? []).map((img) => ({ id: img.id, url: img.url, altText: img.altText, isPrimary: img.isPrimary }))
 
-        const dto = await api.put<ProductDto>(`/api/admin/products/${product.id}`, {
-          id: product.id,
+        const dto = await api.post<ProductDto>(`/api/admin/products/${product.id}/update`, {
           nameEn: form.nameEn,
           nameTa: form.nameTa || null,
           descriptionEn: form.description || null,
@@ -531,7 +528,6 @@ function EditProductModal({
           benefitsEn: form.benefitsEn || null,
           benefitsTa: null,
           price: Number(form.price),
-          originalPrice: form.originalPrice ? Number(form.originalPrice) : null,
           stockQuantity: stockNum,
           categoryId: form.categoryId,
           images: imagesPayload,
@@ -597,20 +593,22 @@ function EditProductModal({
               <input type="text" value={form.categoryId} onChange={set('categoryId')} placeholder="Category name" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             )}
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
               <input type="number" value={form.price} onChange={set('price')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">MRP (₹) <span className="text-gray-400 font-normal">(optional)</span></label>
-              <input type="number" value={form.originalPrice} onChange={set('originalPrice')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock (units) <span className="text-red-500">*</span></label>
               <input type="number" value={form.stock} onChange={set('stock')} min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
             </div>
           </div>
+          {product.originalPrice && (
+            <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 text-xs text-amber-700">
+              <TiIcon name="tag" size={13} />
+              Active discount: ₹{product.originalPrice} → ₹{product.price} ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off). Manage via the % button in Inventory.
+            </div>
+          )}
           <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} onUploadingChange={setUploading} />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="text-gray-400 font-normal">(optional)</span></label>
@@ -649,6 +647,131 @@ function EditProductModal({
               {saved ? '✓ Saved!' : saving ? 'Saving…' : uploading ? 'Uploading…' : 'Save Changes'}
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Discount Modal ───────────────────────────────────────────────────────────
+
+function DiscountModal({
+  product,
+  onClose,
+  onUpdate,
+}: {
+  product: InventoryRow
+  onClose: () => void
+  onUpdate: (p: InventoryRow) => void
+}) {
+  const [pct, setPct] = useState('')
+  const [applying, setApplying] = useState(false)
+  const [removing, setRemoving] = useState(false)
+  const [error, setError] = useState('')
+
+  const currentDiscount = product.originalPrice
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 0
+
+  const previewPrice = pct && Number(pct) > 0
+    ? Math.round(product.price * (1 - Number(pct) / 100))
+    : null
+
+  async function applyDiscount() {
+    const p = Number(pct)
+    if (!p || p <= 0 || p >= 100) { setError('Enter a percentage between 1 and 99'); return }
+    setApplying(true); setError('')
+    try {
+      const dto = await api.post<ProductDto>(`/api/admin/products/${product.id}/discount`, { percentage: p })
+      onUpdate(mapApiProduct(dto)); onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to apply discount')
+      setApplying(false)
+    }
+  }
+
+  async function removeDiscount() {
+    setRemoving(true); setError('')
+    try {
+      const dto = await api.post<ProductDto>(`/api/admin/products/${product.id}/discount`, { percentage: 0 })
+      onUpdate(mapApiProduct(dto)); onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to remove discount')
+      setRemoving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <div>
+            <h2 className="font-serif text-lg font-bold text-gray-900">Apply Discount</h2>
+            <p className="text-gray-400 text-xs mt-0.5 truncate max-w-[200px]">{product.name}</p>
+          </div>
+          <button type="button" onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg" aria-label="Close">
+            <TiIcon name="close" size={18} className="text-gray-500" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          {currentDiscount > 0 && (
+            <div className="flex items-center justify-between bg-amber-50 border border-amber-100 rounded-xl p-3">
+              <div>
+                <p className="text-xs font-semibold text-amber-700">Active: {currentDiscount}% off</p>
+                <p className="text-xs text-gray-500 mt-0.5">₹{product.originalPrice} → ₹{product.price}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => void removeDiscount()}
+                disabled={removing}
+                className="text-xs font-semibold text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition disabled:opacity-50"
+              >
+                {removing ? 'Removing…' : 'Remove'}
+              </button>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">New Discount %</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={pct}
+                onChange={(e) => { setPct(e.target.value); setError('') }}
+                placeholder="e.g. 20"
+                min="1"
+                max="99"
+                className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition"
+              />
+              <span className="text-gray-400 text-sm font-medium flex-shrink-0">%</span>
+            </div>
+          </div>
+
+          {previewPrice !== null && previewPrice > 0 && (
+            <div className="bg-[#f5f9f7] rounded-xl p-3">
+              <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Preview</p>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 line-through text-sm">₹{product.price}</span>
+                <span className="font-bold text-[#3d7a20] text-lg">₹{previewPrice}</span>
+                <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">-{pct}%</span>
+              </div>
+            </div>
+          )}
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+        </div>
+
+        <div className="flex gap-3 p-5 border-t border-gray-100">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+          <button
+            type="button"
+            onClick={() => void applyDiscount()}
+            disabled={!pct || applying}
+            className="flex-1 py-2.5 bg-[#3d7a20] text-white rounded-xl text-sm font-semibold hover:bg-[#2a5a14] disabled:opacity-40 disabled:cursor-not-allowed transition"
+          >
+            {applying ? 'Applying…' : 'Apply'}
+          </button>
         </div>
       </div>
     </div>
@@ -899,57 +1022,88 @@ function OverviewPanel() {
 
 // ─── Panel: Inventory ─────────────────────────────────────────────────────────
 
+const PAGE_SIZE = 20
+
 function InventoryPanel() {
-  const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState<InventoryRow | null>(null)
+  const [discountProduct, setDiscountProduct] = useState<InventoryRow | null>(null)
   const [inventory, setInventory] = useState<InventoryRow[]>(isApiMode() ? [] : INVENTORY_INIT)
   const [apiCategories, setApiCategories] = useState<CategoryDto[]>([])
   const [loading, setLoading] = useState(isApiMode())
   const [loadError, setLoadError] = useState('')
 
+  // Filters & pagination
+  const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'stock'>('name')
+  const [sortDesc, setSortDesc] = useState(false)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+
+  // Debounce search
+  useEffect(() => {
+    const t = setTimeout(() => { setDebouncedSearch(search); setPage(1) }, 350)
+    return () => clearTimeout(t)
+  }, [search])
+
+  // Load categories once
   useEffect(() => {
     if (!isApiMode() || !getStoredToken()) return
-    Promise.all([
-      api.get<ProductDtoPagedResult>('/api/admin/products?PageSize=100'),
-      api.get<CategoryDto[]>('/api/admin/categories'),
-    ])
-      .then(([products, cats]) => {
-        setInventory((products.items ?? []).map(mapApiProduct))
-        setApiCategories(cats)
-      })
-      .catch((err: unknown) => {
-        const msg = err instanceof Error ? err.message : 'Failed to load inventory'
-        setLoadError(msg)
-      })
-      .finally(() => setLoading(false))
+    api.get<CategoryDto[]>('/api/admin/categories').then(setApiCategories).catch(() => {})
   }, [])
 
-  const filtered = inventory.filter(
-    (p) => p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase()),
-  )
+  // Fetch products (server-side)
+  useEffect(() => {
+    if (!isApiMode() || !getStoredToken()) { setLoading(false); return }
+    setLoading(true)
+    setLoadError('')
+    const params = new URLSearchParams({ pageNumber: String(page), pageSize: String(PAGE_SIZE), sortBy, desc: String(sortDesc) })
+    if (debouncedSearch) params.set('search', debouncedSearch)
+    if (categoryFilter) params.set('categoryId', categoryFilter)
+    api.get<ProductDtoPagedResult>(`/api/admin/products?${params.toString()}`)
+      .then((r) => {
+        setInventory((r.items ?? []).map(mapApiProduct))
+        setTotalPages(r.totalPages)
+        setTotalCount(r.totalCount)
+      })
+      .catch((err: unknown) => setLoadError(err instanceof Error ? err.message : 'Failed to load inventory'))
+      .finally(() => setLoading(false))
+  }, [page, debouncedSearch, categoryFilter, sortBy, sortDesc])
 
-  function handleAddProduct(p: InventoryRow) {
-    setInventory((prev) => [p, ...prev])
-  }
-
-  function handleEditProduct(p: InventoryRow) {
-    setInventory((prev) => prev.map((item) => (item.id === p.id ? p : item)))
-  }
+  function handleAddProduct(p: InventoryRow) { setInventory((prev) => [p, ...prev]) }
+  function handleEditProduct(p: InventoryRow) { setInventory((prev) => prev.map((item) => (item.id === p.id ? p : item))) }
 
   function handleDelete(id: string) {
-    if (isApiMode() && getStoredToken()) {
-      void api.delete(`/api/admin/products/${id}`)
-    }
+    if (isApiMode() && getStoredToken()) void api.delete(`/api/admin/products/${id}`)
     setInventory((prev) => prev.filter((p) => p.id !== id))
   }
+
+  function toggleSort(col: 'name' | 'price' | 'stock') {
+    if (sortBy === col) setSortDesc((d) => !d)
+    else { setSortBy(col); setSortDesc(false); setPage(1) }
+  }
+
+  function SortIcon({ col }: { col: 'name' | 'price' | 'stock' }) {
+    if (sortBy !== col) return <TiIcon name="arrows-vertical" size={11} className="ml-1 text-gray-300 inline" />
+    return <TiIcon name={sortDesc ? 'arrow-down' : 'arrow-up'} size={11} className="ml-1 text-[#3d7a20] inline" />
+  }
+
+  // In demo mode, filter client-side
+  const shown = isApiMode() ? inventory : inventory.filter(
+    (p) => p.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || p.category.toLowerCase().includes(debouncedSearch.toLowerCase()),
+  )
 
   return (
     <div className="p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
         <div>
           <h1 className="font-serif text-2xl font-bold text-gray-900">Inventory</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{inventory.length} products · {inventory.filter(p => p.stock === 0).length} out of stock</p>
+          <p className="text-gray-500 text-sm mt-0.5">
+            {isApiMode() ? `${totalCount} products` : `${inventory.length} products`} · {inventory.filter(p => p.stock === 0).length} out of stock
+          </p>
         </div>
         <button
           type="button"
@@ -961,14 +1115,28 @@ function InventoryPanel() {
         </button>
       </div>
 
-      <div className="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-2 gap-2 w-full sm:w-72 mb-5">
-        <TiIcon name="search" size={15} className="text-gray-400 flex-shrink-0" />
-        <input type="text" placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-transparent text-sm text-gray-600 placeholder-gray-400 outline-none w-full" />
+      {/* Filters row */}
+      <div className="flex flex-wrap gap-2 mb-5">
+        <div className="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-2 gap-2 flex-1 min-w-[180px] max-w-xs">
+          <TiIcon name="search" size={15} className="text-gray-400 flex-shrink-0" />
+          <input type="text" placeholder="Search products…" value={search} onChange={(e) => setSearch(e.target.value)} className="bg-transparent text-sm text-gray-600 placeholder-gray-400 outline-none w-full" />
+        </div>
+        {apiCategories.length > 0 && (
+          <select
+            value={categoryFilter}
+            onChange={(e) => { setCategoryFilter(e.target.value); setPage(1) }}
+            title="Category filter"
+            className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-[#3d7a20] transition appearance-none min-w-[140px]"
+          >
+            <option value="">All Categories</option>
+            {apiCategories.map((c) => <option key={c.id} value={c.id}>{c.nameEn}</option>)}
+          </select>
+        )}
       </div>
 
       {loadError && (
         <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-          Failed to load inventory: {loadError}
+          {loadError}
         </div>
       )}
 
@@ -978,20 +1146,37 @@ function InventoryPanel() {
             <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <table className="w-full text-sm min-w-[560px]">
+          <table className="w-full text-sm min-w-[620px]">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <button type="button" onClick={() => toggleSort('name')} className="flex items-center hover:text-gray-700 transition-colors">
+                    Product <SortIcon col="name" />
+                  </button>
+                </th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Price</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Stock</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <button type="button" onClick={() => toggleSort('price')} className="flex items-center ml-auto hover:text-gray-700 transition-colors">
+                    Price <SortIcon col="price" />
+                  </button>
+                </th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <button type="button" onClick={() => toggleSort('stock')} className="flex items-center ml-auto hover:text-gray-700 transition-colors">
+                    Stock <SortIcon col="stock" />
+                  </button>
+                </th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map((item) => {
+              {shown.length === 0 ? (
+                <tr><td colSpan={6} className="text-center text-gray-400 text-sm py-12">No products found.</td></tr>
+              ) : shown.map((item) => {
                 const s = stockStatus(item.stock)
+                const discPct = item.originalPrice
+                  ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
+                  : 0
                 return (
                   <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-4 py-3">
@@ -999,11 +1184,24 @@ function InventoryPanel() {
                         <div className="w-9 h-9 rounded-lg overflow-hidden bg-[#f5f0e8] flex-shrink-0">
                           <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                         </div>
-                        <span className="font-medium text-gray-900 text-sm">{item.name}</span>
+                        <div>
+                          <p className="font-medium text-gray-900 text-sm leading-tight">{item.name}</p>
+                          {item.nameTa && <p className="text-gray-400 text-xs">{item.nameTa}</p>}
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{item.category}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-gray-900">₹{item.price}</td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex flex-col items-end gap-0.5">
+                        <span className="font-semibold text-gray-900">₹{item.price}</span>
+                        {item.originalPrice && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-gray-400 line-through text-xs">₹{item.originalPrice}</span>
+                            <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">-{discPct}%</span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-right text-gray-700 font-medium">
                       {item.stock === 0 ? '—' : item.stock}
                       {item.stock > 0 && item.stock < 20 && <TiIcon name="alert" size={12} className="inline ml-1 text-amber-500" />}
@@ -1012,7 +1210,16 @@ function InventoryPanel() {
                       <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${s.cls}`}>{s.label}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setDiscountProduct(item)}
+                          className={`p-1.5 rounded-lg transition-colors ${item.originalPrice ? 'text-amber-500 bg-amber-50 hover:bg-amber-100' : 'text-gray-400 hover:text-amber-500 hover:bg-amber-50'}`}
+                          aria-label="Apply discount"
+                          title="Apply / remove discount"
+                        >
+                          <TiIcon name="tag" size={14} />
+                        </button>
                         <button type="button" onClick={() => setEditingProduct(item)} className="p-1.5 text-gray-400 hover:text-[#3d7a20] hover:bg-[#fdf4e8] rounded-lg transition-colors" aria-label="Edit"><TiIcon name="pencil" size={14} /></button>
                         <button type="button" onClick={() => handleDelete(item.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" aria-label="Delete"><TiIcon name="trash" size={14} /></button>
                       </div>
@@ -1024,6 +1231,47 @@ function InventoryPanel() {
           </table>
         )}
       </div>
+
+      {/* Pagination */}
+      {isApiMode() && totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-xs text-gray-400">
+            Page {page} of {totalPages} · {totalCount} products
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || loading}
+              className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            >
+              ← Prev
+            </button>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const p = totalPages <= 5 ? i + 1 : Math.max(1, Math.min(page - 2, totalPages - 4)) + i
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setPage(p)}
+                  disabled={loading}
+                  className={`w-8 h-8 rounded-lg text-sm font-medium transition ${p === page ? 'bg-[#3d7a20] text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40'}`}
+                >
+                  {p}
+                </button>
+              )
+            })}
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages || loading}
+              className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <AddProductModal
@@ -1038,6 +1286,13 @@ function InventoryPanel() {
           onClose={() => setEditingProduct(null)}
           onSave={handleEditProduct}
           apiCategories={apiCategories}
+        />
+      )}
+      {discountProduct && (
+        <DiscountModal
+          product={discountProduct}
+          onClose={() => setDiscountProduct(null)}
+          onUpdate={handleEditProduct}
         />
       )}
     </div>
@@ -1078,6 +1333,9 @@ function OrdersPanel() {
         status: ORDER_STATUS[o.status] ?? 'Pending',
         items: o.items ?? [],
         address: fmtAddress(o.shippingAddress),
+        paymentMethod: o.paymentMethod ?? 'cod',
+        paymentStatus: o.paymentStatus ?? null,
+        transactionId: o.paymentTransactionId ?? null,
         isReal: true,
       }))
     : ORDERS_STATIC.map((o) => ({
@@ -1091,6 +1349,9 @@ function OrdersPanel() {
         status: o.status,
         items: [] as OrderDto['items'],
         address: o.address,
+        paymentMethod: 'cod' as string,
+        paymentStatus: null as string | null,
+        transactionId: null as string | null,
         isReal: false,
       }))
 
@@ -1148,6 +1409,7 @@ function OrdersPanel() {
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Date</th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Items</th>
                 <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Amount</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Payment</th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Details</th>
               </tr>
@@ -1169,6 +1431,16 @@ function OrdersPanel() {
                     <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell">{order.date}</td>
                     <td className="px-4 py-3 text-center text-gray-700">{order.itemCount ?? '—'}</td>
                     <td className="px-4 py-3 text-right font-semibold text-gray-900">₹{order.amount.toFixed ? order.amount.toFixed(2) : order.amount}</td>
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                      <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${order.paymentMethod === 'online' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                        {order.paymentMethod === 'online' ? '💳 Online' : '💵 COD'}
+                      </span>
+                      {order.paymentMethod === 'online' && order.paymentStatus && (
+                        <span className={`block mt-1 text-[10px] font-semibold ${order.paymentStatus === 'paid' ? 'text-emerald-600' : 'text-amber-600'}`}>
+                          {order.paymentStatus === 'paid' ? 'Paid' : 'Pending'}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-center">
                       {order.isReal && isApiMode() ? (
                         <select
@@ -1202,7 +1474,7 @@ function OrdersPanel() {
 
                   {expandedId === order.id && (
                     <tr className="bg-[#f5f9f7]">
-                      <td colSpan={7} className="px-4 py-4">
+                      <td colSpan={8} className="px-4 py-4">
                         <div className="space-y-3">
                           {/* Customer details */}
                           <div className="flex flex-wrap gap-4">
@@ -1224,6 +1496,21 @@ function OrdersPanel() {
                                 </div>
                               </div>
                             )}
+                            <div className="flex items-start gap-2">
+                              <TiIcon name="credit-card" size={13} className="text-[#3d7a20] flex-shrink-0 mt-0.5" />
+                              <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Payment</p>
+                                <p className="text-sm font-medium text-gray-800">
+                                  {order.paymentMethod === 'online' ? 'Online (Cashfree)' : 'Cash on Delivery'}
+                                  {order.paymentMethod === 'online' && order.paymentStatus
+                                    ? ` · ${order.paymentStatus === 'paid' ? 'Paid' : 'Pending'}`
+                                    : ''}
+                                </p>
+                                {order.transactionId && (
+                                  <p className="text-xs text-gray-500 font-mono mt-0.5">Txn: {order.transactionId}</p>
+                                )}
+                              </div>
+                            </div>
                           </div>
                           {/* Delivery address */}
                           {order.address && (
@@ -1378,117 +1665,6 @@ function DeliveryPanel() {
               </tbody>
             </table>
           )}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─── Panel: Farmers ───────────────────────────────────────────────────────────
-
-function FarmersPanel() {
-  const [apiFarmers, setApiFarmers] = useState<FarmerDto[]>([])
-  const [loading, setLoading] = useState(isApiMode())
-  const [useDemo, setUseDemo] = useState(!isApiMode())
-
-  useEffect(() => {
-    if (!isApiMode() || !getStoredToken()) return
-    api.get<FarmerDto[]>('/api/admin/farmers')
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setApiFarmers(data)
-        else setUseDemo(true)
-      })
-      .catch(() => setUseDemo(true))
-      .finally(() => setLoading(false))
-  }, [])
-
-  const farmers = useDemo
-    ? FARMERS
-    : apiFarmers.map((f) => ({
-        id: f.id,
-        name: f.name ?? '–',
-        village: f.village ?? '–',
-        produce: f.produce ?? '–',
-        supply: f.weeklySupplyKg != null ? `${f.weeklySupplyKg} kg/wk` : '–',
-        rating: f.rating ?? 4.5,
-        phone: f.phone ?? '–',
-        active: f.isActive,
-      }))
-
-  const activeCount = farmers.filter((f) => f.active).length
-  const avgRating = farmers.length > 0
-    ? (farmers.reduce((s, f) => s + f.rating, 0) / farmers.length).toFixed(1)
-    : '–'
-
-  return (
-    <div className="p-4 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div>
-          <h1 className="font-serif text-2xl font-bold text-gray-900">Farmers</h1>
-          <p className="text-gray-500 text-sm mt-0.5">
-            {loading ? 'Loading…' : `${farmers.length} partner farmers · ${activeCount} active this month`}
-            {isApiMode() && useDemo && !loading && <span className="ml-2 text-xs text-amber-600">(demo data — API endpoint not found)</span>}
-          </p>
-        </div>
-        <button type="button" className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#2a5a14] transition-colors self-start sm:self-auto">
-          <TiIcon name="plus" size={15} />
-          Add Farmer
-        </button>
-      </div>
-      <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
-        {[
-          { label: 'Total Partners',    value: loading ? '…' : `${farmers.length}`,  icon: <TiIcon name="shine" size={18} className="text-[#3d7a20]" /> },
-          { label: 'Active This Month', value: loading ? '…' : String(activeCount),  icon: <TiIcon name="stats-up" size={18} className="text-emerald-500" /> },
-          { label: 'Avg Rating',        value: loading ? '…' : `${avgRating} ★`,     icon: <TiIcon name="crown" size={18} className="text-amber-500" /> },
-        ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl p-3 sm:p-4 border border-gray-100 shadow-sm flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">{s.icon}</div>
-            <div>
-              <p className="text-lg sm:text-xl font-bold text-gray-900">{s.value}</p>
-              <p className="text-[10px] sm:text-xs text-gray-500">{s.label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
-          <table className="w-full text-sm min-w-[520px]">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Farmer</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Village</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Produce</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Weekly Supply</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Rating</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Contact</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {farmers.map((f) => (
-                <tr key={f.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-[#fdf4e8] rounded-full flex items-center justify-center flex-shrink-0"><TiIcon name="shine" size={14} className="text-[#3d7a20]" /></div>
-                      <span className="font-medium text-gray-900 text-sm">{f.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell"><div className="flex items-center gap-1"><TiIcon name="location-pin" size={11} />{f.village}</div></td>
-                  <td className="px-4 py-3 text-gray-600 text-xs">{f.produce}</td>
-                  <td className="px-4 py-3 text-right font-medium text-gray-900 hidden md:table-cell">{f.supply}</td>
-                  <td className="px-4 py-3 text-center"><Stars rating={f.rating} /></td>
-                  <td className="px-4 py-3 hidden lg:table-cell"><div className="flex items-center gap-1 text-xs text-gray-500"><TiIcon name="headphone" size={11} />{f.phone}</div></td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${f.active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>{f.active ? 'Active' : 'Inactive'}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       )}
     </div>
@@ -1662,7 +1838,256 @@ VITE_EMAILJS_TEMPLATE_REPORT=template_xxxxxxx`}</pre>
   )
 }
 
-// ─── Panel: Discounts (Coupons) ───────────────────────────────────────────────
+// ─── Panel: Product Discounts ─────────────────────────────────────────────────
+
+interface ProductDiscountDto {
+  id: string
+  productId: string
+  productName?: string | null
+  discountPercent: number
+  originalPrice: number
+  discountedPrice: number
+  startsAtUtc: string
+  endsAtUtc: string
+  isActive: boolean
+}
+
+const DISCOUNTS_DEMO: ProductDiscountDto[] = [
+  { id: 'd1', productId: '1', productName: 'தென்காசி Local Mango',   discountPercent: 10, originalPrice: 280, discountedPrice: 252, startsAtUtc: '2026-06-01T00:00:00Z', endsAtUtc: '2026-06-30T23:59:59Z', isActive: true },
+  { id: 'd2', productId: '3', productName: 'Ruby Pomegranate',        discountPercent: 15, originalPrice: 240, discountedPrice: 204, startsAtUtc: '2026-06-01T00:00:00Z', endsAtUtc: '2026-06-20T23:59:59Z', isActive: true },
+  { id: 'd3', productId: '5', productName: 'Soursop (Sitaphal)',      discountPercent: 20, originalPrice: 180, discountedPrice: 144, startsAtUtc: '2026-06-15T00:00:00Z', endsAtUtc: '2026-06-22T23:59:59Z', isActive: false },
+]
+
+function DiscountFormModal({
+  discount,
+  onClose,
+  onSave,
+}: {
+  discount: ProductDiscountDto | null
+  onClose: () => void
+  onSave: (d: ProductDiscountDto) => void
+}) {
+  const today = new Date().toISOString().split('T')[0]
+  const [form, setForm] = useState({
+    productId: discount?.productId ?? '',
+    discountPercent: String(discount?.discountPercent ?? ''),
+    originalPrice: String(discount?.originalPrice ?? ''),
+    startsAtUtc: discount ? discount.startsAtUtc.split('T')[0] : today,
+    endsAtUtc: discount ? discount.endsAtUtc.split('T')[0] : '',
+  })
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  function set(field: keyof typeof form) {
+    return (e: React.ChangeEvent<HTMLInputElement>) => setForm((p) => ({ ...p, [field]: e.target.value }))
+  }
+
+  const discountedPrice = form.originalPrice && form.discountPercent
+    ? Math.round(Number(form.originalPrice) * (1 - Number(form.discountPercent) / 100))
+    : 0
+
+  async function handleSave() {
+    if (!form.productId || !form.discountPercent || !form.originalPrice || !form.endsAtUtc) return
+    setSaving(true)
+    const body: Omit<ProductDiscountDto, 'id'> = {
+      productId: form.productId,
+      discountPercent: Number(form.discountPercent),
+      originalPrice: Number(form.originalPrice),
+      discountedPrice,
+      startsAtUtc: new Date(form.startsAtUtc).toISOString(),
+      endsAtUtc: new Date(form.endsAtUtc + 'T23:59:59').toISOString(),
+      isActive: true,
+    }
+    try {
+      if (isApiMode() && getStoredToken()) {
+        const dto = discount
+          ? await api.put<ProductDiscountDto>(`/api/admin/discounts/${discount.id}`, { id: discount.id, ...body })
+          : await api.post<ProductDiscountDto>('/api/admin/discounts', body)
+        setSaved(true)
+        setTimeout(() => { onSave(dto); onClose() }, 800)
+      } else {
+        setSaved(true)
+        setTimeout(() => { onSave({ ...body, id: discount?.id ?? `d${Date.now()}` }); onClose() }, 800)
+      }
+    } catch {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <h2 className="font-serif text-xl font-bold text-gray-900">{discount ? 'Edit Discount' : 'Add Discount'}</h2>
+          <button type="button" onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg" aria-label="Close"><TiIcon name="close" size={18} className="text-gray-500" /></button>
+        </div>
+        <div className="p-5 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Product ID <span className="text-red-500">*</span></label>
+            <input type="text" value={form.productId} onChange={set('productId')} placeholder="Product UUID" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Original Price (₹) <span className="text-red-500">*</span></label>
+              <input type="number" value={form.originalPrice} onChange={set('originalPrice')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Discount % <span className="text-red-500">*</span></label>
+              <input type="number" value={form.discountPercent} onChange={set('discountPercent')} placeholder="0" min="0" max="100" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
+            </div>
+          </div>
+          {discountedPrice > 0 && (
+            <div className="bg-[#f5f9f7] rounded-xl p-3 flex items-center gap-2">
+              <TiIcon name="tag" size={15} className="text-[#3d7a20]" />
+              <span className="text-sm text-gray-600">Discounted price: <strong className="text-[#3d7a20]">₹{discountedPrice}</strong></span>
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Starts</label>
+              <input type="date" value={form.startsAtUtc} onChange={set('startsAtUtc')} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Expires <span className="text-red-500">*</span></label>
+              <input type="date" value={form.endsAtUtc} onChange={set('endsAtUtc')} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 p-5 border-t border-gray-100">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+          <button
+            type="button"
+            onClick={() => void handleSave()}
+            disabled={!form.productId || !form.discountPercent || !form.originalPrice || !form.endsAtUtc || saving}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${saved ? 'bg-emerald-500 text-white' : 'bg-[#3d7a20] text-white hover:bg-[#2a5a14] disabled:opacity-40 disabled:cursor-not-allowed'}`}
+          >
+            {saved ? '✓ Saved!' : discount ? 'Save Changes' : 'Add Discount'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ProductDiscountsPanel() {
+  const [discounts, setDiscounts] = useState<ProductDiscountDto[]>(isApiMode() ? [] : DISCOUNTS_DEMO)
+  const [loading, setLoading] = useState(isApiMode())
+  const [editingDiscount, setEditingDiscount] = useState<ProductDiscountDto | null>(null)
+  const [showModal, setShowModal] = useState(false)
+
+  useEffect(() => {
+    if (!isApiMode() || !getStoredToken()) { setLoading(false); return }
+    api.get<ProductDiscountDto[]>('/api/admin/discounts')
+      .then((data) => setDiscounts(data))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  function handleSaveDiscount(d: ProductDiscountDto) {
+    setDiscounts((prev) => {
+      const exists = prev.some((x) => x.id === d.id)
+      return exists ? prev.map((x) => (x.id === d.id ? d : x)) : [d, ...prev]
+    })
+  }
+
+  async function handleDelete(id: string) {
+    if (isApiMode() && getStoredToken()) {
+      try { await api.delete(`/api/admin/discounts/${id}`) } catch { return }
+    }
+    setDiscounts((prev) => prev.filter((d) => d.id !== id))
+  }
+
+  async function handleToggle(d: ProductDiscountDto) {
+    const updated = { ...d, isActive: !d.isActive }
+    if (isApiMode() && getStoredToken()) {
+      try { await api.put<ProductDiscountDto>(`/api/admin/discounts/${d.id}`, updated) } catch { return }
+    }
+    setDiscounts((prev) => prev.map((x) => (x.id === d.id ? updated : x)))
+  }
+
+  const activeCount = discounts.filter((d) => d.isActive).length
+
+  return (
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-gray-900">Product Discounts</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{activeCount} active · {discounts.length} total</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => { setEditingDiscount(null); setShowModal(true) }}
+          className="flex items-center gap-2 bg-[#3d7a20] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#2a5a14] transition-colors self-start sm:self-auto"
+        >
+          <TiIcon name="plus" size={15} />
+          Add Discount
+        </button>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="w-8 h-8 border-2 border-[#3d7a20] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : discounts.length === 0 ? (
+          <p className="text-center text-gray-400 text-sm py-12">No product discounts yet.</p>
+        ) : (
+          <table className="w-full text-sm min-w-[580px]">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Original</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Discount</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Final Price</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Expires</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {discounts.map((d) => (
+                <tr key={d.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-4 py-3 font-semibold text-gray-900 text-sm max-w-[160px] truncate">{d.productName ?? d.productId.slice(0, 8)}</td>
+                  <td className="px-4 py-3 text-right text-gray-400 line-through text-sm">₹{d.originalPrice}</td>
+                  <td className="px-4 py-3 text-right font-bold text-amber-600">{d.discountPercent}% off</td>
+                  <td className="px-4 py-3 text-right font-semibold text-[#3d7a20] hidden sm:table-cell">₹{d.discountedPrice}</td>
+                  <td className="px-4 py-3 text-center text-gray-500 text-xs hidden md:table-cell">
+                    {new Date(d.endsAtUtc).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      type="button"
+                      onClick={() => void handleToggle(d)}
+                      className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${d.isActive ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                    >
+                      {d.isActive ? 'Active' : 'Inactive'}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <button type="button" onClick={() => { setEditingDiscount(d); setShowModal(true) }} className="p-1.5 text-gray-400 hover:text-[#3d7a20] hover:bg-[#fdf4e8] rounded-lg transition-colors" aria-label="Edit"><TiIcon name="pencil" size={14} /></button>
+                      <button type="button" onClick={() => void handleDelete(d.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" aria-label="Delete"><TiIcon name="trash" size={14} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {showModal && (
+        <DiscountFormModal
+          discount={editingDiscount}
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveDiscount}
+        />
+      )}
+    </div>
+  )
+}
+
+// ─── Panel: Coupons ───────────────────────────────────────────────────────────
 
 interface CouponDto {
   id: string
@@ -2314,7 +2739,7 @@ function SidebarContent({ activeNav, setActiveNav, onNavClick }: {
           <div className="rounded-xl p-1 flex-shrink-0">
             <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-8 h-8 rounded-lg object-contain" />
           </div>
-          <span className="font-serif text-white font-bold text-sm">{t('Tenkasi Fresh', 'டெங்காசி பிரெஷ்')}</span>
+          <span className="font-serif text-white font-bold text-sm">{t('Tenkasi Fresh', 'தென்காசி பிரெஷ்')}</span>
         </div>
         <p className="text-white/40 text-[10px] tracking-widest uppercase ml-11">{t('Admin Console', 'நிர்வாக மேடை')}</p>
       </div>
@@ -2409,7 +2834,7 @@ function AdminPage() {
               </div>
               <div className="hidden sm:block">
                 <p className="text-sm font-semibold text-gray-900 leading-tight">{user.name}</p>
-                <p className="text-xs text-gray-500">{t('Admin · Tenkasi', 'நிர்வாகி · டெங்காசி')}</p>
+                <p className="text-xs text-gray-500">{t('Admin · Tenkasi', 'நிர்வாகி · தென்காசி')}</p>
               </div>
             </div>
           </div>
@@ -2418,12 +2843,12 @@ function AdminPage() {
         <div className="flex-1 overflow-y-auto">
           {activeNav === 'Overview'   && <OverviewPanel />}
           {activeNav === 'Inventory'  && <InventoryPanel />}
-          {activeNav === 'Discounts'  && <DiscountsPanel />}
+          {activeNav === 'Discounts'  && <ProductDiscountsPanel />}
+          {activeNav === 'Coupons'    && <DiscountsPanel />}
           {activeNav === 'Seasonal'   && <SeasonalPanel />}
           {activeNav === 'Baskets'    && <BasketsPanel />}
           {activeNav === 'Orders'     && <OrdersPanel />}
           {activeNav === 'Delivery'   && <DeliveryPanel />}
-          {activeNav === 'Farmers'    && <FarmersPanel />}
           {activeNav === 'Settings'   && <SettingsPanel />}
         </div>
       </div>

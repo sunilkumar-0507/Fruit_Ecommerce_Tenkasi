@@ -23,7 +23,7 @@ export default function ProductCard({
   const { toggle, isFav } = useFav()
   const fav = isFav(id)
   const [added, setAdded] = useState(false)
-  const discount = Math.round(((originalPrice - price) / originalPrice) * 100)
+  const discount = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0
 
   function handleAdd() {
     addToCart({ id, name, nameTamil, category, image, price, unit })
@@ -41,9 +41,11 @@ export default function ProductCard({
           className="product-img-enhance w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
-        <div className="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-full text-xs font-bold">
-          {discount}% OFF
-        </div>
+        {discount > 0 && (
+          <div className="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-full text-xs font-bold">
+            {discount}% OFF
+          </div>
+        )}
         {typeBadge && (
           <div className="absolute top-3 right-3 bg-white/90 text-gray-700 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide border border-gray-200">
             {typeBadge}
@@ -75,9 +77,9 @@ export default function ProductCard({
           <div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-xl font-bold text-gray-900">₹{price}</span>
-              <span className="text-sm text-gray-400 line-through">₹{originalPrice}</span>
+              {discount > 0 && <span className="text-sm text-gray-400 line-through">₹{originalPrice}</span>}
             </div>
-            <p className="text-gray-400 text-xs">{unit}</p>
+            <p className="text-gray-400 text-xs">per kg</p>
           </div>
           <button
             type="button"

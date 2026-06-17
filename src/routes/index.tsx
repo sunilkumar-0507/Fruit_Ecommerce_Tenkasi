@@ -36,31 +36,31 @@ const DEMO_FEATURED = PRODUCTS.filter((p) => p.featured)
 
 const TESTIMONIALS = [
   {
-    name: 'Priya Sharma',
+    name: 'Priya S.',
     role: 'Regular Customer',
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
-    testimonial: "The freshness of fruits from Tenkasi Fresh is unmatched! I've been a customer for 2 years.",
+    testimonial: 'The quality and taste remind me of the fruits I enjoyed during my childhood in our village.',
     rating: 5,
   },
   {
-    name: 'Rajesh Kumar',
+    name: 'Rajesh K.',
     role: 'Business Owner',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
-    testimonial: 'Perfect for my restaurant. Always consistent quality and timely delivery.',
+    testimonial: 'Fresh, flavorful, and beautifully packed. The seasonal varieties are always a delight.',
     rating: 5,
   },
   {
-    name: 'Anjali Desai',
+    name: 'Anjali D.',
     role: 'Home Chef',
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
-    testimonial: 'Premium quality at reasonable prices. My family loves the organic selection!',
+    testimonial: 'Tenkasi Fresh has helped us rediscover traditional fruits that are becoming difficult to find elsewhere.',
     rating: 5,
   },
   {
-    name: 'Vikram Singh',
+    name: 'Vikram R.',
     role: 'Health Enthusiast',
     image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop',
-    testimonial: "Best organic fruits I've found. Supporting local farming has never been easier.",
+    testimonial: 'The authenticity and quality keep me coming back every season.',
     rating: 5,
   },
 ]
@@ -141,16 +141,16 @@ function HomePage() {
             <div className="space-y-6 sm:space-y-8 z-10">
               <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
                 {lang === 'ta' ? (
-                  <>வெயிலில் பழுத்த,<br />மேற்கு தொடர்ச்சி மலை<br /><span className="text-[#3d7a20]">டெங்காசியின்</span> கொடை.</>
+                  <>எங்கள் மண்ணிலிருந்து<br />உங்கள் உள்ளத்திற்கு<br /><span className="text-[#3d7a20]">தென்காசி பழங்கள்</span></>
                 ) : (
-                  <>Sun-ripened,<br />bounty from the<br />foothills of{' '}<span className="text-[#3d7a20]">Tenkasi</span>.</>
+                  <>From Our Soil<br />to Your Soul —<br /><span className="text-[#3d7a20]">Tenkasi</span> Native Fruits</>
                 )}
               </h1>
               <p className="text-base sm:text-lg text-gray-600 max-w-lg leading-relaxed">
                 {lang === 'ta' ? (
-                  <>விடியற்காலையில் அறுவடை. வாழை இலைகளில் மூட்டு. <span className="text-[#3d7a20] font-semibold">தமிழ்நாடு</span> முழுவதும் சாயங்காலத்திற்கு முன் டெலிவரி — நேரடியாக எங்கள் 240+ விவசாயி குடும்பங்களிடமிருந்து.</>
+                  <>மேற்கு தொடர்ச்சி மலையடிவாரத்தில் உள்ள <span className="text-[#3d7a20] font-semibold">தென்காசி</span> — தமிழ்நாட்டின் மிக விலைமதிப்பான பழ வகைகளின் தொட்டில். பாரம்பரிய சுவைகளை, பருவகால அறுவடைகளை, மேற்கு தொடர்ச்சி மலையின் புதுமையை உங்களுக்கு கொண்டு வருகிறோம்.</>
                 ) : (
-                  <>Harvested at dawn. Wrapped in banana leaves. Delivered by dusk across{' '}<span className="text-[#3d7a20] font-semibold">Tamil Nadu</span> — directly from our 240+ farmer families.</>
+                  <>Nestled in the foothills of the Western Ghats, <span className="text-[#3d7a20] font-semibold">Tenkasi</span> is home to Tamil Nadu's most treasured fruit varieties. We bring you authentic flavors, seasonal harvests, and the freshness of the Western Ghats.</>
                 )}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
@@ -253,16 +253,16 @@ function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#3d7a20] mb-3">
-              {t('Why Choose Tenkasi Fresh?', 'ஏன் டெங்காசி பிரெஷ் தேர்வு செய்ய வேண்டும்?')}
+              {t('Why Choose Tenkasi Fresh?', 'ஏன் தென்காசி பிரெஷ் தேர்வு செய்ய வேண்டும்?')}
             </h2>
             <p className="text-gray-500 text-lg">{t('We deliver excellence in every bite', 'ஒவ்வொரு கடியிலும் சிறந்த தரம் வழங்குகிறோம்')}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: <Leaf size={28} />, title: t('Organic & Natural', 'இயற்கை மற்றும் கேமிக்கல் இல்லாதது'), desc: t('Pesticide-free fruits grown in natural conditions', 'இயற்கை சூழலில் பூச்சிக்கொல்லி இல்லாமல் வளர்க்கப்பட்ட பழங்கள்') },
-              { icon: <Zap size={28} />, title: t('Farm Fresh', 'பண்ணை புதியது'), desc: t('Picked and delivered within 24 hours', '24 மணி நேரத்திற்குள் பறித்து டெலிவரி செய்யப்படும்') },
-              { icon: <Award size={28} />, title: t('Quality Assured', 'தரம் உறுதி'), desc: t('Stringent quality checks at every step', 'ஒவ்வொரு கட்டத்திலும் கடுமையான தர சோதனை') },
-              { icon: <Truck size={28} />, title: t('Fast Delivery', 'விரைவான டெலிவரி'), desc: t('Quick delivery available across Tamil Nadu', 'தமிழ்நாடு முழுவதும் விரைவான டெலிவரி கிடைக்கும்') },
+              { icon: <Leaf size={28} />, title: t('Heritage Varieties', 'பாரம்பரிய வகைகள்'), desc: t('Carefully selected native fruits that preserve the authentic flavors of Tamil Nadu.', 'தமிழ்நாட்டின் உண்மையான சுவைகளை பாதுகாக்கும் கவனமாக தேர்ந்தெடுக்கப்பட்ட நாட்டுப் பழங்கள்.') },
+              { icon: <Zap size={28} />, title: t('Seasonal Freshness', 'பருவகால புதுமை'), desc: t('Fruits offered during their natural harvest season for superior taste and nutrition.', 'சிறந்த சுவை மற்றும் ஊட்டச்சத்துக்காக இயற்கையான அறுவடை பருவத்தில் வழங்கப்படும் பழங்கள்.') },
+              { icon: <Award size={28} />, title: t('Premium Quality', 'உயர்தர தரம்'), desc: t('Every fruit is selected and inspected to ensure freshness, quality, and consistency.', 'புதுமை, தரம் மற்றும் சீரான தன்மையை உறுதிசெய்ய ஒவ்வொரு பழமும் தேர்ந்தெடுக்கப்பட்டு சோதிக்கப்படுகிறது.') },
+              { icon: <Truck size={28} />, title: t('Trusted Since 1959', '1959 முதல் நம்பகமானது'), desc: t('Built on decades of agricultural heritage and community trust across Tamil Nadu.', 'தமிழ்நாடு முழுவதும் பல தசாப்தங்களின் விவசாய பாரம்பரியம் மற்றும் சமூக நம்பிக்கையில் கட்டப்பட்டது.') },
             ].map((item) => (
               <div
                 key={item.title}
@@ -360,7 +360,7 @@ function HomePage() {
                 <p className="text-[#f5821f] text-xs font-bold tracking-widest uppercase">{t('About Us', 'எங்களைப் பற்றி')}</p>
                 <h2 className="font-serif text-4xl sm:text-5xl font-bold leading-tight">
                   {lang === 'ta' ? (
-                    <>டெங்காசியில் வேரூன்றியது,<br />தமிழ்நாடு முழுவதும் நம்பகமானது</>
+                    <>தென்காசியில் வேரூன்றியது,<br />தமிழ்நாடு முழுவதும் நம்பகமானது</>
                   ) : (
                     <>Rooted in Tenkasi,<br />trusted across Tamil Nadu</>
                   )}
@@ -368,7 +368,7 @@ function HomePage() {
                 <p className="text-white/80 text-lg leading-relaxed">
                   {t(
                     'Established in 1959, O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative is a network of 240+ farming families from the Western Ghats foothills. We cut out the middlemen and bring tropical fruits from our soil to your doorstep — fresh, chemical-free, and fairly priced.',
-                    '1959இல் நிறுவப்பட்ட O.1919 டெங்காசி செங்கோட்டை தாலுக்கா விவசாய உற்பத்தியாளர் கூட்டுறவு, மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து 240+ விவசாயி குடும்பங்களின் வலையமைப்பு. இடைத்தரகர்களை கடந்து, எங்கள் மண்ணிலிருந்து நேரடியாக உங்கள் வீட்டுக்கு — புதியதாக, கேமிக்கல் இல்லாமல், நியாயமான விலையில்.'
+                    '1959இல் நிறுவப்பட்ட O.1919 தென்காசி செங்கோட்டை தாலுக்கா விவசாய உற்பத்தியாளர் கூட்டுறவு, மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து 240+ விவசாயி குடும்பங்களின் வலையமைப்பு. இடைத்தரகர்களை கடந்து, எங்கள் மண்ணிலிருந்து நேரடியாக உங்கள் வீட்டுக்கு — புதியதாக, கேமிக்கல் இல்லாமல், நியாயமான விலையில்.'
                   )}
                 </p>
                 <Link

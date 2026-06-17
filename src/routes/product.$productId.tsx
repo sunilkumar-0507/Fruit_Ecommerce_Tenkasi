@@ -303,7 +303,7 @@ function ProductDetailPage() {
               )}
               {product.seasonal && (
                 <span className="bg-amber-50 text-amber-700 text-xs font-bold px-3 py-1 rounded-full tracking-widest uppercase">
-                  🌿 Seasonal
+                  🌿 {t('Seasonal', 'பருவகாலம்')}
                 </span>
               )}
             </div>
@@ -328,14 +328,14 @@ function ProductDetailPage() {
                 <span className="text-sm font-bold">{product.rating}</span>
                 <span className="text-amber-300 text-sm">★</span>
               </div>
-              <span className="text-gray-500 text-sm">{product.reviews.toLocaleString('en-IN')} ratings</span>
+              <span className="text-gray-500 text-sm">{product.reviews.toLocaleString('en-IN')} {t('ratings', 'மதிப்பீடுகள்')}</span>
             </div>
 
             {/* Price */}
             <div className="flex items-end gap-3 py-3 border-t border-b border-gray-100">
               <span className="text-3xl font-bold text-gray-900">₹{product.price}</span>
               <span className="text-lg text-gray-400 line-through mb-0.5">₹{product.originalPrice}</span>
-              {discount > 0 && <span className="text-emerald-600 font-bold text-sm mb-0.5">{discount}% off</span>}
+              {discount > 0 && <span className="text-emerald-600 font-bold text-sm mb-0.5">{discount}% {t('off', 'தள்ளுபடி')}</span>}
               <span className="text-gray-400 text-sm mb-0.5">/ {product.unit}</span>
             </div>
 

@@ -70,7 +70,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     if (isApiMode() && getStoredToken()) {
       api
-        .post<CartDto>('/api/Cart/items', { productId: product.id, quantity: qty })
+        .post<CartDto>('/api/Cart/items', { productId: product.id, quantity: Math.max(1, Math.round(qty)) })
         .then((cart) => {
           const cartItem = (cart.items ?? []).find((ci) => ci.productId === product.id)
           if (cartItem) {

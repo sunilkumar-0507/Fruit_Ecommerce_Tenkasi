@@ -9,6 +9,7 @@ import { useCart } from '#/context/CartContext'
 import { useOrders, type Address } from '#/context/OrderContext'
 import { useAuth } from '#/context/AuthContext'
 import { notifyNewOrder } from '#/services/notificationService'
+import { createPaymentSession, verifyPayment, launchCashfreeCheckout } from '#/lib/apiClient'
 
 export const Route = createFileRoute('/cart')({ component: CartPage })
 
@@ -101,6 +102,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
   const [couponCode, setCouponCode] = useState(cartCoupon?.code ?? '')
   const [couponDiscount, setCouponDiscount] = useState(cartCoupon?.discount ?? 0)
   const [wasRepeatCustomer] = useState(() => orders.length >= 1)
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online'>('cod')
 
   const emptyForm = {
     name: user?.name ?? '',
@@ -137,9 +139,25 @@ function CheckoutModal({ onClose, cartCoupon }: {
     setPlacing(true)
     setOrderError('')
     try {
-      const result = await placeOrder(selectedAddr.id, couponCode || undefined)
-      setOrderId(result.id)
+      const result = await placeOrder(selectedAddr.id, couponCode || undefined, paymentMethod)
       if (result.discountAmount) setCouponDiscount(result.discountAmount)
+
+      // Online: open Cashfree's seamless checkout, then confirm with the server before
+      // marking the order successful. On failure/cancel the order stays Pending.
+      if (paymentMethod === 'online') {
+        if (!result.rawId) throw new Error('Could not start the online payment for this order.')
+        const session = await createPaymentSession(result.rawId, {
+          customerName: selectedAddr.name || user?.name,
+          customerPhone: selectedAddr.phone || user?.phone,
+        })
+        await launchCashfreeCheckout(session.paymentSessionId)
+        const verified = await verifyPayment(result.rawId)
+        if (verified.paymentStatus !== 'paid') {
+          throw new Error('Payment was not completed. Your order is saved as pending — you can retry from My Orders.')
+        }
+      }
+
+      setOrderId(result.id)
       void notifyNewOrder({
         id: result.id,
         customerName: user?.name ?? selectedAddr.name,
@@ -459,6 +477,46 @@ function CheckoutModal({ onClose, cartCoupon }: {
                 </div>
               </div>
 
+              {/* Payment method */}
+              <div className="mb-5">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Payment Method</h3>
+                <div className="space-y-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('cod')}
+                    className={`w-full flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all text-left ${paymentMethod === 'cod' ? 'border-[#3d7a20] bg-[#fef8f0]' : 'border-gray-200 hover:border-gray-300 bg-white'}`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${paymentMethod === 'cod' ? 'border-[#3d7a20]' : 'border-gray-300'}`}>
+                      {paymentMethod === 'cod' && <div className="w-2 h-2 rounded-full bg-[#3d7a20]" />}
+                    </div>
+                    <div className="flex items-center gap-2.5 flex-1">
+                      <span className="text-lg">💵</span>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">Cash on Delivery</p>
+                        <p className="text-xs text-gray-400">Pay when your order arrives</p>
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('online')}
+                    className={`w-full flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all text-left ${paymentMethod === 'online' ? 'border-[#3d7a20] bg-[#fef8f0]' : 'border-gray-200 hover:border-gray-300 bg-white'}`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${paymentMethod === 'online' ? 'border-[#3d7a20]' : 'border-gray-300'}`}>
+                      {paymentMethod === 'online' && <div className="w-2 h-2 rounded-full bg-[#3d7a20]" />}
+                    </div>
+                    <div className="flex items-center gap-2.5 flex-1">
+                      <span className="text-lg">💳</span>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">Pay Online</p>
+                        <p className="text-xs text-gray-400">UPI, cards &amp; net banking via Cashfree</p>
+                      </div>
+                      <span className="ml-auto text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full flex-shrink-0">SECURE</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               {orderError && (
                 <p className="text-sm text-red-500 text-center mb-3">{orderError}</p>
               )}
@@ -474,6 +532,8 @@ function CheckoutModal({ onClose, cartCoupon }: {
                     <Loader2 size={16} className="animate-spin" />
                     Placing order…
                   </>
+                ) : paymentMethod === 'online' ? (
+                  `Pay ₹${total} via Cashfree`
                 ) : (
                   `Place Order · ₹${total}`
                 )}
@@ -541,6 +601,11 @@ function CheckoutModal({ onClose, cartCoupon }: {
 function CartPage() {
   const user = useAuthGuard()
   const { items, updateQty, removeItem } = useCart()
+
+  function handleDecrement(item: (typeof items)[0]) {
+    if (item.qty <= 1) removeItem(item.id)
+    else updateQty(item.id, -1)
+  }
   const { orders } = useOrders()
   const [showCheckout, setShowCheckout] = useState(false)
   const [couponInput, setCouponInput] = useState('')
@@ -625,12 +690,12 @@ function CartPage() {
                     <h3 className="font-serif text-sm sm:text-base font-semibold text-gray-900 truncate">
                       {item.name}
                     </h3>
-                    <p className="text-gray-400 text-xs">{item.unit}</p>
+                    <p className="text-gray-400 text-xs">per kg</p>
                   </div>
                   <div className="flex items-center gap-1.5 sm:gap-2 bg-gray-100 rounded-full px-2 sm:px-3 py-1.5 flex-shrink-0">
                     <button
                       type="button"
-                      onClick={() => updateQty(item.id, -1)}
+                      onClick={() => handleDecrement(item)}
                       className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors"
                       aria-label="Decrease quantity"
                     >

@@ -247,6 +247,8 @@ function LoginPage() {
   )
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 function SignInForm({ onSuccess, onForgot }: { onSuccess: (u: import('#/services/auth').User) => void; onForgot: () => void }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -257,6 +259,10 @@ function SignInForm({ onSuccess, onForgot }: { onSuccess: (u: import('#/services
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
     setError('')
+    if (!EMAIL_RE.test(email.trim())) {
+      setError('Please enter a valid email address.')
+      return
+    }
     setLoading(true)
     try {
       const user = await loginUser({ email, password })
@@ -305,6 +311,10 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
     setError('')
+    if (!EMAIL_RE.test(email.trim())) {
+      setError('Please enter a valid email address.')
+      return
+    }
     setLoading(true)
     try {
       await fetch(`${(import.meta.env as Record<string, string>).VITE_API_URL ?? ''}/api/Auth/forgot-password`, {
@@ -375,6 +385,10 @@ function RegisterForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
     setError('')
+    if (!EMAIL_RE.test(form.email.trim())) {
+      setError('Please enter a valid email address.')
+      return
+    }
     setLoading(true)
     try {
       const user = await registerUser(form)

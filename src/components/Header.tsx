@@ -6,8 +6,8 @@ import { useFav } from '#/context/FavContext'
 import TiIcon from '#/components/TiIcon'
 import { useLang } from '#/contexts/LanguageContext'
 
-const TICKER_EN = ['Farm Fresh', 'Premium Quality', 'Fast Delivery', 'Best Prices', '240+ Farmers', 'Direct from Farm']
-const TICKER_TA = ['பண்ணை புதிய பழங்கள்', 'உயர் தரம்', 'விரைவான டெலிவரி', 'சிறந்த விலை', '240+ விவசாயிகள்', 'நேரடியாக பண்ணையிலிருந்து']
+const TICKER_EN = ['Authentic Taste', 'Seasonal Harvests', 'Heritage Varieties', 'Premium Quality', 'Naturally Grown', 'Western Ghats Freshness']
+const TICKER_TA = ['நேர்மையான சுவை', 'பருவகால அறுவடை', 'பாரம்பரிய ரகங்கள்', 'உயர் தரம்', 'இயற்கையாக வளர்ந்தது', 'மேற்கு தொடர்ச்சி மலை பதனம்']
 
 function HeaderTicker({ lang }: { lang: 'en' | 'ta' }) {
   const items = lang === 'ta' ? TICKER_TA : TICKER_EN
@@ -157,9 +157,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-
-      {/* Ticker */}
-      <HeaderTicker lang={lang} />
 
       {/* Main Header */}
       <nav className="bg-[#0c1d2b] border-b border-[#f5821f]/20 shadow-lg">
@@ -318,6 +315,9 @@ export default function Header() {
           )}
         </div>
       </nav>
+
+      {/* Ticker */}
+      <HeaderTicker lang={lang} />
     </header>
   )
 }

@@ -49,7 +49,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="w-14 h-14 rounded-xl object-contain flex-shrink-0" />
-              <span className="font-serif text-lg font-bold">{t('Tenkasi Fresh Fruits', 'டெங்காசி பிரெஷ் பழங்கள்')}</span>
+              <span className="font-serif text-lg font-bold">{t('Tenkasi Fresh Fruits', 'தென்காசி பிரெஷ் பழங்கள்')}</span>
             </div>
             <p className="text-white/70 text-sm leading-relaxed mb-5">
               {t(
@@ -75,10 +75,10 @@ export default function Footer() {
               <p className="font-semibold text-white/85 text-[11px] leading-snug">
                 {t(
                   'O.1919 Tenkasi Shencottai Taluks Agricultural Producers Cooperative Marketing Society',
-                  'O.1919 டெங்காசி செங்கோட்டை தாலுக்கா விவசாய உற்பத்தியாளர் கூட்டுறவு சந்தை சமூகம்'
+                  'O.1919 தென்காசி செங்கோட்டை தாலுக்கா விவசாய உற்பத்தியாளர் கூட்டுறவு சந்தை சமூகம்'
                 )}
               </p>
-              <p className="text-white/55">{t('42C/1A Rail Nagar Road, Tenkasi – 627 811', '42C/1A ரெயில் நகர் சாலை, டெங்காசி – 627 811')}</p>
+              <p className="text-white/55">{t('42C/1A Rail Nagar Road, Tenkasi – 627 811', '42C/1A ரெயில் நகர் சாலை, தென்காசி – 627 811')}</p>
               <a href="tel:+917094402579" className="text-white/55 hover:text-white transition-colors no-underline block">
                 +91 7094402579
               </a>
@@ -130,7 +130,7 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-white/10 py-4 px-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-white/50 text-xs">
-          <p>{t('© 2026 Tenkasi Fresh Fruits. From our soil to your soul.', '© 2026 டெங்காசி பிரெஷ் பழங்கள். எங்கள் மண்ணிலிருந்து உங்கள் உள்ளத்திற்கு.')}</p>
+          <p>{t('© 2026 Tenkasi Fresh Fruits. From our soil to your soul.', '© 2026 தென்காசி பிரெஷ் பழங்கள். எங்கள் மண்ணிலிருந்து உங்கள் உள்ளத்திற்கு.')}</p>
           <p>{t('Made with ♥ in Tamil Nadu · FSSAI Lic. 22824105000124', 'தமிழ்நாட்டில் ♥ உடன் தயாரிக்கப்பட்டது · FSSAI உரிமம். 22824105000124')}</p>
         </div>
       </div>

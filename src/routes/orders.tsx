@@ -84,12 +84,31 @@ function OrderCard({ order, onCancel }: { order: OrderDto; onCancel: (id: string
         ) : (
           <p className="text-xs text-gray-400 mb-4 italic">No item details available.</p>
         )}
-        <div className="flex items-center justify-between border-t border-gray-50 pt-3">
-          <span className="text-sm text-gray-400">{items.length} item{items.length !== 1 ? 's' : ''}</span>
-          <div>
-            <span className="text-xs text-gray-400 mr-1">Total</span>
-            <span className="font-bold text-gray-900">₹{order.total.toFixed(2)}</span>
+        <div className="border-t border-gray-50 pt-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm text-gray-400">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+              {order.paymentMethod && (
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${order.paymentMethod === 'online' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                  {order.paymentMethod === 'online' ? '💳 Online' : '💵 COD'}
+                </span>
+              )}
+              {order.paymentMethod === 'online' && order.paymentStatus && (
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${order.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {order.paymentStatus === 'paid' ? 'Paid' : 'Payment pending'}
+                </span>
+              )}
+            </div>
+            <div>
+              <span className="text-xs text-gray-400 mr-1">Total</span>
+              <span className="font-bold text-gray-900">₹{order.total.toFixed(2)}</span>
+            </div>
           </div>
+          {order.paymentMethod === 'online' && order.paymentTransactionId && (
+            <p className="text-[11px] text-gray-400 mt-2">
+              Txn ID: <span className="font-mono text-gray-600">{order.paymentTransactionId}</span>
+            </p>
+          )}
         </div>
       </div>
     </div>

@@ -21,18 +21,18 @@ const OCCASIONS = [
 const FEATURES = [
   {
     icon: <TiIcon name="gift" size={24} className="text-[#3d7a20]" />,
-    title: 'Hand-arranged',
-    desc: 'Each basket is hand-assembled by our team with care and attention to detail.',
+    title: 'Beautifully Arranged',
+    desc: 'Every basket is thoughtfully assembled to create a premium gifting experience.',
   },
   {
     icon: <TiIcon name="star" size={24} className="text-[#3d7a20]" />,
-    title: 'Premium selection',
-    desc: 'Only the finest, ripest fruits hand-picked from trusted farmers make it in.',
+    title: 'Premium Fruit Selection',
+    desc: 'Only carefully selected fruits known for their quality, freshness, and presentation are included.',
   },
   {
     icon: <TiIcon name="truck" size={24} className="text-[#3d7a20]" />,
-    title: 'Fast delivery',
-    desc: 'Quick delivery wrapped in traditional banana leaves, fresh to your door.',
+    title: 'Convenient Delivery',
+    desc: 'Delivered fresh and ready to gift across Tamil Nadu, wrapped in traditional style.',
   },
 ]
 
@@ -99,7 +99,7 @@ function CustomBasketModal({ onClose }: { onClose: () => void }) {
                     </div>
                     <h4 className="text-xs font-semibold text-gray-900 leading-tight mb-0.5 truncate">{p.name}</h4>
                     <p className="text-[#3d7a20] text-xs font-bold mb-2">
-                      ₹{p.price}<span className="text-gray-400 font-normal"> /{p.unit}</span>
+                      ₹{p.price}<span className="text-gray-400 font-normal"> /kg</span>
                     </p>
                     {qty === 0 ? (
                       <button
@@ -209,10 +209,10 @@ function BasketsPage() {
               Festival &amp; Gift Baskets
             </p>
             <h1 className="font-serif text-5xl sm:text-6xl font-bold text-gray-900 mb-4">
-              Give the gift<br />of freshness
+              Thoughtfully Curated.<br />Naturally Memorable.
             </h1>
             <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-lg">
-              Curated fruit hampers for every occasion — wrapped in banana leaves and tied with raffia, the Tenkasi way.
+              Celebrate life's special moments with beautifully curated fruit baskets from Tenkasi Fresh. Whether it's a festival, wedding, corporate event, or a heartfelt gift — our hampers bring freshness, health, and the authentic charm of Tamil Nadu's agricultural heritage.
             </p>
             <div className="flex flex-wrap gap-2">
               {OCCASIONS.map((o) => (

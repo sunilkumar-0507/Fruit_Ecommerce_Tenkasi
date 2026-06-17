@@ -23,6 +23,7 @@ export interface Order {
   customerName: string
   date: string
   status: string
+  paymentMethod?: string
 }
 
 interface OrderContextValue {
@@ -31,7 +32,7 @@ interface OrderContextValue {
   loadAddresses: () => Promise<void>
   addAddress: (a: Omit<Address, 'id'>) => Promise<Address>
   setDefaultAddress: (id: string) => Promise<void>
-  placeOrder: (shippingAddressId: string, couponCode?: string) => Promise<{ id: string; discountAmount?: number }>
+  placeOrder: (shippingAddressId: string, couponCode?: string, paymentMethod?: string) => Promise<{ id: string; rawId: string; total: number; discountAmount?: number }>
 }
 
 const OrderContext = createContext<OrderContextValue | null>(null)
@@ -151,11 +152,11 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     setAddresses((prev) => prev.map((a) => ({ ...a, isDefault: a.id === id })))
   }
 
-  async function placeOrder(shippingAddressId: string, couponCode?: string): Promise<{ id: string; discountAmount?: number }> {
+  async function placeOrder(shippingAddressId: string, couponCode?: string, paymentMethod?: string): Promise<{ id: string; rawId: string; total: number; discountAmount?: number }> {
     if (!isApiMode() || !getStoredToken()) {
       // Demo mode: not expected when using API, but fallback
       orderSeq += 1
-      return { id: `#TF-${orderSeq}` }
+      return { id: `#TF-${orderSeq}`, rawId: '', total: 0 }
     }
 
     let validatedCode: string | null = null
@@ -174,6 +175,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     const dto = await api.post<OrderDto>('/api/Orders', {
       shippingAddressId,
       couponCode: validatedCode,
+      paymentMethod: paymentMethod ?? 'cod',
     })
 
     const displayId = dto.orderNumber ?? `#${dto.id.slice(0, 8).toUpperCase()}`
@@ -195,11 +197,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         day: '2-digit', month: 'short', year: 'numeric',
       }),
       status: 'Confirmed',
+      paymentMethod: dto.paymentMethod ?? paymentMethod ?? 'cod',
     }
 
     setOrders((prev) => [newOrder, ...prev])
 
-    return { id: displayId, discountAmount }
+    return { id: displayId, rawId: dto.id, total: dto.total, discountAmount }
   }
 
   return (
