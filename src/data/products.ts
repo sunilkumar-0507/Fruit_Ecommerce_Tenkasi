@@ -16,8 +16,11 @@ export interface Product {
   seasonal?: boolean
   featured?: boolean
   isBasket?: boolean
+  isOutOfStock?: boolean
   description?: string
+  descriptionTa?: string
   uses?: string[]
+  usesTa?: string[]
 }
 
 export const PRODUCTS: Product[] = [
@@ -36,7 +39,9 @@ export const PRODUCTS: Product[] = [
     unit: '1 kg',
     featured: true,
     description: 'Hand-picked from the foothills of Tenkasi, these mangoes are slow-ripened on the tree without carbide. Their golden flesh is intensely sweet with a floral aroma unique to the Tenkasi micro-climate. Each fruit is individually checked for ripeness before packing.',
+    descriptionTa: 'தேன்கசி அடிவாரத்தில் கையால் பறிக்கப்பட்ட இந்த மாம்பழங்கள், கார்பைடு இல்லாமல் மரத்திலேயே மெல்லப் பழுக்கின்றன. தேன்கசி சிறு தட்பவெப்பநிலையில் மட்டுமே கிடைக்கும் மலர் வாசம் கொண்ட தங்க நிற சுளைகள் மிகவும் இனிமையானவை. ஒவ்வொரு பழமும் நிரம்பப் பழுத்த நிலையை சோதித்து பேக் செய்யப்படுகிறது.',
     uses: ['Eat fresh as a healthy snack', 'Make mango lassi or milkshake', 'Use in salads and salsas', 'Prepare mango pickle (urugai)', 'Add to desserts and smoothies'],
+    usesTa: ['ஆரோக்கியமான சிற்றுண்டியாக நேரடியாக சாப்பிடலாம்', 'மாம்பழ லஸ்ஸி அல்லது மில்க்ஷேக் தயாரிக்கலாம்', 'சாலட் மற்றும் சல்சாவில் சேர்க்கலாம்', 'மாம்பழ உறுகை (ஊறுகாய்) தயாரிக்கலாம்', 'இனிப்பு வகைகள் மற்றும் ஸ்மூதியில் சேர்க்கலாம்'],
   },
   {
     id: '2',
@@ -53,7 +58,9 @@ export const PRODUCTS: Product[] = [
     unit: '500 g',
     featured: true,
     description: 'Imported directly from Thailand and Malaysia, these rambutans arrive in Tamil Nadu within 48 hours of harvest. The hairy exterior hides a juicy, lychee-like white flesh that is refreshingly sweet with a hint of tartness.',
+    descriptionTa: 'தைலாந்து மற்றும் மலேசியாவிலிருந்து நேரடியாக இறக்குமதி செய்யப்படும் இந்த ராம்புட்டான்கள், அறுவடையிலிருந்து 48 மணி நேரத்திற்குள் தமிழ்நாடு வருகின்றன. முட்கள் போன்ற வெளியுரைக்கு மறைவில் உள்ள வெண்மையான சுளை, லிச்சி போன்று புத்துணர்ச்சியான இனிப்பும் சிறிது புளிப்பும் கொண்டது.',
     uses: ['Eat fresh — peel and enjoy', 'Add to fruit salads', 'Make rambutan juice', 'Use in desserts and ice cream', 'Freeze for later use'],
+    usesTa: ['உரித்து நேரடியாக சாப்பிடலாம்', 'பழச் சாலட்டில் சேர்க்கலாம்', 'ராம்புட்டான் சாறு தயாரிக்கலாம்', 'இனிப்பு வகைகள் மற்றும் ஐஸ்கிரீமில் சேர்க்கலாம்', 'பின்னர் பயன்படுத்த உறைய வைக்கலாம்'],
   },
   {
     id: '3',
@@ -69,7 +76,9 @@ export const PRODUCTS: Product[] = [
     unit: '1 kg',
     featured: true,
     description: 'Sourced from premium farms in Maharashtra, these ruby-red pomegranates are celebrated for their deep colour, high juice content, and jewel-like arils. Rich in antioxidants and vitamin C, they are a superfood that tastes exceptional.',
+    descriptionTa: 'மகாராஷ்டிரா சிறப்பு பண்ணைகளிலிருந்து கொண்டுவரப்படும் இந்த மாணிக்க சிவப்பு மாதுளைகள், அழகிய நிறம், அதிக சாறு மற்றும் நகை போன்ற விதைகளுக்காக பிரசித்தமானவை. ஆன்டிஆக்ஸிடண்ட் மற்றும் வைட்டமின் சி நிறைந்த சூப்பர் உணவு.',
     uses: ['Eat arils as a snack', 'Extract fresh juice', 'Add to yogurt and oatmeal', 'Use as garnish for biryanis', 'Prepare pomegranate raita'],
+    usesTa: ['விதைகளை சிற்றுண்டியாக சாப்பிடலாம்', 'புதிய சாறு பிழியலாம்', 'தயிர் மற்றும் ஓட்ஸில் சேர்க்கலாம்', 'பிரியாணியில் அலங்காரமாக பயன்படுத்தலாம்', 'மாதுளை ரைத்தா தயாரிக்கலாம்'],
   },
   {
     id: '4',
@@ -86,7 +95,9 @@ export const PRODUCTS: Product[] = [
     unit: '500 g',
     featured: true,
     description: 'Grown organically in Tenkasi home gardens, the Green Rose Apple is a mild, refreshing tropical fruit with a crisp bell-like texture. Naturally low in calories and high in fibre, it is a favourite evening snack for children and adults alike.',
+    descriptionTa: 'தேன்கசி வீட்டுத் தோட்டங்களில் இயற்கையாக வளர்க்கப்படும் பச்சை சம்பா பழம், மிதமான, புத்துணர்ச்சியான வெப்பமண்டல பழம். மணி போன்ற இறுக்கமான அமைப்பு கொண்டது. இயற்கையாகவே குறைந்த கலோரி மற்றும் அதிக நார்ச்சத்து உடையது, குழந்தைகள் மற்றும் பெரியவர்களுக்கு மாலை நேர சிற்றுண்டியாக மிகவும் விரும்பப்படுகிறது.',
     uses: ['Eat fresh — crisp and hydrating', 'Add to fruit chaat', 'Make jams and preserves', 'Use in fruit punch', 'Great for fasting days'],
+    usesTa: ['இறுக்கமான புத்துணர்ச்சியுடன் நேரடியாக சாப்பிடலாம்', 'பழம் சாட்டில் சேர்க்கலாம்', 'ஜாம் மற்றும் தொக்கு தயாரிக்கலாம்', 'பழப்பானத்தில் சேர்க்கலாம்', 'விரத நாட்களில் சிறந்த உணவு'],
   },
   {
     id: '5',
@@ -280,7 +291,9 @@ export const PRODUCTS: Product[] = [
     seasonal: true,
     featured: true,
     description: 'A rare seasonal fruit from the Tenkasi region, the Wild Jackfruit is prized for its unique sweet-tart flavour and delicate texture. Available only for a few weeks each year, it is handpicked at peak ripeness and delivered fresh to your door.',
+    descriptionTa: 'தேன்கசி பகுதியிலிருந்து அரிய பருவகால பழம், அயனி தனித்துவமான இனிப்பு-புளிப்பு சுவை மற்றும் மென்மையான அமைப்பிற்காக மதிக்கப்படுகிறது. ஆண்டுதோறும் சில வாரங்கள் மட்டுமே கிடைக்கும்; உச்ச பழுத்த நிலையில் கையால் பறிக்கப்பட்டு நேரடியாக வீட்டிற்கு வருகிறது.',
     uses: ['Eat fresh as a healthy snack', 'Make juice or smoothie', 'Add to fruit salads', 'Use as a natural sweetener in desserts'],
+    usesTa: ['ஆரோக்கியமான சிற்றுண்டியாக சாப்பிடலாம்', 'சாறு அல்லது ஸ்மூதி தயாரிக்கலாம்', 'பழச் சாலட்டில் சேர்க்கலாம்', 'இனிப்பு வகைகளில் இயற்கை இனிப்பாக பயன்படுத்தலாம்'],
   },
   {
     id: '18',
@@ -297,7 +310,9 @@ export const PRODUCTS: Product[] = [
     unit: '1 dozen',
     featured: true,
     description: 'Organically grown Nendran bananas from the banana groves of Tenkasi. These thick-skinned, starchy bananas are a staple of Tamil cuisine — eaten ripe as a snack, used in cooking, or offered in temple rituals. Rich in potassium and fibre.',
+    descriptionTa: 'தேன்கசி வாழைத் தோட்டங்களில் இயற்கையாக வளர்க்கப்பட்ட நேந்திர வாழைகள். இந்த கனமான, மாவுச்சத்து நிறைந்த வாழைகள் தமிழ் சமையலின் இன்றியமையாத பகுதி — கனிந்ததை சிற்றுண்டியாக சாப்பிடலாம், சமைக்கலாம் அல்லது கோயில் படையலில் பயன்படுத்தலாம். பொட்டாசியம் மற்றும் நார்ச்சத்து நிறைந்தது.',
     uses: ['Eat ripe as a healthy snack', 'Steam or fry as a side dish', 'Make banana chips (vazhakkai chips)', 'Use in payasam and halwa', 'Baby food and weaning diet'],
+    usesTa: ['கனிந்ததை ஆரோக்கியமான சிற்றுண்டியாக சாப்பிடலாம்', 'வேகவைத்து அல்லது வறுத்து சாப்பிடலாம்', 'வாழைக்காய் சிப்ஸ் தயாரிக்கலாம்', 'பாயசம் மற்றும் அல்வாவில் பயன்படுத்தலாம்', 'குழந்தை உணவாகவும் பயன்படுத்தலாம்'],
   },
   {
     id: '19',
@@ -314,7 +329,9 @@ export const PRODUCTS: Product[] = [
     unit: '1 dozen',
     featured: true,
     description: 'Rasthali, known as the "silk banana", is one of Tamil Nadu\'s most beloved varieties. Grown organically in the Tenkasi groves, each banana is fragrant, honey-sweet, and melt-in-the-mouth. No artificial ripening — each bunch is harvested at the right stage and allowed to ripen naturally.',
+    descriptionTa: '"பட்டுவாழை" என அழைக்கப்படும் ரஸ்தாளி, தமிழ்நாட்டின் மிகவும் விரும்பப்படும் ரகங்களில் ஒன்று. தேன்கசி தோட்டங்களில் இயற்கையாக வளர்க்கப்படும் ஒவ்வொரு வாழையும் நறுமணமுள்ளதும், தேன் இனிமையும், வாயில் கரைந்துவிடும் தன்மையும் கொண்டது. செயற்கை முதிர்வு இல்லை — ஒவ்வொரு கொத்தும் சரியான கட்டத்தில் அறுவடை செய்யப்பட்டு இயற்கையாகப் பழுக்க வைக்கப்படுகிறது.',
     uses: ['Eat fresh as a sweet snack', 'Offer in pooja and rituals', 'Make banana halwa', 'Blend into smoothies and milkshakes', 'Use in fruit salads'],
+    usesTa: ['இனிப்பான சிற்றுண்டியாக நேரடியாக சாப்பிடலாம்', 'பூஜை மற்றும் சடங்குகளில் படையல் செய்யலாம்', 'வாழைப்பழ அல்வா தயாரிக்கலாம்', 'ஸ்மூதி மற்றும் மில்க்ஷேக்கில் கலக்கலாம்', 'பழச் சாலட்டில் சேர்க்கலாம்'],
   },
   {
     id: '21',
@@ -331,7 +348,9 @@ export const PRODUCTS: Product[] = [
     unit: '500 g',
     seasonal: true,
     description: 'Fresh Indian Gooseberry (Nelli) from Tenkasi\'s organic farms — one of Ayurveda\'s most revered superfoods. Packed with Vitamin C, antioxidants, and iron, these tangy-sweet fruits are hand-harvested at peak ripeness. Each fruit is firm, unblemished, and free of any chemical treatment.',
+    descriptionTa: 'தேன்கசி இயற்கை பண்ணைகளிலிருந்து புதிய நெல்லிக்காய் — ஆயுர்வேதம் போற்றும் சூப்பர் உணவுகளில் முன்னணி. வைட்டமின் சி, ஆன்டிஆக்ஸிடண்ட்கள் மற்றும் இரும்புச்சத்து நிரம்பியது. ஒவ்வொரு பழமும் இறுக்கமாக, சேதமில்லாமல், எந்த இரசாயன சிகிச்சையும் இல்லாமல் உள்ளது.',
     uses: ['Eat raw with salt and chilli', 'Make amla juice or chyawanprash', 'Prepare nelli murukku or pickle', 'Dry and powder for hair oil', 'Add to rasam and chutneys'],
+    usesTa: ['உப்பு மிளகாயுடன் பச்சையாக சாப்பிடலாம்', 'நெல்லி சாறு அல்லது சவ்வன்பிராஷ் தயாரிக்கலாம்', 'நெல்லி முறுக்கு அல்லது ஊறுகாய் தயாரிக்கலாம்', 'தலை எண்ணெய்க்காக உலர்த்தி பொடி செய்யலாம்', 'ரசம் மற்றும் சட்னியில் சேர்க்கலாம்'],
   },
   {
     id: '22',
@@ -348,7 +367,9 @@ export const PRODUCTS: Product[] = [
     unit: '500 g',
     seasonal: true,
     description: 'Wild Gooseberry (Kattunelli) grows freely across the Western Ghats forests near Tenkasi. These small, intensely sour berries are harvested seasonally from wild trees by our farming families. Prized in traditional medicine, they have a more concentrated flavour and higher Vitamin C content than cultivated amla.',
+    descriptionTa: 'காட்டு நெல்லிக்காய் தேன்கசி அருகில் மேற்கு தொடர்ச்சி மலை காடுகளில் இயற்கையாக வளர்கிறது. பருவகாலத்தில் காட்டு மரங்களில் இருந்து அறுவடை செய்யப்படும் இந்த சிறிய, தீவிர புளிப்பான பழங்கள் பாரம்பரிய மருத்துவத்தில் மிகவும் மதிக்கப்படுகின்றன. சாகுபடி நெல்லியை விட அதிக வைட்டமின் சி உடையது.',
     uses: ['Make medicinal nelli juice', 'Prepare traditional pickle (urugai)', 'Dry in sunlight for preserving', 'Use in hair tonics and oils', 'Add to tamarind-based chutneys'],
+    usesTa: ['மருத்துவ நெல்லி சாறு தயாரிக்கலாம்', 'பாரம்பரிய ஊறுகாய் (உறுகை) தயாரிக்கலாம்', 'சூரிய ஒளியில் உலர்த்தி பாதுகாக்கலாம்', 'தலை தொனிக்கல் மற்றும் எண்ணெய்களில் பயன்படுத்தலாம்', 'புளி சட்னியில் சேர்க்கலாம்'],
   },
 ]
 

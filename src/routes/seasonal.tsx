@@ -52,6 +52,7 @@ function mapProduct(p: ProductDto): Product {
     reviews: 0,
     unit: 'per kg',
     featured: false,
+    isOutOfStock: p.isOutOfStock,
   }
 }
 

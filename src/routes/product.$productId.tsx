@@ -372,14 +372,16 @@ function ProductDetailPage() {
                 {product.description && (
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">{t('About this product', 'இந்த பொருளைப் பற்றி')}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">{product.description}</p>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      {isTamil && product.descriptionTa ? product.descriptionTa : product.description}
+                    </p>
                   </div>
                 )}
                 {product.uses && product.uses.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2.5 text-sm uppercase tracking-wide">{t('Uses & Benefits', 'பயன்கள் மற்றும் நன்மைகள்')}</h3>
                     <ul className="space-y-2">
-                      {product.uses.map((use, i) => (
+                      {(isTamil && product.usesTa ? product.usesTa : product.uses).map((use, i) => (
                         <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
                           <TiIcon name="check" size={15} className="text-[#3d7a20] mt-0.5 flex-shrink-0" />
                           {use}

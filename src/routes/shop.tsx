@@ -36,6 +36,7 @@ function mapProduct(p: ProductDto): Product {
     reviews: 0,
     unit: 'per kg',
     featured: false,
+    isOutOfStock: p.isOutOfStock,
   }
 }
 
@@ -73,11 +74,16 @@ function ShopPage() {
   }, [])
 
   const showCombos = activeCategory === 'Combos & Baskets'
+  const isCategoryView = !showCombos && activeCategory !== 'All'
   const filtered = showCombos
     ? []
     : activeCategory === 'All'
       ? products
       : products.filter((p) => (extractFruitType(p.name) ?? p.category) === activeCategory)
+  // Category view: top 6 by rating; All: show everything
+  const displayed = isCategoryView
+    ? [...filtered].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 6)
+    : filtered
 
   return (
     <main className="min-h-screen bg-[#faf9f4]">
@@ -159,11 +165,24 @@ function ShopPage() {
             <p className="text-lg">No products found in this category.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {displayed.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
+            {isCategoryView && filtered.length > 6 && (
+              <div className="text-center mt-10">
+                <button
+                  type="button"
+                  onClick={() => setActiveCategory('All')}
+                  className="inline-flex items-center gap-2 border-2 border-[#3d7a20] text-[#3d7a20] px-8 py-3 rounded-full font-semibold hover:bg-[#3d7a20] hover:text-white transition-colors"
+                >
+                  View all {filtered.length} products →
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </main>

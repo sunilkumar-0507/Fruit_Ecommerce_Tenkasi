@@ -18,6 +18,7 @@ export default function ProductCard({
   rating,
   reviews,
   unit,
+  isOutOfStock,
 }: Product) {
   const { addToCart } = useCart()
   const { toggle, isFav } = useFav()
@@ -26,6 +27,7 @@ export default function ProductCard({
   const discount = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0
 
   function handleAdd() {
+    if (isOutOfStock) return
     addToCart({ id, name, nameTamil, category, image, price, unit })
     setAdded(true)
     setTimeout(() => setAdded(false), 1200)
@@ -81,18 +83,24 @@ export default function ProductCard({
             </div>
             <p className="text-gray-400 text-xs">per kg</p>
           </div>
-          <button
-            type="button"
-            onClick={handleAdd}
-            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
-              added
-                ? 'bg-emerald-500 scale-110'
-                : 'bg-[#3d7a20] hover:bg-[#2a5a14] hover:scale-110 active:scale-95'
-            }`}
-            aria-label={`Add ${name} to cart`}
-          >
-            <TiIcon name={added ? 'check' : 'plus'} size={16} className="text-white" />
-          </button>
+          {isOutOfStock ? (
+            <span className="text-xs font-semibold text-red-500 bg-red-50 border border-red-200 px-2.5 py-1.5 rounded-full">
+              Out of Stock
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={handleAdd}
+              className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
+                added
+                  ? 'bg-emerald-500 scale-110'
+                  : 'bg-[#3d7a20] hover:bg-[#2a5a14] hover:scale-110 active:scale-95'
+              }`}
+              aria-label={`Add ${name} to cart`}
+            >
+              <TiIcon name={added ? 'check' : 'plus'} size={16} className="text-white" />
+            </button>
+          )}
         </div>
       </div>
     </div>
