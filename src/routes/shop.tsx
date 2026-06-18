@@ -64,7 +64,7 @@ function ShopPage() {
         // Build filter tabs from fruit-type keywords in product names
         const seen = new Set<string>()
         for (const p of mapped) {
-          const key = extractFruitType(p.name) ?? p.category
+          const key = extractFruitType(p.name)
           if (key) seen.add(key)
         }
         setCategories(['All', 'Combos & Baskets', ...Array.from(seen)])

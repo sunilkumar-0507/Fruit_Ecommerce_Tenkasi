@@ -97,7 +97,7 @@ function HomePage() {
         // Group by fruit type extracted from product name (e.g. "Alphonso Mango" → "Mango")
         const catMap = new Map<string, { count: number; image: string }>()
         for (const p of products) {
-          const key = extractFruitType(p.name) ?? p.category
+          const key = extractFruitType(p.name)
           if (!key) continue
           if (!catMap.has(key)) catMap.set(key, { count: 0, image: p.image })
           catMap.get(key)!.count++
@@ -204,8 +204,8 @@ function HomePage() {
               {t('Browse our carefully curated selection of fresh and organic fruits', 'புதிய மற்றும் இயற்கை பழங்களின் எங்கள் தெரிவுசெய்யப்பட்ட தொகுப்பை உலாவுங்கள்')}
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            {(isApiMode() && liveCategories.length > 0 ? liveCategories : HOME_CATEGORIES).map((cat) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {(isApiMode() && liveCategories.length > 0 ? liveCategories : HOME_CATEGORIES).slice(0, 6).map((cat) => (
               <CategoryCard
                 key={cat.name}
                 name={cat.name}
@@ -214,6 +214,16 @@ function HomePage() {
               />
             ))}
           </div>
+          {(isApiMode() ? liveCategories : HOME_CATEGORIES).length > 6 && (
+            <div className="text-center mt-8">
+              <Link
+                to="/shop"
+                className="inline-flex items-center gap-2 border-2 border-[#3d7a20] text-[#3d7a20] px-8 py-3 rounded-full font-semibold hover:bg-[#3d7a20] hover:text-white transition-colors no-underline"
+              >
+                {t('Browse all categories →', 'அனைத்து வகைகளையும் காண →')}
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

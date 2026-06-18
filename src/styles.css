@@ -458,6 +458,10 @@ a {
   animation: float-leaf 3.6s ease-in-out infinite;
 }
 
+/* ─── Hide scrollbar utility ──────────────────────────────────────────────── */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
 /* ─── Input / select text readability ─────────────────────────────────────── */
 input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
 select,
