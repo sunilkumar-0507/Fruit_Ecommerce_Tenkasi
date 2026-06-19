@@ -53,8 +53,8 @@ export default function Footer() {
             </div>
             <p className="text-white/70 text-sm leading-relaxed mb-5">
               {t(
-                'Hand-picked at sunrise from the foothills of the Western Ghats. Wrapped in banana leaves, delivered to your door before dusk.',
-                'மேற்கு தொடர்ச்சி மலையடிவாரத்திலிருந்து விடியற்காலையில் கையால் பறிக்கப்படும். வாழை இலைகளில் மூடி, சாயங்காலத்திற்கு முன் உங்கள் வீட்டுக்கு வழங்கப்படும்.'
+                'Nestled in the foothills of the Western Ghats, Tenkasi is home to Tamil Nadu\'s most treasured fruit varieties. We bring you authentic flavors, seasonal harvests, and the freshness of the Western Ghats.',
+                'மேற்கு தொடர்ச்சி மலையடிவாரத்தில் அமைந்துள்ள தென்காசி, தமிழ்நாட்டின் மிக விலைமதிப்பான பழ வகைகளின் தொட்டில். நேர்மையான சுவைகளையும், பருவகால அறுவடைகளையும், மேற்கு தொடர்ச்சி மலையின் புதுமையையும் உங்களுக்கு கொண்டு வருகிறோம்.'
               )}
             </p>
             <div className="flex gap-3 mb-5">
