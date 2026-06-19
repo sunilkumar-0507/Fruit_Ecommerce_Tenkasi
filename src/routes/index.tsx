@@ -135,18 +135,18 @@ function HomePage() {
         }}
       >
       {/* HERO */}
-      <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 px-4">
+      <section className="relative pt-6 sm:pt-14 pb-10 sm:pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-6 sm:space-y-8 z-10">
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
+              <h1 className="font-serif text-3xl sm:text-5xl lg:text-7xl font-bold text-gray-900 leading-tight">
                 {lang === 'ta' ? (
                   <>எங்கள் மண்ணிலிருந்து<br />உங்கள் உள்ளத்திற்கு<br /><span className="text-[#3d7a20]">தென்காசி பழங்கள்</span></>
                 ) : (
                   <>From Our Soil<br />to Your Soul —<br /><span className="text-[#3d7a20]">Tenkasi</span> Native Fruits</>
                 )}
               </h1>
-              <p className="text-base sm:text-lg text-gray-600 max-w-lg leading-relaxed">
+              <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-lg leading-relaxed">
                 {lang === 'ta' ? (
                   <>மேற்கு தொடர்ச்சி மலையடிவாரத்தில் உள்ள <span className="text-[#3d7a20] font-semibold">தென்காசி</span> — தமிழ்நாட்டின் மிக விலைமதிப்பான பழ வகைகளின் தொட்டில். பாரம்பரிய சுவைகளை, பருவகால அறுவடைகளை, மேற்கு தொடர்ச்சி மலையின் புதுமையை உங்களுக்கு கொண்டு வருகிறோம்.</>
                 ) : (
@@ -170,7 +170,7 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="relative h-96 sm:h-[500px] lg:h-[540px]">
+            <div className="relative h-64 sm:h-[420px] lg:h-[540px]">
               <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl">
                 <img
                   src="/images/categories/hero-fruits.jpeg"
@@ -179,25 +179,16 @@ function HomePage() {
                   loading="lazy"
                 />
               </div>
-              <div className="absolute top-6 right-6 bg-[#3d7a20] text-white rounded-2xl px-4 py-3 shadow-lg">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">🌿</span>
-                  <span className="font-bold text-sm">{t('100% Farm Fresh', '100% பண்ணை புதியது')}</span>
-                </div>
-                <p className="text-[10px] font-bold tracking-widest text-[#f5821f]">
-                  {t('DIRECT FROM FARMERS', 'நேரடியாக விவசாயிகளிடமிருந்து')}
-                </p>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* CATEGORIES */}
-      <section className="py-16 sm:py-24 px-4">
+      <section className="py-10 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#3d7a20] mb-3">
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-[#3d7a20] mb-3">
               {t('Shop by Category', 'வகைப்படி கடையில் வாங்குங்கள்')}
             </h2>
             <p className="text-gray-500 text-lg max-w-xl mx-auto">
@@ -228,11 +219,11 @@ function HomePage() {
       </section>
 
       {/* BESTSELLERS */}
-      <section className="py-16 sm:py-24 px-4 bg-white">
+      <section className="py-10 sm:py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <h2 className="font-serif text-4xl sm:text-5xl font-bold text-gray-900 mb-2">
+              <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
                 {t('Bestseller Products', 'அதிகம் விற்பனையான பொருட்கள்')}
               </h2>
               <p className="text-gray-400">{t('Most loved by our customers', 'எங்கள் வாடிக்கையாளர்கள் அதிகம் விரும்புவது')}</p>
@@ -259,10 +250,10 @@ function HomePage() {
       </section>
 
       {/* WHY CHOOSE US */}
-      <section className="py-16 sm:py-24 px-4">
+      <section className="py-10 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#3d7a20] mb-3">
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-[#3d7a20] mb-3">
               {t('Why Choose Tenkasi Fresh?', 'ஏன் தென்காசி பிரெஷ் தேர்வு செய்ய வேண்டும்?')}
             </h2>
             <p className="text-gray-500 text-lg">{t('We deliver excellence in every bite', 'ஒவ்வொரு கடியிலும் சிறந்த தரம் வழங்குகிறோம்')}</p>
@@ -314,10 +305,10 @@ function HomePage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-16 sm:py-24 px-4 bg-white">
+      <section className="py-10 sm:py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
               {t('What Our Customers Say', 'எங்கள் வாடிக்கையாளர்கள் என்ன சொல்கிறார்கள்')}
             </h2>
             <p className="text-gray-500 text-lg">{t('Real experiences from real customers', 'உண்மையான வாடிக்கையாளர்களின் உண்மையான அனுபவங்கள்')}</p>
@@ -362,7 +353,7 @@ function HomePage() {
       </section>
 
       {/* ABOUT */}
-      <section className="py-16 sm:py-24 px-4">
+      <section className="py-10 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="bg-gradient-to-br from-[#0c1d2b] to-[#3d7a20] rounded-3xl overflow-hidden p-10 sm:p-16">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -401,7 +392,7 @@ function HomePage() {
       </section>
 
       {/* APP PROMO */}
-      <section className="py-16 sm:py-24 px-4">
+      <section className="py-10 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="bg-gradient-to-r from-[#3d7a20]/90 to-[#4fb8b2]/90 rounded-3xl overflow-hidden p-10 sm:p-16">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">

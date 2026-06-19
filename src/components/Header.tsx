@@ -162,9 +162,9 @@ export default function Header() {
       <nav className="bg-[#0c1d2b] border-b border-[#f5821f]/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-2">
-            <Link to="/" className="flex items-center gap-2 no-underline flex-shrink-0">
-              <img src="/images/products/CoopLogo.png" alt="Tenkasi Fresh Coop" className="h-[80px] w-[80px] object-contain rounded-2xl" />
-              <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="h-[80px] w-auto object-contain rounded-2xl" />
+            <Link to="/" className="flex items-center gap-1.5 no-underline flex-shrink-0">
+              <img src="/images/products/CoopLogo.png" alt="Tenkasi Fresh Coop" className="h-[48px] sm:h-[70px] w-[48px] sm:w-[70px] object-contain rounded-xl sm:rounded-2xl" />
+              <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="h-[48px] sm:h-[70px] w-auto object-contain rounded-xl sm:rounded-2xl" />
             </Link>
 
             <div className="hidden md:flex items-center gap-7">
@@ -186,8 +186,8 @@ export default function Header() {
             </div>
 
             <div className="flex items-center gap-1">
-              {/* Language toggle */}
-              <div className="flex items-center rounded-full border border-white/20 overflow-hidden mr-1">
+              {/* Language toggle — hidden on mobile (available in hamburger menu) */}
+              <div className="hidden md:flex items-center rounded-full border border-white/20 overflow-hidden mr-1">
                 <button
                   type="button"
                   onClick={() => setLang('en')}
