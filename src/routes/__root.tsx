@@ -35,6 +35,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { title: 'Tenkasi Fresh — Farm to Home Since 1959' },
     ],
     links: [
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap' },
+      { rel: 'preload', as: 'image', href: '/images/categories/hero-fruits.jpeg' },
+      { rel: 'preload', as: 'image', href: '/images/products/CoopLogo.png' },
+      { rel: 'preload', as: 'image', href: '/images/products/MainLogo.jpeg' },
       { rel: 'stylesheet', href: appCss },
       { rel: 'stylesheet', href: themifyUrl },
       { rel: 'icon', type: 'image/jpeg', href: '/images/products/MainLogo.jpeg' },

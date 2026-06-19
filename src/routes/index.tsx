@@ -174,9 +174,12 @@ function HomePage() {
               <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl">
                 <img
                   src="/images/categories/hero-fruits.jpeg"
-                  alt="Fresh Fruits"
+                  alt="Fresh Fruits from Tenkasi Western Ghats"
                   className="w-full h-full object-cover"
-                  loading="lazy"
+                  loading="eager"
+                  fetchPriority="high"
+                  width={800}
+                  height={540}
                 />
               </div>
             </div>

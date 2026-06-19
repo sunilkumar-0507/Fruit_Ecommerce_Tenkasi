@@ -163,8 +163,8 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-2">
             <Link to="/" className="flex items-center gap-1.5 no-underline flex-shrink-0">
-              <img src="/images/products/CoopLogo.png" alt="Tenkasi Fresh Coop" className="h-[48px] sm:h-[70px] w-[48px] sm:w-[70px] object-contain rounded-xl sm:rounded-2xl" />
-              <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="h-[48px] sm:h-[70px] w-auto object-contain rounded-xl sm:rounded-2xl" />
+              <img src="/images/products/CoopLogo.png" alt="Tenkasi Fresh Coop" className="h-[48px] sm:h-[70px] w-[48px] sm:w-[70px] object-contain rounded-xl sm:rounded-2xl" width={70} height={70} />
+              <img src="/images/products/MainLogo.jpeg" alt="Tenkasi Fresh" className="h-[48px] sm:h-[70px] w-auto object-contain rounded-xl sm:rounded-2xl" width={140} height={70} />
             </Link>
 
             <div className="hidden md:flex items-center gap-7">

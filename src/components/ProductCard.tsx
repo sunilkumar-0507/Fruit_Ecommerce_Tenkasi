@@ -42,6 +42,8 @@ export default function ProductCard({
           alt={name}
           className="product-img-enhance w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
+          width={400}
+          height={224}
         />
         {discount > 0 && (
           <div className="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-full text-xs font-bold">

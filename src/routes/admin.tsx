@@ -2479,17 +2479,29 @@ function isSeasonalCat(nameEn: string | null, slug: string | null) {
 }
 
 function SeasonalPanel() {
-  type SeasonalEntry = { id: string; name: string; nameTamil: string; category: string; price: number; unit: string; image: string; isSeasonal: boolean }
+  type SeasonalEntry = {
+    id: string; name: string; nameTa: string; category: string; categoryId: string
+    price: number; stockQuantity: number; image: string
+    rawImages: import('#/lib/apiClient').ProductImageDto[]
+    descriptionEn: string | null; aboutEn: string | null; usageEn: string | null; benefitsEn: string | null
+    isSeasonal: boolean
+  }
 
   const [products, setProducts] = useState<SeasonalEntry[]>(
     isApiMode() ? [] : PRODUCTS.map((p) => ({
       id: p.id,
       name: p.name,
-      nameTamil: p.nameTamil,
+      nameTa: p.nameTamil,
       category: p.category,
+      categoryId: p.categorySlug,
       price: p.price,
-      unit: p.unit,
+      stockQuantity: 50,
       image: p.image,
+      rawImages: [],
+      descriptionEn: p.description ?? null,
+      aboutEn: null,
+      usageEn: (p.uses ?? []).join(' | ') || null,
+      benefitsEn: null,
       isSeasonal: p.seasonal === true || p.categorySlug === 'seasonal-fruits',
     })),
   )
@@ -2518,11 +2530,17 @@ function SeasonalPanel() {
           return {
             id: p.id,
             name: p.nameEn ?? '',
-            nameTamil: p.nameTa ?? '',
+            nameTa: p.nameTa ?? '',
             category: p.category?.nameEn ?? '',
+            categoryId: p.category?.id ?? '',
             price: p.price,
-            unit: 'per Kg',
+            stockQuantity: p.stockQuantity,
             image: primary?.url ?? '/images/products/mangoes.jpeg',
+            rawImages: p.images ?? [],
+            descriptionEn: p.descriptionEn ?? null,
+            aboutEn: p.aboutEn ?? null,
+            usageEn: p.usageEn ?? null,
+            benefitsEn: p.benefitsEn ?? null,
             isSeasonal: isSeasonalCat(p.category?.nameEn ?? null, p.category?.slug ?? null),
           }
         }))
@@ -2561,14 +2579,32 @@ function SeasonalPanel() {
       alert('Category not found. Use the "Create Seasonal Category" button first.')
       return
     }
+    const product = products.find((p) => p.id === id)
+    if (!product) return
     setTogglingId(id)
     try {
-      await api.patch<ProductDto>(`/api/admin/products/${id}`, { id, categoryId: target.id })
+      await api.post<ProductDto>(`/api/admin/products/${id}/update`, {
+        nameEn: product.name,
+        nameTa: product.nameTa || null,
+        descriptionEn: product.descriptionEn || null,
+        descriptionTa: null,
+        aboutEn: product.aboutEn || null,
+        aboutTa: null,
+        usageEn: product.usageEn || null,
+        usageTa: null,
+        benefitsEn: product.benefitsEn || null,
+        benefitsTa: null,
+        price: product.price,
+        stockQuantity: product.stockQuantity,
+        categoryId: target.id,
+        images: product.rawImages.map((img) => ({ id: img.id, url: img.url, altText: img.altText, isPrimary: img.isPrimary })),
+      })
       setProducts((prev) => prev.map((p) =>
-        p.id === id ? { ...p, isSeasonal: !currentlySeasonal, category: target.name } : p
+        p.id === id ? { ...p, isSeasonal: !currentlySeasonal, category: target.name, categoryId: target.id } : p
       ))
-    } catch {
-      alert('Failed to update product category. Please try again.')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error'
+      alert(`Failed to update product category: ${msg}`)
     } finally {
       setTogglingId(null)
     }
@@ -2639,9 +2675,9 @@ function SeasonalPanel() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
-                  <p className="text-xs text-gray-400 mb-1">{p.nameTamil}</p>
+                  <p className="text-xs text-gray-400 mb-1">{p.nameTa}</p>
                   <span className="inline-block text-[10px] font-bold text-[#3d7a20] bg-[#fdf4e8] px-2 py-0.5 rounded-full">
-                    Seasonal · ₹{p.price}/{p.unit}
+                    Seasonal · ₹{p.price}/kg
                   </span>
                 </div>
                 <button
@@ -2706,11 +2742,17 @@ function SeasonalPanel() {
               {
                 id: newP.id,
                 name: newP.name,
-                nameTamil: '',
+                nameTa: '',
                 category: newP.category,
+                categoryId: '',
                 price: newP.price,
-                unit: '1 kg',
+                stockQuantity: newP.stock,
                 image: newP.image || '/images/products/wa2-soursop.jpeg',
+                rawImages: [],
+                descriptionEn: null,
+                aboutEn: null,
+                usageEn: null,
+                benefitsEn: null,
                 isSeasonal: true,
               },
             ])
