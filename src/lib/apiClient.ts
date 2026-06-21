@@ -106,6 +106,7 @@ export interface ProductDto {
   originalPrice?: number | null
   stockQuantity: number
   isOutOfStock: boolean
+  unitType?: 'kg' | 'piece'
   category: CategoryDto
   images: ProductImageDto[] | null
   rating: number

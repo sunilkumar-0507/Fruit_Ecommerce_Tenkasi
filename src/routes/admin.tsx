@@ -182,7 +182,7 @@ function fmtAddress(addr: OrderDto['shippingAddress']): string {
 
 // ─── Map API → inventory row ──────────────────────────────────────────────────
 
-type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; categoryId?: string; price: number; originalPrice?: number; stock: number; image: string; discount?: number; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null; rawImages?: import('#/lib/apiClient').ProductImageDto[] }
+type InventoryRow = { id: string; name: string; nameTa?: string | null; category: string; categoryId?: string; price: number; originalPrice?: number; stock: number; image: string; discount?: number; unitType?: 'kg' | 'piece'; descriptionEn?: string | null; aboutEn?: string | null; usageEn?: string | null; benefitsEn?: string | null; rawImages?: import('#/lib/apiClient').ProductImageDto[] }
 
 function mapApiProduct(p: ProductDto): InventoryRow {
   const primary = (p.images ?? []).find((i) => i.isPrimary) ?? (p.images ?? [])[0]
@@ -200,6 +200,7 @@ function mapApiProduct(p: ProductDto): InventoryRow {
     aboutEn: p.aboutEn,
     usageEn: p.usageEn,
     benefitsEn: p.benefitsEn,
+    unitType: p.unitType ?? 'kg',
     rawImages: p.images ?? [],
   }
 }
@@ -307,6 +308,7 @@ function AddProductModal({
     price: '', originalPrice: '', stock: '', image: '', description: '',
     aboutEn: '', usageEn: '', benefitsEn: '',
   })
+  const [unitType, setUnitType] = useState<'kg' | 'piece'>('kg')
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -342,6 +344,7 @@ function AddProductModal({
           originalPrice: form.originalPrice ? Number(form.originalPrice) : null,
           stockQuantity: stockNum,
           categoryId: form.categoryId,
+          unitType,
           images: form.image ? [{ url: form.image, altText: form.nameEn, isPrimary: true }] : [],
         })
         if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn ?? undefined })
@@ -365,6 +368,7 @@ function AddProductModal({
         category: cat?.nameEn ?? form.categoryId,
         price: Number(form.price),
         stock: stockNum,
+        unitType,
         image: form.image || '/images/products/p-mango.jpg',
       })
       onClose()
@@ -418,6 +422,17 @@ function AddProductModal({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock (units) <span className="text-red-500">*</span></label>
               <input type="number" value={form.stock} onChange={set('stock')} placeholder="0" min="0" className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Sold by</label>
+            <div className="flex gap-3">
+              {(['kg', 'piece'] as const).map((u) => (
+                <button key={u} type="button" onClick={() => setUnitType(u)}
+                  className={`flex-1 py-2.5 rounded-lg border text-sm font-semibold transition-all ${unitType === u ? 'border-[#3d7a20] bg-[#3d7a20]/5 text-[#3d7a20]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
+                  {u === 'kg' ? '⚖️ Kilogram (250g steps)' : '🔢 Pieces (1, 2, 3…)'}
+                </button>
+              ))}
             </div>
           </div>
           <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} onUploadingChange={setUploading} />
@@ -490,6 +505,7 @@ function EditProductModal({
     usageEn: product.usageEn ?? '',
     benefitsEn: product.benefitsEn ?? '',
   })
+  const [unitType, setUnitType] = useState<'kg' | 'piece'>(product.unitType ?? 'kg')
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -530,6 +546,7 @@ function EditProductModal({
           price: Number(form.price),
           stockQuantity: stockNum,
           categoryId: form.categoryId,
+          unitType,
           images: imagesPayload,
         })
         if (stockNum < 20) void notifyLowStock({ name: form.nameEn, stock: stockNum, category: cat?.nameEn ?? undefined })
@@ -609,6 +626,17 @@ function EditProductModal({
               Active discount: ₹{product.originalPrice} → ₹{product.price} ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off). Manage via the % button in Inventory.
             </div>
           )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Sold by</label>
+            <div className="flex gap-3">
+              {(['kg', 'piece'] as const).map((u) => (
+                <button key={u} type="button" onClick={() => setUnitType(u)}
+                  className={`flex-1 py-2.5 rounded-lg border text-sm font-semibold transition-all ${unitType === u ? 'border-[#3d7a20] bg-[#3d7a20]/5 text-[#3d7a20]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
+                  {u === 'kg' ? '⚖️ Kilogram (250g steps)' : '🔢 Pieces (1, 2, 3…)'}
+                </button>
+              ))}
+            </div>
+          </div>
           <ProductImageField value={form.image} onChange={(url) => setForm((p) => ({ ...p, image: url }))} onUploadingChange={setUploading} />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="text-gray-400 font-normal">(optional)</span></label>

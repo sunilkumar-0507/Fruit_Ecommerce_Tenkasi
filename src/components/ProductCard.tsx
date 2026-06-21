@@ -18,6 +18,7 @@ export default function ProductCard({
   rating,
   reviews,
   unit,
+  unitType,
   isOutOfStock,
 }: Product) {
   const { addToCart } = useCart()
@@ -25,10 +26,11 @@ export default function ProductCard({
   const fav = isFav(id)
   const [added, setAdded] = useState(false)
   const discount = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0
+  const isPiece = unitType === 'piece'
 
   function handleAdd() {
     if (isOutOfStock) return
-    addToCart({ id, name, nameTamil, category, image, price, unit }, 0.25)
+    addToCart({ id, name, nameTamil, category, image, price, unit }, isPiece ? 1 : 0.25)
     setAdded(true)
     setTimeout(() => setAdded(false), 1200)
   }
@@ -83,7 +85,7 @@ export default function ProductCard({
               <span className="text-xl font-bold text-gray-900">₹{price}</span>
               {discount > 0 && <span className="text-sm text-gray-400 line-through">₹{originalPrice}</span>}
             </div>
-            <p className="text-gray-400 text-xs">per kg</p>
+            <p className="text-gray-400 text-xs">{isPiece ? 'per piece' : 'per kg'}</p>
           </div>
           {isOutOfStock ? (
             <span className="text-xs font-semibold text-red-500 bg-red-50 border border-red-200 px-2.5 py-1.5 rounded-full">

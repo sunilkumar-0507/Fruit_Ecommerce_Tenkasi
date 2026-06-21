@@ -17,6 +17,7 @@ export interface Product {
   featured?: boolean
   isBasket?: boolean
   isOutOfStock?: boolean
+  unitType?: 'kg' | 'piece'
   description?: string
   descriptionTa?: string
   uses?: string[]

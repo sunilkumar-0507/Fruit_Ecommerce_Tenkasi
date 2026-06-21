@@ -202,6 +202,7 @@ function fromApiDto(p: ProductDto): Product {
     rating: p.rating ?? 4.5,
     reviews: 0,
     unit: 'per kg',
+    unitType: p.unitType ?? 'kg',
   }
 }
 
@@ -219,7 +220,7 @@ function ProductDetailPage() {
   const { addToCart } = useCart()
   const { toggle, isFav } = useFav()
   const [added, setAdded] = useState(false)
-  const [qty, setQty] = useState(0.25)
+  const [qty, setQty] = useState(staticProduct?.unitType === 'piece' ? 1 : 0.25)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -234,6 +235,8 @@ function ProductDetailPage() {
   const product: Product | null = isApiMode()
     ? (apiProduct ? fromApiDto(apiProduct) : null)
     : (staticProduct ?? null)
+
+  const isPiece = product?.unitType === 'piece'
 
   if (!product) {
     if (apiLoading) {
@@ -399,18 +402,27 @@ function ProductDetailPage() {
               <div className="flex items-center bg-gray-100 rounded-xl p-1 gap-1">
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.max(0.25, Math.round((q - 0.25) * 100) / 100))}
+                  onClick={() => isPiece
+                    ? setQty((q) => Math.max(1, q - 1))
+                    : setQty((q) => Math.max(0.25, Math.round((q - 0.25) * 100) / 100))
+                  }
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
                   aria-label="Decrease quantity"
                 >
                   <TiIcon name="minus" size={13} className="text-gray-600" />
                 </button>
                 <span className="w-16 text-center font-bold text-gray-900 text-sm">
-                  {qty < 1 ? `${Math.round(qty * 1000)}g` : `${qty % 1 === 0 ? qty.toFixed(0) : qty} kg`}
+                  {isPiece
+                    ? `${qty} ${qty === 1 ? t('pc', 'பொருள்') : t('pcs', 'பொருள்கள்')}`
+                    : qty < 1 ? `${Math.round(qty * 1000)}g` : `${qty % 1 === 0 ? qty.toFixed(0) : qty} kg`
+                  }
                 </span>
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.round((q + 0.25) * 100) / 100)}
+                  onClick={() => isPiece
+                    ? setQty((q) => q + 1)
+                    : setQty((q) => Math.round((q + 0.25) * 100) / 100)
+                  }
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
                   aria-label="Increase quantity"
                 >
