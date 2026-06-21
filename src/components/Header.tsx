@@ -216,7 +216,7 @@ export default function Header() {
                     <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
                       <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
-                        <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                        <p className="text-xs text-gray-400 truncate">{user.phone ?? user.email}</p>
                         {isAdmin && <span className="inline-block mt-1 text-[10px] font-bold text-[#3d7a20] bg-[#fdf4e8] px-2 py-0.5 rounded-full tracking-wide uppercase">{t('Admin', 'நிர்வாகி')}</span>}
                       </div>
                       <Link to="/orders" onClick={() => setUserMenuOpen(false)} className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors no-underline">

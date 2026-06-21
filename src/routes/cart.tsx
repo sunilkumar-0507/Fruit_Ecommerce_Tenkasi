@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import {
   Trash2, Plus, Minus, X, MapPin, ChevronLeft,
-  Check, Package, ShoppingBag, Loader2,
+  Check, ShoppingBag, Loader2,
 } from 'lucide-react'
 import { useAuthGuard } from '#/hooks/useAuthGuard'
 import { useCart } from '#/context/CartContext'
@@ -12,6 +12,12 @@ import { notifyNewOrder } from '#/services/notificationService'
 import { createPaymentSession, verifyPayment, launchCashfreeCheckout } from '#/lib/apiClient'
 
 export const Route = createFileRoute('/cart')({ component: CartPage })
+
+function fmtQty(qty: number): string {
+  if (qty < 1) return `${Math.round(qty * 1000)}g`
+  const kg = Math.round(qty * 100) / 100
+  return `${kg % 1 === 0 ? kg.toFixed(0) : kg} kg`
+}
 
 const DELIVERY_FEE = 49
 
@@ -425,10 +431,10 @@ function CheckoutModal({ onClose, cartCoupon }: {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-900 truncate">{item.name}</p>
-                        <p className="text-xs text-gray-400">Qty: {item.qty} × ₹{item.price}</p>
+                        <p className="text-xs text-gray-400">{fmtQty(item.qty)} × ₹{item.price}/kg</p>
                       </div>
                       <p className="text-sm font-bold text-gray-900 flex-shrink-0">
-                        ₹{item.price * item.qty}
+                        ₹{Math.round(item.price * item.qty)}
                       </p>
                     </div>
                   ))}
@@ -451,7 +457,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
               <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-2.5">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-gray-900">₹{subtotal}</span>
+                  <span className="font-semibold text-gray-900">₹{Math.round(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Delivery</span>
@@ -538,9 +544,6 @@ function CheckoutModal({ onClose, cartCoupon }: {
                   `Place Order · ₹${total}`
                 )}
               </button>
-              <p className="text-center text-xs text-gray-400 mt-3">
-                Estimated delivery: Today by 7 PM
-              </p>
             </div>
           )}
 
@@ -567,10 +570,6 @@ function CheckoutModal({ onClose, cartCoupon }: {
                   <p className="text-[10px] text-gray-400 mt-1.5">10% off on your next purchase</p>
                 </div>
               )}
-              <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mb-6 bg-gray-50 rounded-xl py-3">
-                <Package size={14} />
-                <span>Estimated delivery: Today by 7 PM</span>
-              </div>
               <div className="flex gap-3">
                 <button
                   type="button"
@@ -603,8 +602,8 @@ function CartPage() {
   const { items, updateQty, removeItem } = useCart()
 
   function handleDecrement(item: (typeof items)[0]) {
-    if (item.qty <= 1) removeItem(item.id)
-    else updateQty(item.id, -1)
+    if (item.qty <= 0.25) removeItem(item.id)
+    else updateQty(item.id, -0.25)
   }
   const { orders } = useOrders()
   const [showCheckout, setShowCheckout] = useState(false)
@@ -690,7 +689,7 @@ function CartPage() {
                     <h3 className="font-serif text-sm sm:text-base font-semibold text-gray-900 truncate">
                       {item.name}
                     </h3>
-                    <p className="text-gray-400 text-xs">per kg</p>
+                    <p className="text-gray-400 text-xs">₹{item.price}/kg</p>
                   </div>
                   <div className="flex items-center gap-1.5 sm:gap-2 bg-gray-100 rounded-full px-2 sm:px-3 py-1.5 flex-shrink-0">
                     <button
@@ -701,12 +700,12 @@ function CartPage() {
                     >
                       <Minus size={13} />
                     </button>
-                    <span className="text-sm font-semibold text-gray-800 w-4 sm:w-5 text-center">
-                      {item.qty}
+                    <span className="text-sm font-semibold text-gray-800 w-12 sm:w-14 text-center">
+                      {fmtQty(item.qty)}
                     </span>
                     <button
                       type="button"
-                      onClick={() => updateQty(item.id, 1)}
+                      onClick={() => updateQty(item.id, 0.25)}
                       className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors"
                       aria-label="Increase quantity"
                     >
@@ -714,7 +713,7 @@ function CartPage() {
                     </button>
                   </div>
                   <p className="text-sm sm:text-base font-bold text-gray-900 w-14 sm:w-16 text-right flex-shrink-0">
-                    ₹{item.price * item.qty}
+                    ₹{Math.round(item.price * item.qty)}
                   </p>
                   <button
                     type="button"
@@ -823,7 +822,7 @@ function CartPage() {
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal</span>
-                    <span className="font-semibold text-gray-900">₹{subtotal}</span>
+                    <span className="font-semibold text-gray-900">₹{Math.round(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Delivery</span>

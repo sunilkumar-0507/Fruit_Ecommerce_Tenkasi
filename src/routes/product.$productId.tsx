@@ -219,7 +219,7 @@ function ProductDetailPage() {
   const { addToCart } = useCart()
   const { toggle, isFav } = useFav()
   const [added, setAdded] = useState(false)
-  const [qty, setQty] = useState(0.5)
+  const [qty, setQty] = useState(0.25)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -399,25 +399,25 @@ function ProductDetailPage() {
               <div className="flex items-center bg-gray-100 rounded-xl p-1 gap-1">
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.max(0.5, Math.round((q - 0.5) * 10) / 10))}
+                  onClick={() => setQty((q) => Math.max(0.25, Math.round((q - 0.25) * 100) / 100))}
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
                   aria-label="Decrease quantity"
                 >
                   <TiIcon name="minus" size={13} className="text-gray-600" />
                 </button>
-                <span className="w-14 text-center font-bold text-gray-900 text-sm">
-                  {qty < 1 ? '½' : qty % 1 === 0 ? `${qty}` : `${qty}`} kg
+                <span className="w-16 text-center font-bold text-gray-900 text-sm">
+                  {qty < 1 ? `${Math.round(qty * 1000)}g` : `${qty % 1 === 0 ? qty.toFixed(0) : qty} kg`}
                 </span>
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.round((q + 0.5) * 10) / 10)}
+                  onClick={() => setQty((q) => Math.round((q + 0.25) * 100) / 100)}
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
                   aria-label="Increase quantity"
                 >
                   <TiIcon name="plus" size={13} className="text-gray-600" />
                 </button>
               </div>
-              <span className="text-sm font-semibold text-[#3d7a20]">= ₹{(product.price * qty).toFixed(0)}</span>
+              <span className="text-sm font-semibold text-[#3d7a20]">= ₹{Math.round(product.price * qty)}</span>
             </div>
 
             {/* Action buttons */}

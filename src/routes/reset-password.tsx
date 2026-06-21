@@ -18,6 +18,24 @@ function ResetPasswordPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
+  const [showResend, setShowResend] = useState(false)
+  const [resendEmail, setResendEmail] = useState('')
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendSent, setResendSent] = useState(false)
+
+  async function handleResend() {
+    if (!resendEmail) return
+    setResendLoading(true)
+    try {
+      await fetch(
+        `${(import.meta.env as Record<string, string>).VITE_API_URL ?? ''}/api/Auth/forgot-password`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: resendEmail }) },
+      )
+      setResendSent(true)
+    } finally {
+      setResendLoading(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -139,8 +157,45 @@ function ResetPasswordPage() {
 
               <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
-                    {error}
+                  <div className="space-y-3">
+                    <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+                      {error}
+                    </div>
+                    {resendSent ? (
+                      <div className="bg-[#f5f9f7] border border-[#3d7a20]/20 text-[#3d7a20] text-sm px-4 py-3 rounded-xl">
+                        ✓ New reset link sent — check your inbox and spam folder.
+                      </div>
+                    ) : !showResend ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowResend(true)}
+                        className="text-sm text-[#3d7a20] hover:underline font-medium"
+                      >
+                        Request a new reset link →
+                      </button>
+                    ) : (
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-500">Enter your email to receive a fresh link:</p>
+                        <div className="flex gap-2">
+                          <input
+                            type="email"
+                            value={resendEmail}
+                            onChange={(e) => setResendEmail(e.target.value)}
+                            placeholder="your@email.com"
+                            required
+                            className="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => { void handleResend() }}
+                            disabled={resendLoading || !resendEmail}
+                            className="px-4 py-2.5 bg-[#3d7a20] text-white rounded-xl text-sm font-semibold hover:bg-[#2a5a14] transition-colors disabled:opacity-50 flex-shrink-0"
+                          >
+                            {resendLoading ? '…' : 'Send'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 

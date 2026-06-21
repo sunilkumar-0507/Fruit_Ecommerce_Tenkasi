@@ -103,7 +103,7 @@ export async function notifyLowStock(product: {
 
 export async function notifyNewCustomer(customer: {
   name: string
-  email: string
+  email?: string
   phone?: string
 }): Promise<void> {
   const prefs = loadPrefs()
@@ -113,7 +113,7 @@ export async function notifyNewCustomer(customer: {
     to_email:       prefs.adminEmail,
     subject:        `New Customer Registered — ${customer.name}`,
     customer_name:  customer.name,
-    customer_email: customer.email,
+    customer_email: customer.email ?? 'N/A',
     customer_phone: customer.phone ?? 'N/A',
     registered_at:  new Date().toLocaleString('en-IN'),
   })

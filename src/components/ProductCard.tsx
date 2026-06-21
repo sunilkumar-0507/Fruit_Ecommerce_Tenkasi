@@ -28,7 +28,7 @@ export default function ProductCard({
 
   function handleAdd() {
     if (isOutOfStock) return
-    addToCart({ id, name, nameTamil, category, image, price, unit })
+    addToCart({ id, name, nameTamil, category, image, price, unit }, 0.25)
     setAdded(true)
     setTimeout(() => setAdded(false), 1200)
   }

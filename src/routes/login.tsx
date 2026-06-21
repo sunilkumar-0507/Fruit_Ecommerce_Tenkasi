@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import TiIcon from '#/components/TiIcon'
 import { useAuth } from '#/context/AuthContext'
-import { loginUser, registerUser } from '#/services/auth'
+import { loginUser, registerUser, requestPasswordOtp, verifyPasswordOtp, resetPasswordWithToken } from '#/services/auth'
 import { PRODUCTS } from '#/data/products'
 
 export const Route = createFileRoute('/login')({
@@ -134,10 +134,10 @@ function LoginPage() {
   }, [user, successUser])
 
   const handleLoginSuccess = useCallback((u: import('#/services/auth').User) => {
-    redirectTarget.current = u.role === 'admin' ? '/admin' : '/'
+    redirectTarget.current = u.role === 'admin' ? '/admin' : redirect
     login(u)
     setSuccessUser({ name: u.name })
-  }, [login])
+  }, [login, redirect])
 
   const handleAnimationDone = useCallback(() => {
     const target = redirectTarget.current
@@ -211,7 +211,7 @@ function LoginPage() {
               {tab === 'signin' ? 'Welcome back' : tab === 'register' ? 'Create account' : 'Reset password'}
             </h1>
             <p className="text-gray-500 text-sm mb-7">
-              {tab === 'signin' ? 'Sign in to continue shopping' : tab === 'register' ? 'Join 500K+ happy customers' : 'Enter your email and we\'ll send a reset link'}
+              {tab === 'signin' ? 'Sign in to continue shopping' : tab === 'register' ? 'Join 500K+ happy customers' : 'We\'ll send a 6-digit OTP to your mobile'}
             </p>
 
             {tab !== 'forgot' && (
@@ -247,10 +247,16 @@ function LoginPage() {
   )
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PHONE_RE = /^[6-9]\d{9}$/
+const IS_DEMO = !(import.meta.env as Record<string, string>).VITE_API_URL
+
+function cleanPhone(raw: string) {
+  const digits = raw.replace(/\D/g, '')
+  return digits.length === 12 && digits.startsWith('91') ? digits.slice(2) : digits
+}
 
 function SignInForm({ onSuccess, onForgot }: { onSuccess: (u: import('#/services/auth').User) => void; onForgot: () => void }) {
-  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
@@ -259,13 +265,14 @@ function SignInForm({ onSuccess, onForgot }: { onSuccess: (u: import('#/services
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
     setError('')
-    if (!EMAIL_RE.test(email.trim())) {
-      setError('Please enter a valid email address.')
+    const p = cleanPhone(phone)
+    if (!PHONE_RE.test(p)) {
+      setError('Enter a valid 10-digit mobile number.')
       return
     }
     setLoading(true)
     try {
-      const user = await loginUser({ email, password })
+      const user = await loginUser({ phone: p, password })
       onSuccess(user)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed. Please try again.')
@@ -278,8 +285,8 @@ function SignInForm({ onSuccess, onForgot }: { onSuccess: (u: import('#/services
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="signin-email">Email address</label>
-        <input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="signin-phone">Mobile number</label>
+        <input id="signin-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="9876543210" required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
       </div>
       <div>
         <div className="flex items-center justify-between mb-1.5">
@@ -303,42 +310,68 @@ function SignInForm({ onSuccess, onForgot }: { onSuccess: (u: import('#/services
 }
 
 function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
-  const [email, setEmail] = useState('')
+  const [step, setStep] = useState<'phone' | 'otp' | 'password' | 'done'>('phone')
+  const [phone, setPhone] = useState('')
+  const [otp, setOtp] = useState('')
+  const [resetToken, setResetToken] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleSubmit(e: { preventDefault(): void }) {
+  async function handleSendOtp(e: { preventDefault(): void }) {
     e.preventDefault()
     setError('')
-    if (!EMAIL_RE.test(email.trim())) {
-      setError('Please enter a valid email address.')
-      return
-    }
+    const p = cleanPhone(phone)
+    if (!PHONE_RE.test(p)) { setError('Enter a valid 10-digit mobile number.'); return }
     setLoading(true)
     try {
-      await fetch(`${(import.meta.env as Record<string, string>).VITE_API_URL ?? ''}/api/Auth/forgot-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-      setSent(true)
-    } catch {
-      setError('Could not send reset email. Please try again.')
-    } finally {
-      setLoading(false)
-    }
+      await requestPasswordOtp(p)
+      setPhone(p)
+      setStep('otp')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not send OTP. Try again.')
+    } finally { setLoading(false) }
   }
 
-  if (sent) {
+  async function handleVerifyOtp(e: { preventDefault(): void }) {
+    e.preventDefault()
+    setError('')
+    if (otp.length !== 6) { setError('Enter the 6-digit OTP.'); return }
+    setLoading(true)
+    try {
+      const { token } = await verifyPasswordOtp(phone, otp)
+      setResetToken(token)
+      setStep('password')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid OTP. Please try again.')
+    } finally { setLoading(false) }
+  }
+
+  async function handleResetPassword(e: { preventDefault(): void }) {
+    e.preventDefault()
+    setError('')
+    if (newPassword.length < 8) { setError('Password must be at least 8 characters.'); return }
+    if (newPassword !== confirmPassword) { setError('Passwords do not match.'); return }
+    setLoading(true)
+    try {
+      await resetPasswordWithToken(resetToken, newPassword)
+      setStep('done')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not reset password. Please try again.')
+    } finally { setLoading(false) }
+  }
+
+  if (step === 'done') {
     return (
       <div className="text-center space-y-4">
         <div className="w-14 h-14 rounded-full bg-[#f5f9f7] flex items-center justify-center mx-auto">
-          <TiIcon name="email" size={26} className="text-[#3d7a20]" />
+          <TiIcon name="shine" size={26} className="text-[#3d7a20]" />
         </div>
-        <p className="font-semibold text-gray-900">Check your inbox</p>
+        <p className="font-semibold text-gray-900">Password updated!</p>
         <p className="text-gray-500 text-sm leading-relaxed">
-          We've sent a password reset link to <span className="font-medium text-gray-700">{email}</span>. Check your spam folder if you don't see it.
+          Your password has been reset. Sign in with your new password.
         </p>
         <button type="button" onClick={onBack} className="text-sm text-[#3d7a20] hover:underline font-medium">
           ← Back to Sign In
@@ -347,23 +380,79 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
     )
   }
 
+  if (step === 'otp') {
+    return (
+      <form onSubmit={(e) => { void handleVerifyOtp(e) }} className="space-y-4">
+        {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>}
+        <div className="text-center pb-1">
+          <p className="text-gray-500 text-sm">OTP sent to <span className="font-medium text-gray-700">+91 {phone}</span></p>
+          {IS_DEMO && <p className="text-xs text-[#f5821f] mt-1">Demo mode — use OTP <strong>123456</strong></p>}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="forgot-otp">6-digit OTP</label>
+          <input
+            id="forgot-otp"
+            type="text"
+            inputMode="numeric"
+            maxLength={6}
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            placeholder="• • • • • •"
+            required
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-center tracking-[0.5em] text-lg outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white"
+          />
+        </div>
+        <button type="submit" disabled={loading} className="w-full bg-[#3d7a20] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          {loading ? 'Verifying…' : 'Verify OTP'}
+        </button>
+        <button type="button" onClick={() => { setStep('phone'); setOtp(''); setError('') }} className="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors">
+          ← Change number
+        </button>
+      </form>
+    )
+  }
+
+  if (step === 'password') {
+    return (
+      <form onSubmit={(e) => { void handleResetPassword(e) }} className="space-y-4">
+        {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="forgot-newpw">New password</label>
+          <div className="relative">
+            <input id="forgot-newpw" type={showPw ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min 8 characters" required minLength={8} className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
+            <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label={showPw ? 'Hide' : 'Show'}>
+              <TiIcon name="eye" size={17} className="text-gray-400" />
+            </button>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="forgot-confirmpw">Confirm password</label>
+          <input id="forgot-confirmpw" type={showPw ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Re-enter password" required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
+        </div>
+        <button type="submit" disabled={loading} className="w-full bg-[#3d7a20] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          {loading ? 'Updating…' : 'Set New Password'}
+        </button>
+      </form>
+    )
+  }
+
   return (
-    <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
+    <form onSubmit={(e) => { void handleSendOtp(e) }} className="space-y-4">
       {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="forgot-email">Email address</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="forgot-phone">Mobile number</label>
         <input
-          id="forgot-email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
+          id="forgot-phone"
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="9876543210"
           required
           className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white"
         />
       </div>
       <button type="submit" disabled={loading} className="w-full bg-[#3d7a20] text-white py-3 rounded-xl font-semibold text-sm hover:bg-[#2a5a14] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-        {loading ? 'Sending…' : 'Send Reset Link'}
+        {loading ? 'Sending OTP…' : 'Send OTP'}
       </button>
       <button type="button" onClick={onBack} className="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors">
         ← Back to Sign In
@@ -373,7 +462,7 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
 }
 
 function RegisterForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').User) => void }) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' })
+  const [form, setForm] = useState({ name: '', phone: '', password: '' })
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -385,13 +474,14 @@ function RegisterForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
     setError('')
-    if (!EMAIL_RE.test(form.email.trim())) {
-      setError('Please enter a valid email address.')
+    const p = cleanPhone(form.phone)
+    if (!PHONE_RE.test(p)) {
+      setError('Enter a valid 10-digit mobile number.')
       return
     }
     setLoading(true)
     try {
-      const user = await registerUser(form)
+      const user = await registerUser({ name: form.name, phone: p, password: form.password })
       onSuccess(user)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed. Please try again.')
@@ -403,16 +493,14 @@ function RegisterForm({ onSuccess }: { onSuccess: (u: import('#/services/auth').
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">{error}</div>}
-      {[
-        { id: 'reg-name', label: 'Full name', field: 'name' as const, type: 'text', placeholder: 'Ravi Kumar' },
-        { id: 'reg-email', label: 'Email address', field: 'email' as const, type: 'email', placeholder: 'you@example.com' },
-        { id: 'reg-phone', label: 'Phone number', field: 'phone' as const, type: 'tel', placeholder: '+91 70944 02579' },
-      ].map(({ id, label, field, type, placeholder }) => (
-        <div key={id}>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor={id}>{label}</label>
-          <input id={id} type={type} value={form[field]} onChange={set(field)} placeholder={placeholder} required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
-        </div>
-      ))}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="reg-name">Full name</label>
+        <input id="reg-name" type="text" value={form.name} onChange={set('name')} placeholder="Ravi Kumar" required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="reg-phone">Mobile number</label>
+        <input id="reg-phone" type="tel" value={form.phone} onChange={set('phone')} placeholder="9876543210" required className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#3d7a20] focus:ring-2 focus:ring-[#3d7a20]/10 transition bg-white" />
+      </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="reg-pw">Password</label>
         <div className="relative">

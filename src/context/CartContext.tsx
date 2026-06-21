@@ -24,8 +24,21 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null)
 
+const CART_KEY = 'tf_cart'
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([])
+  const [items, setItems] = useState<CartItem[]>(() => {
+    try {
+      const stored = localStorage.getItem(CART_KEY)
+      return stored ? (JSON.parse(stored) as CartItem[]) : []
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem(CART_KEY, JSON.stringify(items))
+  }, [items])
 
   // On mount: if using real API and user is logged in, load server cart
   useEffect(() => {
@@ -70,7 +83,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     if (isApiMode() && getStoredToken()) {
       api
-        .post<CartDto>('/api/Cart/items', { productId: product.id, quantity: Math.max(1, Math.round(qty)) })
+        .post<CartDto>('/api/Cart/items', { productId: product.id, quantity: qty })
         .then((cart) => {
           const cartItem = (cart.items ?? []).find((ci) => ci.productId === product.id)
           if (cartItem) {
@@ -94,7 +107,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           void api.put<CartDto>(`/api/Cart/items/${item.cartItemId}`, { quantity: newQty })
         }
       }
-      return prev.map((i) => (i.id === id ? { ...i, qty: i.qty + delta } : i)).filter((i) => i.qty > 0)
+      return prev
+        .map((i) => (i.id === id ? { ...i, qty: Math.round((i.qty + delta) * 100) / 100 } : i))
+        .filter((i) => i.qty > 0)
     })
   }
 
@@ -110,6 +125,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   function clearCart() {
     setItems([])
+    localStorage.removeItem(CART_KEY)
     if (isApiMode() && getStoredToken()) {
       void api.delete('/api/Cart')
     }

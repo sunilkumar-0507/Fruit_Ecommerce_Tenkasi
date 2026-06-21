@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { api, isApiMode, getStoredToken, type AddressDto, type OrderDto } from '#/lib/apiClient'
 import { notifyNewOrder } from '#/services/notificationService'
+import { useAuth } from '#/context/AuthContext'
 
 export interface Address {
   id: string
@@ -78,6 +79,7 @@ function load<T>(key: string, fallback: T): T {
 let orderSeq = 1290
 
 export function OrderProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
   const [orders, setOrders] = useState<Order[]>(() =>
     isApiMode() ? [] : (load(ORDERS_KEY, []) as Order[]),
   )
@@ -93,11 +95,18 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     if (!isApiMode()) localStorage.setItem(ADDRS_KEY, JSON.stringify(addresses))
   }, [addresses])
 
-  // Load addresses from API on mount when logged in
+  // Load addresses from the API whenever the logged-in user changes (login/reload),
+  // and clear them on logout. Keyed on `user` so it re-runs after login — the provider
+  // mounts at app startup, before the user signs in, so a mount-only effect would miss it.
   useEffect(() => {
-    if (!isApiMode() || !getStoredToken()) return
-    void loadAddresses()
-  }, [])
+    if (!isApiMode()) return
+    if (user && getStoredToken()) {
+      void loadAddresses()
+    } else {
+      setAddresses([])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   async function loadAddresses(): Promise<void> {
     const dtos = await api.get<AddressDto[]>('/api/Addresses')
