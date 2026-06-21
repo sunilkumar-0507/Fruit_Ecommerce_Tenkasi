@@ -101,7 +101,8 @@ export function loginUser(payload: LoginPayload): Promise<User> {
   }
   return request<ApiAuthResponse>('/api/Auth/login', {
     method: 'POST',
-    body: JSON.stringify({ phoneNumber: payload.phone, password: payload.password }),
+    // TODO: remove email once backend accepts phoneNumber directly
+    body: JSON.stringify({ email: `${payload.phone}@ph.tenkasifresh.in`, phoneNumber: payload.phone, password: payload.password }),
   }).then((r) => {
     if (r.refreshToken) localStorage.setItem('tf_refresh', r.refreshToken)
     return mapAuthResponse(r)
@@ -126,8 +127,10 @@ export function registerUser(payload: RegisterPayload): Promise<User> {
   }
   return request<ApiAuthResponse>('/api/Auth/register', {
     method: 'POST',
+    // TODO: remove email once backend accepts phoneNumber directly
     body: JSON.stringify({
       fullName: payload.name,
+      email: `${payload.phone}@ph.tenkasifresh.in`,
       password: payload.password,
       phoneNumber: payload.phone,
     }),
