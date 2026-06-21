@@ -181,18 +181,6 @@ function LoginPage() {
                 Every fruit traced to a farmer we know by name. Harvested at dawn, at your door by dusk.
               </p>
             </div>
-            <div className="space-y-4">
-              {[
-                { icon: 'shine', label: '100% Farm Fresh Fruits' },
-                { icon: 'truck', label: 'Fast Delivery across TN' },
-                { icon: 'user', label: '240+ Farmer Families' },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-3 text-sm text-white/75">
-                  <TiIcon name={item.icon} size={16} className="text-[#f5821f]" />
-                  {item.label}
-                </div>
-              ))}
-            </div>
           </div>
           <p className="relative text-white/30 text-xs">© 2026 Tenkasi Fresh Fruits</p>
         </div>
