@@ -115,8 +115,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
   const [form, setForm] = useState(emptyForm)
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0)
-  const freeDelivery = subtotal >= 499
-  const deliveryFee = freeDelivery ? 0 : DELIVERY_FEE
+  const deliveryFee = DELIVERY_FEE
   const total = Math.max(0, subtotal + deliveryFee - couponDiscount)
 
   function setF(k: keyof typeof form) {
@@ -437,11 +436,7 @@ function CheckoutModal({ onClose, cartCoupon }: {
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Delivery</span>
-                  {freeDelivery ? (
-                    <span className="font-semibold text-[#3d7a20]">Free</span>
-                  ) : (
-                    <span className="font-semibold text-gray-900">₹{deliveryFee}</span>
-                  )}
+                  <span className="font-semibold text-gray-900">₹{deliveryFee}</span>
                 </div>
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-sm text-[#3d7a20]">
@@ -449,10 +444,6 @@ function CheckoutModal({ onClose, cartCoupon }: {
                     <span className="font-semibold">−₹{couponDiscount}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Banana leaf wrap</span>
-                  <span className="text-[#3d7a20] font-medium">Complimentary</span>
-                </div>
                 <div className="border-t border-gray-200 pt-2.5 flex justify-between items-baseline">
                   <span className="font-bold text-gray-900">Total</span>
                   <span className="font-bold text-xl text-gray-900">₹{total}</span>
@@ -556,8 +547,7 @@ function CartPage() {
   }
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0)
-  const freeDelivery = subtotal >= 499
-  const deliveryFee = freeDelivery ? 0 : DELIVERY_FEE
+  const deliveryFee = DELIVERY_FEE
   const couponDiscount = appliedCoupon?.discount ?? 0
   const total = Math.max(0, subtotal + deliveryFee - couponDiscount)
   const isRepeatCustomer = orders.length >= 1
@@ -668,27 +658,6 @@ function CartPage() {
               <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100 lg:sticky lg:top-28">
                 <h2 className="font-serif text-xl font-bold text-gray-900 mb-4">Order summary</h2>
 
-                {/* Free delivery progress */}
-                {!freeDelivery ? (
-                  <div className="mb-4 bg-[#fef8f0] rounded-xl p-3">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-semibold text-[#3d7a20]">Free delivery above ₹499</span>
-                      <span className="text-xs font-bold text-[#3d7a20]">₹{499 - subtotal} away</span>
-                    </div>
-                    <div className="w-full bg-[#c8e6d4] rounded-full h-1.5">
-                      <div
-                        className="bg-[#3d7a20] h-1.5 rounded-full transition-all"
-                        style={{ width: `${Math.min((subtotal / 499) * 100, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mb-4 bg-[#fdf4e8] rounded-xl p-3 flex items-center gap-2">
-                    <span className="text-base">🎉</span>
-                    <span className="text-xs font-semibold text-[#3d7a20]">You've unlocked free delivery!</span>
-                  </div>
-                )}
-
                 {/* Coupon suggestions */}
                 {subtotal >= 1000 && !appliedCoupon && (
                   <button
@@ -762,11 +731,7 @@ function CartPage() {
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Delivery</span>
-                    {freeDelivery ? (
-                      <span className="font-semibold text-[#3d7a20]">Free</span>
-                    ) : (
-                      <span className="font-semibold text-gray-900">₹{deliveryFee}</span>
-                    )}
+                    <span className="font-semibold text-gray-900">₹{deliveryFee}</span>
                   </div>
                   {appliedCoupon && (
                     <div className="flex justify-between text-sm text-[#3d7a20]">
@@ -774,10 +739,6 @@ function CartPage() {
                       <span className="font-semibold">−₹{appliedCoupon.discount}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Banana leaf wrap</span>
-                    <span className="text-[#3d7a20] font-medium">Complimentary</span>
-                  </div>
                 </div>
                 <div className="border-t border-gray-100 pt-4 mb-6">
                   <div className="flex justify-between items-baseline">

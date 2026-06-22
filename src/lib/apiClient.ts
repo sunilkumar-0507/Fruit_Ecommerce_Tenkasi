@@ -141,6 +141,7 @@ export interface OrderDto {
   status: number
   subtotal: number
   discount: number
+  deliveryFee: number
   total: number
   trackingNumber: string | null
   createdAtUtc: string
